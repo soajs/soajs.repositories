@@ -8,9 +8,9 @@
  */
 
 "use strict";
-const colName = "git";
+//const colName = "git";
 const core = require("soajs");
-const async = require("async");
+//const async = require("async");
 const Mongo = core.mongo;
 
 let indexing = {};
