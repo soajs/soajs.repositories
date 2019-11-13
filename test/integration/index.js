@@ -11,7 +11,7 @@
 const imported = require("../data/import.js");
 let helper = require("../helper.js");
 
-let multitenant, controller;
+let service, controller;
 
 describe("starting integration tests", () => {
 
@@ -24,10 +24,10 @@ describe("starting integration tests", () => {
 	        if (msg){
 		        console.log(msg);
 	        }
-            console.log("Starting Controller and Multitenant service");
+            console.log("Starting Controller and GIT service");
             controller = require("soajs.controller");
             setTimeout(function () {
-                multitenant = helper.requireModule('./index');
+	            service = helper.requireModule('./index');
                 setTimeout(function () {
                     done();
                 }, 5000);
@@ -36,8 +36,6 @@ describe("starting integration tests", () => {
     });
 
     it("loading tests", (done) => {
-        require("./product/product.test.js");
-        require("./tenant/tenant.test.js");
         done();
     });
 
