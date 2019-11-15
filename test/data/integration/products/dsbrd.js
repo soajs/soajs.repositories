@@ -89,27 +89,6 @@ let prod = {
                 }
             },
             _TTL: 604800000
-        },
-        {
-            code: "DSBRD_DEVOP",
-            name: "DevOps",
-            locked: true,
-            description: "This package has the right privileges a DevOps user will need to be able to configure, control, and monitor what is happening across the board.",
-            acl: {
-                dashboard: {
-                    urac: [
-                        {
-                            version: "3",
-	                        get: [
-		                        "Group administration",
-		                        "User administration",
-		                        "My account"
-	                        ]
-                        }
-                    ]
-                }
-            },
-            _TTL: 604800000
         }
     ]
 };
