@@ -42,54 +42,6 @@ let lib = {
                     ],
                     config: {
                         dashboard: {
-                            commonFields: {
-                                mail: {
-                                    from: "me@localhost.com",
-                                    transport: {
-                                        type: "sendmail",
-                                        options: {
-
-                                        }
-                                    }
-                                }
-                            },
-                            urac: {
-                                hashIterations: 1024,
-                                seedLength: 32,
-                                link: {
-                                    addUser: "http://dashboard.soajs.org:80/#/setNewPassword",
-                                    changeEmail: "http://dashboard.soajs.org:80/#/changeEmail/validate",
-                                    forgotPassword: "http://dashboard.soajs.org:80/#/resetPassword",
-                                    join: "http://dashboard.soajs.org:80/#/join/validate"
-                                },
-                                tokenExpiryTTL: 172800000,
-                                validateJoin: true,
-                                mail: {
-                                    join: {
-                                        subject: "Welcome to SOAJS",
-                                        path: "undefined/soajs/node_modules/soajs.urac/mail/urac/join.tmpl"
-                                    },
-                                    forgotPassword: {
-                                        subject: "Reset Your Password at SOAJS",
-                                        path: "undefined/soajs/node_modules/soajs.urac/mail/urac/forgotPassword.tmpl"
-                                    },
-                                    addUser: {
-                                        subject: "Account Created at SOAJS",
-                                        path: "undefined/soajs/node_modules/soajs.urac/mail/urac/addUser.tmpl"
-                                    },
-                                    changeUserStatus: {
-                                        subject: "Account Status changed at SOAJS",
-                                        path: "undefined/soajs/node_modules/soajs.urac/mail/urac/changeUserStatus.tmpl"
-                                    },
-                                    changeEmail: {
-                                        subject: "Change Account Email at SOAJS",
-                                        path: "undefined/soajs/node_modules/soajs.urac/mail/urac/changeEmail.tmpl"
-                                    }
-                                }
-                            },
-                            oauth: {
-                                loginMode: "urac"
-                            }
                         }
                     }
                 }
