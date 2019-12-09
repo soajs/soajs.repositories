@@ -36,6 +36,7 @@ describe("starting integration tests", () => {
     });
 
     it("loading tests", (done) => {
+	    require("./git.test.js");
         done();
     });
 

@@ -31,7 +31,15 @@ service.init(() => {
         //PUT methods
 
         //POST methods
-
+	    
+	    service.post("/gitAccounts/login", function (req, res) {
+		    bl.getDriver(req.soajs, config, (err, driver) => {
+			    bl.git.login(req.soajs, req.soajs.inputmaskData, driver, (error, data) => {
+				    return res.json(req.soajs.buildResponse(error, data));
+			    });
+		    });
+	    });
+        
         service.start();
     });
 });

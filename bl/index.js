@@ -18,8 +18,8 @@ const BLs = ["git"];
 
 let BL = {
 	init: init,
+	getDriver: getDriver,
 	git: null
-	
 };
 
 function init(service, localConfig, cb) {
@@ -51,4 +51,14 @@ function init(service, localConfig, cb) {
     });
 }
 
+function getDriver(soajs, localConfig, cb) {
+	let provider = soajs.inputmaskData.provider || 'github';
+	let pathToDriver = __dirname + `/../driver/${provider}/index.js`;
+	if (fs.existsSync(pathToDriver)) {
+		return cb(null, require(pathToDriver));
+	} else {
+		soajs.log.error(`Requested provider is not Supported!`);
+		return cb({"code": 603, "msg": localConfig.errors[603]});
+	}
+}
 module.exports = BL;
