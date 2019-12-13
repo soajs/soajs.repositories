@@ -18,28 +18,26 @@ const bl = require("./bl/index.js");
 const service = new soajs.server.service(config);
 
 service.init(() => {
-    bl.init(service, config, (error) => {
-        if (error) {
-            throw new Error('Failed starting service');
-        }
-
-        //GET methods
-        
-        //DELETE methods
-   
-
-        //PUT methods
-
-        //POST methods
-	    
-	    service.post("/gitAccounts/login", function (req, res) {
-		    bl.getDriver(req.soajs, config, (err, driver) => {
-			    bl.git.login(req.soajs, req.soajs.inputmaskData, driver, (error, data) => {
-				    return res.json(req.soajs.buildResponse(error, data));
-			    });
-		    });
-	    });
-        
-        service.start();
-    });
+	bl.init(service, config, (error) => {
+		if (error) {
+			throw new Error('Failed starting service');
+		}
+		
+		//GET methods
+		
+		//DELETE methods
+		
+		
+		//PUT methods
+		
+		//POST methods
+		
+		service.post("/gitAccounts/login", function (req, res) {
+			bl.git.login(req.soajs, req.soajs.inputmaskData, (error, data) => {
+				return res.json(req.soajs.buildResponse(error, data));
+			});
+		});
+		
+		service.start();
+	});
 });

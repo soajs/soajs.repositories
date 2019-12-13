@@ -9,9 +9,6 @@
 "use strict";
 
 const Octokit = require("@octokit/rest");
-const shortid = require("shortid");
-const async = require("async");
-
 const helper = require("./helper");
 
 function Github(service, data) {
@@ -30,14 +27,14 @@ function Github(service, data) {
 		auth.token = data.token;
 		__self.token = data.token;
 	}
-	if (__self.access === "private") {
+	else if (__self.access === "private") {
 		if (data.password && data.username) {
 			auth.password = data.password;
 			auth.username = data.username;
-			
 			__self.password = data.password;
 		}
 	}
+	
 	if ((auth.token || auth.password) && data.on2fa) {
 		auth.on2fa = () => {
 			return Promise.resolve(data.on2fa)
@@ -45,7 +42,7 @@ function Github(service, data) {
 		__self.on2fa = data.on2fa;
 	}
 	
-	__self.service.log.debug("Git Init!");
+	__self.service.log.debug("Github Git Init!");
 	if (Object.keys(auth).length > 0) {
 		__self.github = new Octokit({auth: auth});
 	} else {
@@ -54,93 +51,67 @@ function Github(service, data) {
 }
 
 Github.prototype.getRepositories = function (data, cb) {
-	
 	let __self = this;
-	if (__self.access === "public") {
-		if (__self.type === 'personal') {
-			__self.github.repos.listForUser({
-				username: __self.username,
-				per_page: data.per_page || '100',
-				page: data.page || 1
-			}).then(({data, headers}) => {
-				return cb(null, data, headers);
-			}).catch((err) => {
-				return cb(err);
-			});
-		} else {
-			__self.github.repos.listForOrg({
-				org: __self.username,
-				per_page: data.per_page || '100',
-				page: data.page || 1
-			}).then(({data, headers}) => {
-				return cb(null, data, headers);
-			}).catch((err) => {
-				return cb(err);
+	if (!__self.manifest){
+		__self.manifest = {
+			total: 0,
+			count : 0
+		};
+	}
+	__self.manifest.count++;
+	data.page = __self.manifest.count;
+	helper.getRepositories(__self, data, (err, records, headers) => {
+		if (err) {
+			return cb(err);
+		}
+		if (__self.manifest.count === 0 ){
+			helper.getRepoPages(headers, (err, pages) => {
+				__self.manifest.total = pages;
+				return cb(null, {
+					records: records && records.length > 0 ? records : [],
+					pages
+				})
+			})
+		}
+		else {
+			return cb(null, {
+				records: records && records.length > 0 ? records : [],
+				pages :__self.manifest.total
 			});
 		}
-	} else {
-		__self.github.repos.list({
-			username: __self.username,
-			visibility: "all",
-			per_page: data.per_page || '500',
-			page: data.page || 1
-		}).then(({data, headers}) => {
-			return cb(null, data, headers);
-		}).catch((err) => {
-			return cb(err);
-		});
-	}
-};
-
-Github.prototype.createAuthToken = function (data, cb) {
-	let __self = this;
-	__self.github.oauthAuthorizations.createAuthorization({
-		note: 'SOAJS GitHub App Token (soajs_' + shortid.generate() + ')',
-		scopes: data.config.gitAccounts.github.tokenScope,
-	}).then(({data}) => {
-		return cb(null, data);
-	}).catch((err) => {
-		return cb(err);
+		
 	});
 };
 
-Github.prototype.validate = function (data, cb) {
+Github.prototype.login = function (data, cb) {
 	let __self = this;
-	if (__self.type === 'personal') {
-		__self.github.users.getByUsername({
-			username: __self.username
-		}).then(({data}) => {
-			return cb(null, data);
-		}).catch((err) => {
+	helper.validate(__self, (err, record) => {
+		if (err) {
 			return cb(err);
-		});
-	} else {
-		__self.github.orgs.get({
-			org: __self.username
-		}).then(({data}) => {
-			return cb(null, data);
-		}).catch((err) => {
-			return cb(err);
-		});
-	}
-};
-
-Github.prototype.createAccountRecord = function (data, cb) {
-	let __self = this;
-	let record = {
-		owner: __self.username,
-		accountType: __self.type,
-		access: __self.access,
-		provider: __self.provider,
-		domain: __self.domain,
-		label: __self.label,
-		type: "account",
-		GID: data.id
-	};
-	if (data.token) {
-		record.token = data.token
-	}
-	return record;
+		}
+		let account = {
+			owner: __self.username,
+			accountType: __self.type,
+			access: __self.access,
+			provider: __self.provider,
+			domain: __self.domain,
+			label: __self.label,
+			type: "account",
+			GID: record.id
+		};
+		if (__self.access === 'private') {
+			helper.createToken(__self, data,(err, result) => {
+				if (err) {
+					return cb(err);
+				} else {
+					account.token = result.token;
+					return cb(null, account);
+				}
+			});
+		} else {
+			return cb(null, account);
+		}
+	});
 };
 
 Github.prototype.createRepositoryRecord = function (data) {
@@ -148,61 +119,16 @@ Github.prototype.createRepositoryRecord = function (data) {
 	return {
 		repository: data.full_name,
 		name: data.name,
-		type: data.owner.type,
-		owner: __self.username,
+		type: "repository",
+		owner: data.owner.login,
+		source: {
+			name: __self.username,
+			ts: data.ts
+		},
 		provider: __self.provider,
-		domain: __self.domain
+		domain: __self.domain,
+		ts: data.ts
 	};
-};
-
-Github.prototype.extractRepos = function (data) {
-	let __self = this;
-	let opts = {};
-	__self.getRepositories(opts, (err, records, headers) => {
-		if (err) {
-			__self.service.log.error(err);
-		}
-		let count = 0;
-		if (records && records.length > 0) {
-			async.each(records, (record, call) => {
-				count++;
-				data.mongo.updateRepository(__self.createRepositoryRecord(record), call);
-			}, (err) => {
-				if (err) {
-					__self.service.log.error(err);
-				}
-				helper.getRepoPages(headers, (err, pages) => {
-					if (err) {
-						__self.service.log.error(err);
-					}
-					if (pages > 1) {
-						async.timesSeries(pages - 1, function (n, next) {
-							//skip the first page
-							__self.getRepositories({page: n + 2}, function (err, records) {
-								if (err) {
-									__self.service.log.error(err);
-								}
-								async.each(records, (record, call) => {
-									count++;
-									data.mongo.updateRepository(__self.createRepositoryRecord(record), call);
-								}, next);
-							});
-							__self.service.log.info(count , "Repositories Added So Far... ");
-						}, function (err) {
-							if (err) {
-								__self.service.log.error(err);
-							}
-							__self.service.log.info(count , "Repositories Added Successfully!");
-						});
-					}
-					else {
-						__self.service.log.info(count , "Repositories Added Successfully!");
-					}
-				});
-			});
-		}
-	});
-	
 };
 
 module.exports = Github;

@@ -7,23 +7,7 @@
  */
 
 "use strict";
-const request = require('request');
-const async = require('async');
-
 const helper = require("./helper");
-
-function requester(options, cb) {
-	options.json = true;
-	
-	if (!options.headers) {
-		options.headers = {};
-	}
-	
-	options.headers['Content-Type'] = 'application/json';
-	request(options, function (error, response, body) {
-		return cb(error, body);
-	});
-}
 
 function Bitbucket(service, data) {
 	let __self = this;
@@ -35,175 +19,95 @@ function Bitbucket(service, data) {
 	__self.service = service;
 	__self.username = data.username;
 	__self.label = data.label;
-	__self.password = data.password;
-	__self.oauthKey = data.oauthKey;
-	__self.oauthSecret = data.oauthSecret;
-	service.log.debug("Git Init!");
+	if (data.token) {
+		__self.token = data.token;
+		__self.tokenInfo = data.tokenInfo;
+	}
+	else if (__self.access === "private") {
+		__self.password = data.password;
+		__self.oauthKey = data.oauthKey;
+		__self.oauthSecret = data.oauthSecret;
+	}
+	service.log.debug("Bitbucket Git Init!");
 }
-
-
-
-Bitbucket.prototype.createAuthToken = function (data, cb) {
-	let __self = this;
-	let formData = {};
-	formData.grant_type = 'password';
-	formData.username = __self.username;
-	formData.password = __self.password;
-	let options = {
-		method: 'POST',
-		json: true,
-		url: data.config.gitAccounts.bitbucket.oauth.domain,
-		headers: {
-			'Content-Type': 'application/x-www-form-urlencoded'
-		},
-		auth: {
-			user: __self.oauthKey,
-			pass: __self.oauthSecret
-		},
-		form: formData
-	};
-	requester(options, cb);
-};
-
-Bitbucket.prototype.validate = function (data, cb) {
-	let __self = this;
-	const options = {
-		method: 'GET',
-		url: data.config.gitAccounts.bitbucket.apiDomain + data.config.gitAccounts.bitbucket.routes.validateUser.replace("%USERNAME%", __self.username)
-	};
-	
-	requester(options, function (error, record) {
-		if (error) {
-			return cb(error);
-		}
-		if (!record || typeof record !== "object") {
-			return cb({message: 'User does not exist'});
-		}
-		if (record.account_id){
-			__self.account_id = record.account_id;
-		}
-		record.id = record.account_id;
-		return cb(null, record);
-	});
-};
-
-Bitbucket.prototype.createAccountRecord = function (response) {
-	let __self = this;
-	let record = {
-		owner: __self.username,
-		accountType: __self.type,
-		access: __self.access,
-		provider: __self.provider,
-		domain: __self.domain,
-		label: __self.label,
-		type: "account",
-		GID: __self.account_id
-	};
-	if (response && response.access_token){
-		record.token = response.access_token;
-		__self.token = response.access_token;
-		__self.expires_in = response.expires_in;
-		__self.refresh_token = response.refresh_token;
-		if ( response.refresh_token && response.expires_in){
-			record.tokenInfo = {
-				refresh_token: response.refresh_token,
-				created: (new Date).getTime(),
-				expires_in: response.expires_in * 1000
-			};
-			
-		}
-	}
-	return record;
-};
-
-Bitbucket.prototype.getRepositories = function (data, cb) {
-	let __self = this;
-	const options = {
-		method: 'GET',
-		url: data.config.gitAccounts.bitbucket.apiDomain + data.config.gitAccounts.bitbucket.routes.getAllRepos.replace("%USERNAME%", __self.account_id || __self.username),
-		qs: {
-			pagelen: data.per_page || '5',
-			page:  data.page || 1,
-		}
-	};
-	if (__self.token) {
-		options.headers = {
-			authorization: 'Bearer ' + __self.token
-		};
-	}
-	requester(options, function (error, records) {
-		if (error) {
-			return cb(error);
-		}
-		return cb(null, records);
-	});
-};
 
 Bitbucket.prototype.createRepositoryRecord = function (data) {
 	let __self = this;
 	return {
 		repository: data.full_name,
 		name: data.name,
-		type: data.owner.type,
-		owner: __self.username,
+		accountType: data.owner.type,
+		type: "repository",
+		owner: data.full_name.split("/")[0],
 		provider: __self.provider,
-		domain: __self.domain
+		source: {
+			name: __self.username,
+			ts : data.ts
+		},
+		domain: __self.domain,
+		ts: data.ts
 	};
 };
 
-Bitbucket.prototype.extractRepos = function (data) {
+Bitbucket.prototype.login = function (data, cb) {
 	let __self = this;
-	let opts = {
-		config: data.config
-	};
-	
-	__self.getRepositories(opts, (err, records) => {
+	helper.validate(__self, data, (err) => {
 		if (err) {
-			__self.service.log.error(err);
+			return cb(err);
 		}
-		let count = 0;
-		if (records && records.values && records.values.length > 0) {
-			async.each(records.values, (record, call) => {
-				count++;
-				data.mongo.updateRepository(__self.createRepositoryRecord(record), call);
-			}, (err) => {
+		let account = {
+			owner: __self.username,
+			accountType: __self.type,
+			access: __self.access,
+			provider: __self.provider,
+			domain: __self.domain,
+			label: __self.label,
+			type: "account",
+			GID: __self.account_id
+		};
+		if (__self.access === 'private') {
+			helper.createToken(__self, data, (err, result) => {
 				if (err) {
-					__self.service.log.error(err);
+					return cb(err);
+				} else {
+					if (result && result.access_token) {
+						account.token = result.access_token;
+						__self.token = result.access_token;
+						__self.expires_in = result.expires_in;
+						__self.refresh_token = result.refresh_token;
+						if (result.refresh_token && result.expires_in) {
+							account.tokenInfo = {
+								refresh_token: result.refresh_token,
+								created: (new Date).getTime(),
+								expires_in: result.expires_in * 1000
+							};
+						}
+					}
+					return cb(null, account);
 				}
-				let pageInfo = {
-					pagelen: records.pagelen,
-					size: records.size
-				};
-				helper.getRepoPages(pageInfo, (err, pages) => {
-					if (err) {
-						__self.service.log.error(err);
-					}
-					if (pages > 1) {
-						async.timesSeries(pages - 1, function (n, next) {
-							//skip the first page
-							__self.getRepositories({page: n + 2}, function (err, records) {
-								if (err) {
-									__self.service.log.error(err);
-								}
-								async.each(records, (record, call) => {
-									count++;
-									data.mongo.updateRepository(__self.createRepositoryRecord(record), call);
-								}, next);
-							});
-							__self.service.log.info(count , "Repositories Added So Far... ");
-						}, function (err) {
-							if (err) {
-								__self.service.log.error(err);
-							}
-							__self.service.log.info(count , "Repositories Added Successfully!");
-						});
-					}
-					else {
-						__self.service.log.info(count , "Repositories Added Successfully!");
-					}
-				});
 			});
+		} else {
+			return cb(null, account);
 		}
+	});
+};
+
+Bitbucket.prototype.getRepositories = function (data, cb) {
+	let __self = this;
+	helper.checkManifest(__self, data, (err)=>{
+		if (err) {
+			return cb(err);
+		}
+		helper.execManifest(__self, data, (err, records) => {
+			if (err) {
+				return cb(err);
+			}
+			console.log(__self.manifest)
+			return cb(null, {
+				records: records.length > 0 ? records : [],
+				pages : __self.manifest.total
+			});
+		});
 	});
 	
 };

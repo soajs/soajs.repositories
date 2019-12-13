@@ -31,7 +31,8 @@ module.exports = {
 			apiDomain: 'https://api.bitbucket.org/2.0',
 			routes: {
 				validateUser: '/users/%USERNAME%',
-				getAllRepos: '/users/%USERNAME%/repositories',
+				getAllRepos: '/repositories/%USERNAME%',
+				getUserTeams: '/user/permissions/teams',
 			},
 			oauth: {
 				domain: 'https://bitbucket.org/site/oauth2/access_token'

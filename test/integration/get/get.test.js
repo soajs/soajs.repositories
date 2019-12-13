@@ -22,7 +22,7 @@ describe("Testing get Git API", () => {
 		done();
 	});
 	
-	it("Success - will login account github", (done) => {
+	it.skip("Success - will login account github", (done) => {
 		let params = {
 			"provider": "github",
 			"domain": "github.com",

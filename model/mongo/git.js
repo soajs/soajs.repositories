@@ -66,7 +66,7 @@ Git.prototype.saveNewAccount = function (data, cb) {
 	let __self = this;
 	__self.mongoCore.insertOne(colName, data, (err, record) => {
 		if (record && Array.isArray(record)) {
-			record = record [0];
+			record = record[0];
 		}
 		return cb(err, {
 			id : record.insertedId
@@ -85,10 +85,11 @@ Git.prototype.updateRepository = function (data, cb) {
 			provider: data.provider,
 			domain: data.domain,
 			type: data.type,
-			ts: new Date().getTime()
+			owner: data.owner,
+			ts: data.ts
 		},
 		'$addToSet' : {
-			owners: data.owner
+			source: data.source
 		}
 	};
 	__self.mongoCore.updateOne(colName, condition, fields, options, (err, response) => {

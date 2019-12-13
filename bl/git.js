@@ -7,13 +7,14 @@
  */
 
 'use strict';
+const async = require("async");
 
 let bl = {
 	"modelObj": null,
 	"model": null,
 	"soajs_service": null,
 	"localConfig": null,
-	
+	"drivers": null,
 	"handleError": (soajs, errCode, err) => {
 		if (err) {
 			soajs.log.error(err);
@@ -36,8 +37,8 @@ let bl = {
 			}
 			return modelObj;
 		},
-		"getDriver": (data, driver) => {
-			return new driver(bl.soajs_service, data);
+		"getDriver": (data) => {
+			return new bl.drivers[data.provider](bl.soajs_service, data);
 		},
 		"closeModel": (soajs, modelObj) => {
 			if (soajs && soajs.tenant && soajs.tenant.type === "client" && soajs.tenant.dbConfig) {
@@ -49,22 +50,26 @@ let bl = {
 	/**
 	 * Git
 	 */
-	"login": (soajs, inputmaskData, driverFile, cb) => {
+	"login": (soajs, inputmaskData, cb) => {
 		let modelObj = bl.mp.getModel(soajs);
 		if (!(inputmaskData.username) && !(inputmaskData.token)) {
 			return cb(bl.handleError(soajs, 602, null), null);
 		}
-		let driver = bl.mp.getDriver(inputmaskData, driverFile);
+		let driver = bl.mp.getDriver(inputmaskData);
+		if (!driver) {
+			return cb(bl.handleError(soajs, 603, null), null);
+		}
 		let data = {
 			config: bl.localConfig
 		};
-		driver.validate(data, (err, response) => {
+		let ts = new Date().getTime();
+		driver.login(data, (err, loginRecord) => {
 			if (err) {
 				return cb(bl.handleError(soajs, 403, err), null);
 			}
 			data = {
 				provider: inputmaskData.provider,
-				id: response.id
+				id: loginRecord.GID
 			};
 			modelObj.checkIfAccountExists(data, (err, count) => {
 				bl.mp.closeModel(soajs, modelObj);
@@ -77,45 +82,80 @@ let bl = {
 				data = {
 					config: bl.localConfig
 				};
-				let opts = {
-					mongo: modelObj,
-					config: bl.localConfig
-				};
-				if (inputmaskData.access === 'public') {
-					modelObj.saveNewAccount(driver.createAccountRecord(response), (err, final) => {
-						if (err) {
-							return cb(bl.handleError(soajs, 602, err), null);
-						} else {
-							driver.extractRepos(opts);
-							soajs.log.info("Adding Repositories");
-							return cb(null, {
-								id: final.id.toString(),
-								message: "Repositories are being added..."
-							});
-						}
-						
-					});
-				} else {
-					driver.createAuthToken(data, (err, token) => {
-						if (err) {
-							return cb(bl.handleError(soajs, 403, err), null);
-						}
-					
-						modelObj.saveNewAccount(driver.createAccountRecord(token), (err, final) => {
-							if (err) {
-								return cb(bl.handleError(soajs, 602, err), null);
-							}
-							driver.extractRepos(opts);
-							soajs.log.info("Adding Repositories");
-							return cb(null, {
-								id: final.id.toString(),
-								message: "Repositories are being added..."
-							});
+				
+				modelObj.saveNewAccount(loginRecord, (err, final) => {
+					if (err) {
+						return cb(bl.handleError(soajs, 602, err), null);
+					} else {
+						soajs.log.info("Adding Repositories");
+						handleRepositories();
+						return cb(null, {
+							id: final.id.toString(),
+							message: "Repositories are being added..."
 						});
+					}
+				});
+			});
+		});
+		
+		function handleRepositories() {
+			let opts = {
+				config: bl.localConfig
+			};
+			driver.getRepositories(opts, (err, firstSet) => {
+				if (err) {
+					soajs.log.error(err);
+				}
+				console.log(firstSet)
+				let count = 0;
+				if (firstSet && firstSet.records && firstSet.records.length > 0) {
+					async.each(firstSet.records, (oneRecord, call) => {
+						count++;
+						oneRecord.ts = ts;
+						let finalRecord = driver.createRepositoryRecord(oneRecord);
+						modelObj.updateRepository(finalRecord, call);
+					}, (err) => {
+						if (err) {
+							soajs.log.error(err);
+						}
+						let pages = firstSet.pages;
+						if (pages > 1) {
+							async.timesSeries(pages - 1, function (n, next) {
+								//skip the first page
+								opts = {
+									config: bl.localConfig
+								};
+								driver.getRepositories(opts, function (err, sets) {
+									if (err) {
+										return next(err);
+									}
+									if (sets && sets.records && sets.records.length > 0) {
+										async.each(sets.records, (oneRecord, call) => {
+											count++;
+											oneRecord.ts = ts;
+											let finalRecord = driver.createRepositoryRecord(oneRecord);
+											modelObj.updateRepository(finalRecord, call);
+										}, (err) => {
+											soajs.log.debug(count, "Repositories Added So Far... ");
+											return next(err);
+										});
+									} else {
+										return next();
+									}
+								});
+							}, function (err) {
+								if (err) {
+									soajs.log.error(err);
+								}
+								soajs.log.info(count, "Repositories Added Successfully!");
+							});
+						} else {
+							soajs.log.debug(count, "Repositories Added Successfully!");
+						}
 					});
 				}
 			});
-		});
+		}
 	},
 	
 };
