@@ -77,7 +77,7 @@ const helper = {
 			method: 'GET',
 			url: data.url,
 			qs: {
-				pagelen: data.pagelen || '100',
+				pagelen: data.pagelen || 3,
 				page: data.page || 1,
 			}
 		};
@@ -132,10 +132,7 @@ const helper = {
 			}
 			async.each(teams.values, (oneTeam, call) => {
 				if (oneTeam && oneTeam.team
-					&& oneTeam.team.username
-					&& oneTeam.team.links
-					&& oneTeam.team.links.self
-					&& oneTeam.team.links.self.href) {
+					&& oneTeam.team.username) {
 					if (!self.manifest) {
 						self.manifest = {
 							auditor: {}
@@ -143,7 +140,7 @@ const helper = {
 					}
 					self.manifest.auditor[oneTeam.team.username] = {
 						count: 0,
-						url: oneTeam.team.links.self.href + "/repositories"
+						url: data.config.gitAccounts.bitbucket.apiDomain + data.config.gitAccounts.bitbucket.routes.getAllRepos.replace("%USERNAME%", oneTeam.team.username)
 					};
 				}
 				return call();
@@ -151,7 +148,6 @@ const helper = {
 		});
 	},
 	"execManifest": (self, data, cb) => {
-		console.log(JSON.stringify(self.manifest, null, 2))
 		if (self.manifest.iterator === 0) {
 			let repositories = [];
 			async.eachOfSeries(self.manifest.auditor, function (value, key, callback) {
@@ -171,6 +167,9 @@ const helper = {
 					helper.getRepoPages(pageInfo, (err, pages) => {
 						//create total count
 						self.manifest.total += pages;
+						if (pages >= 1){
+							self.manifest.iterator++;
+						}
 						//create each auditor count and remove the current iteration
 						self.manifest.auditor[key].total = pages;
 						self.manifest.auditor[key].count++;
@@ -187,7 +186,6 @@ const helper = {
 					return cb(err);
 				}
 				//update count
-				self.manifest.iterator++;
 				return cb(null, repositories);
 			});
 		} else {
@@ -215,7 +213,6 @@ const helper = {
 						return cb(err);
 					}
 					
-					self.manifest.auditor[key].total = repos.size;
 					self.manifest.auditor[key].count++;
 					self.manifest.iterator++;
 					return cb(null, repos && repos.values ? repos.values : repos);

@@ -36,7 +36,6 @@ Bitbucket.prototype.createRepositoryRecord = function (data) {
 	return {
 		repository: data.full_name,
 		name: data.name,
-		accountType: data.owner.type,
 		type: "repository",
 		owner: data.full_name.split("/")[0],
 		provider: __self.provider,
@@ -102,10 +101,10 @@ Bitbucket.prototype.getRepositories = function (data, cb) {
 			if (err) {
 				return cb(err);
 			}
-			console.log(__self.manifest)
 			return cb(null, {
 				records: records.length > 0 ? records : [],
-				pages : __self.manifest.total
+				pages : __self.manifest.total,
+				next : __self.manifest.iterator < __self.manifest.total
 			});
 		});
 	});

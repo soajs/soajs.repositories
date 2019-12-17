@@ -106,7 +106,6 @@ let bl = {
 				if (err) {
 					soajs.log.error(err);
 				}
-				console.log(firstSet)
 				let count = 0;
 				if (firstSet && firstSet.records && firstSet.records.length > 0) {
 					async.each(firstSet.records, (oneRecord, call) => {
@@ -118,37 +117,41 @@ let bl = {
 						if (err) {
 							soajs.log.error(err);
 						}
-						let pages = firstSet.pages;
-						if (pages > 1) {
-							async.timesSeries(pages - 1, function (n, next) {
-								//skip the first page
-								opts = {
-									config: bl.localConfig
-								};
-								driver.getRepositories(opts, function (err, sets) {
-									if (err) {
-										return next(err);
-									}
-									if (sets && sets.records && sets.records.length > 0) {
-										async.each(sets.records, (oneRecord, call) => {
-											count++;
-											oneRecord.ts = ts;
-											let finalRecord = driver.createRepositoryRecord(oneRecord);
-											modelObj.updateRepository(finalRecord, call);
-										}, (err) => {
-											soajs.log.debug(count, "Repositories Added So Far... ");
+						let complete = firstSet.next;
+						if (complete) {
+							async.whilst(function (cb) {
+									cb(null, complete);
+								},
+								function (next) {
+									//skip the first page
+									opts = {
+										config: bl.localConfig
+									};
+									driver.getRepositories(opts, function (err, sets) {
+										if (err) {
 											return next(err);
-										});
-									} else {
-										return next();
+										}
+										complete = sets.next;
+										if (sets && sets.records && sets.records.length > 0) {
+											async.each(sets.records, (oneRecord, call) => {
+												count++;
+												oneRecord.ts = ts;
+												let finalRecord = driver.createRepositoryRecord(oneRecord);
+												modelObj.updateRepository(finalRecord, call);
+											}, (err) => {
+												soajs.log.debug(count, "Repositories Added So Far... ");
+												return next(err, sets);
+											});
+										} else {
+											return next(null, sets);
+										}
+									});
+								}, function (err) {
+									if (err) {
+										soajs.log.error(err);
 									}
+									soajs.log.info(count, "Repositories Added Successfully!");
 								});
-							}, function (err) {
-								if (err) {
-									soajs.log.error(err);
-								}
-								soajs.log.info(count, "Repositories Added Successfully!");
-							});
 						} else {
 							soajs.log.debug(count, "Repositories Added Successfully!");
 						}

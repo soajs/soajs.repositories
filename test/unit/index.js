@@ -40,7 +40,7 @@ describe("Starting Unit test", () => {
 		//require("./driver/bitbucket/index.test.js");
 		//require("./driver/bitbucket/helper.test.js");
 		require("./driver/github/index.test.js");
-		//require("./driver/github/helper.test.js");
+		require("./driver/github/helper.test.js");
 		done();
 	});
 	

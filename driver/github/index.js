@@ -64,19 +64,21 @@ Github.prototype.getRepositories = function (data, cb) {
 		if (err) {
 			return cb(err);
 		}
-		if (__self.manifest.count === 0 ){
+		if (__self.manifest.count === 1 ){
 			helper.getRepoPages(headers, (err, pages) => {
-				__self.manifest.total = pages;
+				__self.manifest.total = Number(pages);
 				return cb(null, {
 					records: records && records.length > 0 ? records : [],
-					pages
+					pages,
+					next:  pages > 1
 				})
 			})
 		}
 		else {
 			return cb(null, {
 				records: records && records.length > 0 ? records : [],
-				pages :__self.manifest.total
+				pages :__self.manifest.total,
+				next : __self.manifest.count < __self.manifest.total
 			});
 		}
 		

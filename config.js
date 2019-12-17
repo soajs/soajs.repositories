@@ -37,6 +37,14 @@ module.exports = {
 			oauth: {
 				domain: 'https://bitbucket.org/site/oauth2/access_token'
 			}
+		},
+		"bitbucket_enterprise": {
+			apiDomain: '%PROVIDER_DOMAIN%/rest/api/1.0',
+			routes: {
+				validateUser: '/users/%USERNAME%',
+				getUserProjects: '/projects/%USERNAME%',
+				getAllRepos: '/repos'
+			},
 		}
 	},
 	
@@ -84,7 +92,7 @@ module.exports = {
 					"required": true,
 					"validation": {
 						"type": "string",
-						"enum": ["github", "bitbucket"]
+						"enum": ["github", "bitbucket", "bitbucket_enterprise"]
 					}
 				},
 				"domain": {
