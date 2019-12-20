@@ -28,7 +28,7 @@ const helper = {
 		let count = 1;
 		try {
 			count = Math.ceil(opts.size / opts.pagelen);
-			return cb(null, count);
+			return cb(null, Number.isNaN(count) ? 1 : count);
 		} catch (e) {
 			return cb(null, count);
 		}
@@ -72,7 +72,33 @@ const helper = {
 		};
 		requester(options, cb);
 	},
-	"getRepositories": (data, cb) => {
+	"refreshToken": (self, data, cb) => {
+		let formData = {};
+		formData.grant_type = 'refresh_token';
+		formData.refresh_token = self.refresh_token;
+		let options = {
+			method: 'POST',
+			json: true,
+			url: data.config.gitAccounts.bitbucket.oauth.domain,
+			headers: {
+				'Content-Type': 'application/x-www-form-urlencoded'
+			},
+			auth: {
+				user: self.oauthKey,
+				pass: self.oauthSecret
+			},
+			form: formData
+		};
+		requester(options, (err, res) => {
+			if (err) {
+				return cb(err);
+			} else {
+				self.token = res.access_token;
+				return cb(null);
+			}
+		});
+	},
+	"getRepositories": (self, data, cb) => {
 		const options = {
 			method: 'GET',
 			url: data.url,
@@ -86,7 +112,23 @@ const helper = {
 				authorization: 'Bearer ' + data.token
 			};
 		}
-		requester(options, cb);
+		requester(options, (err, response) => {
+			if (err) {
+				if (err.type === "error" && err.error && err.error.message === "Access token expired. Use your refresh token to obtain a new access token.") {
+					helper.refreshToken(self, data, (err) => {
+						if (err) {
+							return cb(err);
+						} else {
+							helper.getRepositories(self, data, cb);
+						}
+					});
+				} else {
+					return cb(err);
+				}
+			} else {
+				return cb(null, response);
+			}
+		});
 	},
 	"checkManifest": (self, data, cb) => {
 		if (!self.manifest) {
@@ -156,7 +198,7 @@ const helper = {
 					url: value.url,
 					token: self.token
 				};
-				helper.getRepositories(opts, (err, repos) => {
+				helper.getRepositories(self, opts, (err, repos) => {
 					if (err) {
 						return callback(err);
 					}
@@ -167,7 +209,7 @@ const helper = {
 					helper.getRepoPages(pageInfo, (err, pages) => {
 						//create total count
 						self.manifest.total += pages;
-						if (pages >= 1){
+						if (pages >= 1) {
 							self.manifest.iterator++;
 						}
 						//create each auditor count and remove the current iteration
@@ -208,7 +250,7 @@ const helper = {
 					url: self.manifest.auditor[key].url,
 					token: self.token
 				};
-				helper.getRepositories(opts, (err, repos) => {
+				helper.getRepositories(self, opts, (err, repos) => {
 					if (err) {
 						return cb(err);
 					}

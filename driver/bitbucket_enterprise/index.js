@@ -83,7 +83,6 @@ Bitbucket_enterprise.prototype.getRepositories = function (data, cb) {
 		if (err) {
 			return cb(err);
 		}
-		console.log(records)
 		return cb(null, {
 			records: records && records.values && records.values.length > 0 ? records.values : [],
 			next : !records.isLastPage

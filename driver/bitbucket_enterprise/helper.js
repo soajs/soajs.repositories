@@ -15,7 +15,6 @@ function requester(options, cb) {
 	if (!options.headers) {
 		options.headers = {};
 	}
-	console.log(options, cb)
 	options.headers['Content-Type'] = 'application/json';
 	request(options, function (error, response, body) {
 		return cb(error, body);
@@ -27,7 +26,7 @@ const helper = {
 		let count = 1;
 		try {
 			count = Math.ceil(opts.size / opts.pagelen);
-			return cb(null, count);
+			return cb(null, Number.isNaN(count) ? 1 : count);
 		} catch (e) {
 			return cb(null, count);
 		}
@@ -49,6 +48,9 @@ const helper = {
 			}
 			if (!record || typeof record !== "object") {
 				return cb({message: 'User does not exist'});
+			}
+			if (record.errors) {
+				return cb(record.errors);
 			}
 			if (record.id) {
 				self.id = record.id;

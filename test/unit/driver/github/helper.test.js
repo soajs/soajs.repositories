@@ -13,6 +13,7 @@ const sinon = require('sinon');
 
 const helper = require("../../../helper.js");
 const helperFile = helper.requireModule('driver/github/helper.js');
+const config = helper.requireModule('config.js');
 
 
 describe("Unit test for: Drivers - github, helper", () => {
@@ -178,13 +179,7 @@ describe("Unit test for: Drivers - github, helper", () => {
 				}
 			};
 			let data = {
-				config: {
-					gitAccounts : {
-						github : {
-							tokenScope : ["repo", "admin:repo_hook"]
-						}
-					}
-				},
+				config: config,
 			};
 			helperFile.createToken(self, data, () => {
 				done();
@@ -206,13 +201,7 @@ describe("Unit test for: Drivers - github, helper", () => {
 				}
 			};
 			let data = {
-				config: {
-					gitAccounts : {
-						github : {
-							tokenScope : ["repo", "admin:repo_hook"]
-						}
-					}
-				},
+				config: config
 			};
 			helperFile.createToken(self, data, () => {
 				done();

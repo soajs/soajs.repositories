@@ -35,8 +35,7 @@ function Git(service, options, mongoCore) {
     }
     if (indexing && !indexing[index]) {
         indexing[index] = true;
-
-
+        //todo add indexes
         service.log.debug("Git: Indexes for " + index + " Updated!");
     }
 }
@@ -64,10 +63,11 @@ Git.prototype.checkIfAccountExists = function (data, cb) {
 };
 Git.prototype.saveNewAccount = function (data, cb) {
 	let __self = this;
+	if (!data){
+		let error = new Error("No data provided.");
+		return cb(error, null);
+	}
 	__self.mongoCore.insertOne(colName, data, (err, record) => {
-		if (record && Array.isArray(record)) {
-			record = record[0];
-		}
 		return cb(err, {
 			id : record.insertedId
 		});
@@ -76,7 +76,11 @@ Git.prototype.saveNewAccount = function (data, cb) {
 
 Git.prototype.updateRepository = function (data, cb) {
 	let __self = this;
-	let condition = {'repository': data.repository, domain: data.domain};
+	if (!data || !(data.id || data.provider)) {
+		let error = new Error("Git: must provide owner and provider.");
+		return cb(error, null);
+	}
+	let condition = {repository: data.repository, domain: data.domain};
 	let options = {'upsert': true, 'safe': true};
 	let fields = {
 		'$set': {
