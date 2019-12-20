@@ -77,7 +77,7 @@ Bitbucket.prototype.login = function (data, cb) {
 						if (result.refresh_token && result.expires_in) {
 							account.tokenInfo = {
 								refresh_token: result.refresh_token,
-								created: (new Date).getTime(),
+								created: new Date.getTime(),
 								expires_in: result.expires_in * 1000
 							};
 						}

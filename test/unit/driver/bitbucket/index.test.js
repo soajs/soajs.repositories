@@ -17,7 +17,7 @@ const bitbucketHelper = helper.requireModule('driver/bitbucket/helper.js');
 
 
 describe("Unit test for: Drivers - bitbucket, index", () => {
-	let driver, helperStub;
+	let driver;
 	let service = {
 		config: {
 			"errors": {},
@@ -99,17 +99,16 @@ describe("Unit test for: Drivers - bitbucket, index", () => {
 			sinon.stub(bitbucketHelper, 'validate').callsFake(function fakeFn(self, data, cb) {
 				return cb(null, {
 					id: 1,
-				})
+				});
 			});
 			sinon.stub(bitbucketHelper, 'createToken').callsFake(function fakeFn(self, data, cb) {
 				return cb(null, {
 					access_token: 123,
 					refresh_token: 123,
 					expires_in: 1234
-				})
+				});
 			});
 			driver = new Bitbucket(service, data);
-			
 			done();
 		});
 		
@@ -147,14 +146,14 @@ describe("Unit test for: Drivers - bitbucket, index", () => {
 					total: 2,
 					iterator: 1
 				};
-				return cb(null)
+				return cb(null);
 			});
 			sinon.stub(bitbucketHelper, 'execManifest').callsFake(function fakeFn(self, data, cb) {
 				return cb(null, {
 					records: [{
 						full_name: "SOAJS/repo"
 					}]
-				})
+				});
 			});
 			driver = new Bitbucket(service, data);
 			done();

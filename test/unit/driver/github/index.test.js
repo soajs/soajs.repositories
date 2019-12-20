@@ -17,7 +17,7 @@ const githelper = helper.requireModule('driver/github/helper.js');
 
 
 describe("Unit test for: Drivers - github, index", () => {
-	let driver, helperStub;
+	let driver;
 	let service = {
 		config: {
 			"errors": {},
@@ -99,15 +99,14 @@ describe("Unit test for: Drivers - github, index", () => {
 			sinon.stub(githelper, 'validate').callsFake(function fakeFn(self, cb) {
 				return cb(null, {
 					id: 1
-				})
+				});
 			});
 			sinon.stub(githelper, 'createToken').callsFake(function fakeFn(self, data, cb) {
 				return cb(null, {
 					token : 123
-				})
+				});
 			});
 			driver = new Github(service, data);
-			
 			done();
 		});
 		
@@ -143,7 +142,7 @@ describe("Unit test for: Drivers - github, index", () => {
 			sinon.stub(githelper, 'getRepositories').callsFake(function fakeFn(self, data, cb) {
 				return cb(null, {
 					link: "html link"
-				})
+				});
 			});
 			sinon.stub(githelper, 'getRepoPages').callsFake(function fakeFn(headers, cb) {
 				return cb(null, {
@@ -151,7 +150,7 @@ describe("Unit test for: Drivers - github, index", () => {
 					records: [{
 						full_name: "SOAJS/repo"
 					}]
-				})
+				});
 			});
 			driver = new Github(service, data);
 			

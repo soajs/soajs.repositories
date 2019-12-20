@@ -17,12 +17,12 @@ const helper = {
 		if (!headers || !headers.link) {
 			return cb(null, 1);
 		}
-		let regex = /(?<=\<)(.*?)(?=\>)/gi;
+		let regex = /(?<=<)(.*?)(?=>)/gi;
 		let links = headers.link.match(regex);
 		let repo = [];
 		links.forEach((one) => {
 			let temp = parseUrl(one);
-			repo.push(temp)
+			repo.push(temp);
 		});
 		return cb(null, repo[1] ? repo[1].query.page : 1);
 	},

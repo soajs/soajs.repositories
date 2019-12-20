@@ -83,7 +83,7 @@ describe("Unit test for: BL - Git", () => {
 						type: "account",
 						GID: "1111",
 						token: "token"
-					})
+					});
 				};
 				this.getRepositories = (data, cb)=>{
 					return cb(null, {
@@ -104,7 +104,7 @@ describe("Unit test for: BL - Git", () => {
 								"ts": 1576078535254
 							}
 						]
-					})
+					});
 				};
 				this.createRepositoryRecord = ()=>{
 					return {
@@ -122,8 +122,7 @@ describe("Unit test for: BL - Git", () => {
 							}
 						]
 					};
-				}
-				
+				};
 			}
 			let inputmaskData = {
 				"provider": "github",

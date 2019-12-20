@@ -225,9 +225,9 @@ describe("Unit test for: Drivers - bitbucket, helper", () => {
 							error: {
 								message: "Access token expired. Use your refresh token to obtain a new access token."
 							}
-						})
+						});
 					} else {
-						cb(null, [201, 'THIS IS THE REPLY BODY'])
+						cb(null, [201, 'THIS IS THE REPLY BODY']);
 					}
 				});
 			nock('https://bitbucket.org')
@@ -317,7 +317,7 @@ describe("Unit test for: Drivers - bitbucket, helper", () => {
 			let data = {
 				config
 			};
-			helperFile.checkManifest(self, data, (e) => {
+			helperFile.checkManifest(self, data, () => {
 				assert.deepEqual(self.manifest, 10);
 				done();
 			});
@@ -534,7 +534,7 @@ describe("Unit test for: Drivers - bitbucket, helper", () => {
 					has_wiki: false,
 					name: 'soajs.nodejs.express' },
 					{ scm: 'git', website: '', has_wiki: false, name: 'catalog' },
-					{ scm: 'git', website: null, has_wiki: false, name: 'dashboard' } ])
+					{ scm: 'git', website: null, has_wiki: false, name: 'dashboard' } ]);
 				done();
 			});
 		});
@@ -599,7 +599,7 @@ describe("Unit test for: Drivers - bitbucket, helper", () => {
 					has_wiki: false,
 					name: 'soajs.nodejs.express' },
 					{ scm: 'git', website: '', has_wiki: false, name: 'catalog' },
-					{ scm: 'git', website: null, has_wiki: false, name: 'dashboard' } ])
+					{ scm: 'git', website: null, has_wiki: false, name: 'dashboard' } ]);
 				done();
 			});
 		});

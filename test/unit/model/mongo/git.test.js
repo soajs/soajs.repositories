@@ -74,7 +74,7 @@ describe("Unit test for: Model - git", () => {
 		});
 		
 		it("Fails", (done) => {
-			model.checkIfAccountExists(null, (err, id) => {
+			model.checkIfAccountExists(null, (err) => {
 				assert.ok(err);
 				done();
 			});
@@ -110,7 +110,7 @@ describe("Unit test for: Model - git", () => {
 		});
 		
 		it("Fails", (done) => {
-			model.saveNewAccount(null, (err, id) => {
+			model.saveNewAccount(null, (err) => {
 				assert.ok(err);
 				done();
 			});

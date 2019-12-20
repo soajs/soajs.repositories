@@ -37,7 +37,7 @@ function Github(service, data) {
 	
 	if ((auth.token || auth.password) && data.on2fa) {
 		auth.on2fa = () => {
-			return Promise.resolve(data.on2fa)
+			return Promise.resolve(data.on2fa);
 		};
 		__self.on2fa = data.on2fa;
 	}
@@ -71,8 +71,8 @@ Github.prototype.getRepositories = function (data, cb) {
 					records: records && records.length > 0 ? records : [],
 					pages,
 					next:  pages > 1
-				})
-			})
+				});
+			});
 		}
 		else {
 			return cb(null, {
@@ -81,7 +81,6 @@ Github.prototype.getRepositories = function (data, cb) {
 				next : __self.manifest.count < __self.manifest.total
 			});
 		}
-		
 	});
 };
 

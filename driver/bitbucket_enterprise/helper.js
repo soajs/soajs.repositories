@@ -34,8 +34,8 @@ const helper = {
 	"validate": (self, data, cb) => {
 		const options = {
 			method: 'GET',
-			url: data.config.gitAccounts.bitbucket_enterprise.apiDomain.replace("%PROVIDER_DOMAIN%", self.domain)
-				+ data.config.gitAccounts.bitbucket_enterprise.routes.validateUser.replace("%USERNAME%", self.username)
+			url: data.config.gitAccounts.bitbucket_enterprise.apiDomain.replace("%PROVIDER_DOMAIN%", self.domain) +
+				data.config.gitAccounts.bitbucket_enterprise.routes.validateUser.replace("%USERNAME%", self.username)
 		};
 		if (self.token){
 			options.headers = {

@@ -36,7 +36,8 @@ const helper = {
 	"validate": (self, data, cb) => {
 		const options = {
 			method: 'GET',
-			url: data.config.gitAccounts.bitbucket.apiDomain + data.config.gitAccounts.bitbucket.routes.validateUser.replace("%USERNAME%", self.username)
+			url: data.config.gitAccounts.bitbucket.apiDomain +
+				data.config.gitAccounts.bitbucket.routes.validateUser.replace("%USERNAME%", self.username)
 		};
 		
 		requester(options, function (error, record) {
@@ -173,8 +174,8 @@ const helper = {
 				return cb(null, true);
 			}
 			async.each(teams.values, (oneTeam, call) => {
-				if (oneTeam && oneTeam.team
-					&& oneTeam.team.username) {
+				if (oneTeam && oneTeam.team &&
+					oneTeam.team.username) {
 					if (!self.manifest) {
 						self.manifest = {
 							auditor: {}
@@ -186,7 +187,7 @@ const helper = {
 					};
 				}
 				return call();
-			}, cb)
+			}, cb);
 		});
 	},
 	"execManifest": (self, data, cb) => {
@@ -220,8 +221,7 @@ const helper = {
 							repositories = repositories.concat(repos.values);
 						}
 						return callback(err);
-					})
-					
+					});
 				});
 			}, function (err) {
 				if (err) {
