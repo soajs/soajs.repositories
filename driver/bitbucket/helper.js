@@ -170,6 +170,7 @@ const helper = {
 			if (error) {
 				return cb(error);
 			}
+			self.teams = [];
 			if (!teams || !teams.values || teams.values.length === 0) {
 				return cb(null, true);
 			}
@@ -181,6 +182,7 @@ const helper = {
 							auditor: {}
 						};
 					}
+					self.teams.push(oneTeam.team.username);
 					self.manifest.auditor[oneTeam.team.username] = {
 						count: 0,
 						url: data.config.gitAccounts.bitbucket.apiDomain + data.config.gitAccounts.bitbucket.routes.getAllRepos.replace("%USERNAME%", oneTeam.team.username)

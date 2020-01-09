@@ -74,6 +74,19 @@ const helper = {
 			};
 		}
 		requester(options, cb);
+	},
+	"getProjects": (self, data, cb) => {
+		const options = {
+			method: 'GET',
+			url: data.config.gitAccounts.bitbucket_enterprise.apiDomain.replace("%PROVIDER_DOMAIN%", self.domain) +
+				data.config.gitAccounts.bitbucket_enterprise.routes.getUserProjects
+		};
+		if (self.token) {
+			options.headers = {
+				Authorization: 'Basic ' + self.token
+			};
+		}
+		requester(options, cb);
 	}
 };
 

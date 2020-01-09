@@ -25,10 +25,27 @@ service.init(() => {
 		
 		//GET methods
 		
+		service.get("/git/accounts/list", function (req, res) {
+			bl.git.list(req.soajs, req.soajs.inputmaskData, (error, data) => {
+				return res.json(req.soajs.buildResponse(error, data));
+			});
+		});
+		
+		service.get("/git/accounts", function (req, res) {
+			bl.git.get(req.soajs, req.soajs.inputmaskData, (error, data) => {
+				return res.json(req.soajs.buildResponse(error, data));
+			});
+		});
+		
 		//DELETE methods
 		
-		
 		//PUT methods
+		
+		service.put("/git/sync/account", function (req, res) {
+			bl.git.sync(req.soajs, req.soajs.inputmaskData, (error, data) => {
+				return res.json(req.soajs.buildResponse(error, data));
+			});
+		});
 		
 		//POST methods
 		

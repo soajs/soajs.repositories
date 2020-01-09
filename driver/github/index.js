@@ -21,21 +21,22 @@ function Github(service, data) {
 	__self.provider = data.provider;
 	__self.domain = data.domain;
 	__self.service = service;
-	__self.username = data.username;
+	__self.username = data.username || data.owner;
 	__self.label = data.label;
 	if (data.token) {
 		auth.token = data.token;
 		__self.token = data.token;
-	}
-	else if (__self.access === "private") {
+	} else if (__self.access === "private") {
 		if (data.password && data.username) {
-			auth.password = data.password;
-			auth.username = data.username;
+			auth.token = {
+				password: data.password,
+				username: data.username
+			};
 			__self.password = data.password;
 		}
 	}
 	
-	if ((auth.token || auth.password) && data.on2fa) {
+	if (auth.token && data.on2fa) {
 		auth.on2fa = () => {
 			return Promise.resolve(data.on2fa);
 		};
@@ -44,7 +45,7 @@ function Github(service, data) {
 	
 	__self.service.log.debug("Github Git Init!");
 	if (Object.keys(auth).length > 0) {
-		__self.github = new Octokit({auth: auth});
+		__self.github = new Octokit({auth: auth.token});
 	} else {
 		__self.github = new Octokit();
 	}
@@ -52,10 +53,10 @@ function Github(service, data) {
 
 Github.prototype.getRepositories = function (data, cb) {
 	let __self = this;
-	if (!__self.manifest){
+	if (!__self.manifest) {
 		__self.manifest = {
 			total: 0,
-			count : 0
+			count: 0
 		};
 	}
 	__self.manifest.count++;
@@ -64,21 +65,20 @@ Github.prototype.getRepositories = function (data, cb) {
 		if (err) {
 			return cb(err);
 		}
-		if (__self.manifest.count === 1 ){
+		if (__self.manifest.count === 1) {
 			helper.getRepoPages(headers, (err, pages) => {
 				__self.manifest.total = Number(pages);
 				return cb(null, {
 					records: records && records.length > 0 ? records : [],
 					pages,
-					next:  pages > 1
+					next: pages > 1
 				});
 			});
-		}
-		else {
+		} else {
 			return cb(null, {
 				records: records && records.length > 0 ? records : [],
-				pages :__self.manifest.total,
-				next : __self.manifest.count < __self.manifest.total
+				pages: __self.manifest.total,
+				next: __self.manifest.count < __self.manifest.total
 			});
 		}
 	});
@@ -98,10 +98,13 @@ Github.prototype.login = function (data, cb) {
 			domain: __self.domain,
 			label: __self.label,
 			type: "account",
+			metadata: {
+				organizations: [],
+			},
 			GID: record.id
 		};
 		if (__self.access === 'private') {
-			helper.createToken(__self, data,(err, result) => {
+			helper.createToken(__self, data, (err, result) => {
 				if (err) {
 					return cb(err);
 				} else {
@@ -112,6 +115,7 @@ Github.prototype.login = function (data, cb) {
 		} else {
 			return cb(null, account);
 		}
+		
 	});
 };
 
@@ -130,6 +134,27 @@ Github.prototype.createRepositoryRecord = function (data) {
 		domain: __self.domain,
 		ts: data.ts
 	};
+};
+
+Github.prototype.getOwner = function () {
+	let __self = this;
+	return __self.username;
+};
+
+Github.prototype.getOrganizations = function (data, cb) {
+	let __self = this;
+	helper.getOrganizations(__self, (err, orgs) => {
+		if (err) {
+			return cb(err);
+		}
+		let organizations = [];
+		if (orgs && orgs.length > 0){
+			orgs.forEach((org)=>{
+				organizations.push(org.login);
+			});
+		}
+		return cb(null, organizations);
+	});
 };
 
 module.exports = Github;

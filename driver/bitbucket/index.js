@@ -17,7 +17,7 @@ function Bitbucket(service, data) {
 	__self.provider = data.provider;
 	__self.domain = data.domain;
 	__self.service = service;
-	__self.username = data.username;
+	__self.username = data.username || data.owner;
 	__self.label = data.label;
 	if (data.token) {
 		__self.token = data.token;
@@ -77,7 +77,7 @@ Bitbucket.prototype.login = function (data, cb) {
 						if (result.refresh_token && result.expires_in) {
 							account.tokenInfo = {
 								refresh_token: result.refresh_token,
-								created: new Date.getTime(),
+								created: new Date().getTime(),
 								expires_in: result.expires_in * 1000
 							};
 						}
@@ -108,7 +108,16 @@ Bitbucket.prototype.getRepositories = function (data, cb) {
 			});
 		});
 	});
-	
+};
+
+Bitbucket.prototype.getOwner = function () {
+	let __self = this;
+	return __self.username;
+};
+
+Bitbucket.prototype.getOrganizations = function (data, cb) {
+	let __self = this;
+	return cb(null, __self.teams);
 };
 
 module.exports = Bitbucket;

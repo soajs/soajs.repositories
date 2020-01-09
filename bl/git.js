@@ -7,7 +7,7 @@
  */
 
 'use strict';
-const async = require("async");
+const lib = require("../lib/index.js");
 
 let bl = {
 	"modelObj": null,
@@ -62,7 +62,6 @@ let bl = {
 		let data = {
 			config: bl.localConfig
 		};
-		let ts = new Date().getTime();
 		driver.login(data, (err, loginRecord) => {
 			if (err) {
 				return cb(bl.handleError(soajs, 403, err), null);
@@ -88,7 +87,8 @@ let bl = {
 						return cb(bl.handleError(soajs, 602, err), null);
 					} else {
 						soajs.log.info("Adding Repositories");
-						handleRepositories();
+						soajs.inputmaskData.id = final.id.toString();
+						lib.handleRepositories(bl, soajs, driver, modelObj, false);
 						return cb(null, {
 							id: final.id.toString(),
 							message: "Repositories are being added..."
@@ -97,70 +97,61 @@ let bl = {
 				});
 			});
 		});
+	},
+	"sync": (soajs, inputmaskData, cb) => {
+		let modelObj = bl.mp.getModel(soajs);
+		let data = {
+			id: inputmaskData.id
+		};
 		
-		function handleRepositories() {
-			let opts = {
+		modelObj.getAccount(data, (err, accountRecord) => {
+			bl.mp.closeModel(soajs, modelObj);
+			if (err) {
+				return cb(bl.handleError(soajs, 602, err), null);
+			}
+			if (!accountRecord) {
+				return cb(bl.handleError(soajs, 404, null), null);
+			}
+			let driver = bl.mp.getDriver(accountRecord);
+			if (!driver) {
+				return cb(bl.handleError(soajs, 603, null), null);
+			}
+			data = {
 				config: bl.localConfig
 			};
-			driver.getRepositories(opts, (err, firstSet) => {
-				if (err) {
-					soajs.log.error(err);
-				}
-				let count = 0;
-				if (firstSet && firstSet.records && firstSet.records.length > 0) {
-					async.each(firstSet.records, (oneRecord, call) => {
-						count++;
-						oneRecord.ts = ts;
-						let finalRecord = driver.createRepositoryRecord(oneRecord);
-						modelObj.updateRepository(finalRecord, call);
-					}, (err) => {
-						if (err) {
-							soajs.log.error(err);
-						}
-						let complete = firstSet.next;
-						if (complete) {
-							async.whilst(function (cb) {
-									cb(null, complete);
-								},
-								function (next) {
-									//skip the first page
-									opts = {
-										config: bl.localConfig
-									};
-									driver.getRepositories(opts, function (err, sets) {
-										if (err) {
-											return next(err);
-										}
-										complete = sets.next;
-										if (sets && sets.records && sets.records.length > 0) {
-											async.each(sets.records, (oneRecord, call) => {
-												count++;
-												oneRecord.ts = ts;
-												let finalRecord = driver.createRepositoryRecord(oneRecord);
-												modelObj.updateRepository(finalRecord, call);
-											}, (err) => {
-												soajs.log.debug(count, "Repositories Added So Far... ");
-												return next(err, sets);
-											});
-										} else {
-											return next(null, sets);
-										}
-									});
-								}, function (err) {
-									if (err) {
-										soajs.log.error(err);
-									}
-									soajs.log.info(count, "Repositories Added Successfully!");
-								});
-						} else {
-							soajs.log.debug(count, "Repositories Added Successfully!");
-						}
-					});
-				}
+			soajs.log.info("Updating Repositories");
+			lib.handleRepositories(bl, soajs, driver, modelObj, true);
+			return cb(null, {
+				message: "Repositories are being updated..."
 			});
-		}
+		});
 	},
 	
+	"list": (soajs, inputmaskData, cb) => {
+		let modelObj = bl.mp.getModel(soajs);
+		
+		modelObj.getAccounts((err, accountRecords) => {
+			bl.mp.closeModel(soajs, modelObj);
+			if (err) {
+				return cb(bl.handleError(soajs, 602, err), null);
+			}
+			return cb(null, accountRecords);
+		});
+	},
+	
+	"get": (soajs, inputmaskData, cb) => {
+		let modelObj = bl.mp.getModel(soajs);
+		let data = {
+			id : inputmaskData.id
+		};
+		modelObj.getAccount(data, (err, accountRecords) => {
+			bl.mp.closeModel(soajs, modelObj);
+			if (err) {
+				return cb(bl.handleError(soajs, 602, err), null);
+			}
+			return cb(null, accountRecords);
+		});
+	}
 };
 
 module.exports = bl;

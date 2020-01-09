@@ -57,6 +57,16 @@ const helper = {
 		});
 	},
 	
+	"getOrganizations": (self, cb) => {
+		self.github.orgs.listForUser({
+			username: self.username
+		}) 	.then(({data}) => {
+			return cb(null, data);
+		}).catch((err) => {
+			return cb(err);
+		});
+	},
+	
 	"getRepositories": (self, data, cb) => {
 		if (self.access === "public") {
 			if (self.type === 'personal') {

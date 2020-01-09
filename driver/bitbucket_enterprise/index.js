@@ -17,12 +17,11 @@ function Bitbucket_enterprise(service, data) {
 	__self.provider = data.provider;
 	__self.domain = data.domain;
 	__self.service = service;
-	__self.username = data.username;
+	__self.username = data.username || data.owner;
 	__self.label = data.label;
 	if (data.token) {
 		__self.token = data.token;
-	}
-	else if (__self.access === "private") {
+	} else if (__self.access === "private") {
 		__self.token = new Buffer(data.username + ":" + data.password).toString('base64');
 	}
 	service.log.debug("Bitbucket Enterprise Git Init!");
@@ -38,7 +37,7 @@ Bitbucket_enterprise.prototype.createRepositoryRecord = function (data) {
 		provider: __self.provider,
 		source: {
 			name: __self.username,
-			ts : data.ts
+			ts: data.ts
 		},
 		domain: __self.domain,
 		ts: data.ts
@@ -72,9 +71,9 @@ Bitbucket_enterprise.prototype.login = function (data, cb) {
 
 Bitbucket_enterprise.prototype.getRepositories = function (data, cb) {
 	let __self = this;
-	if (!__self.manifest){
+	if (!__self.manifest) {
 		__self.manifest = {
-			count : 0
+			count: 0
 		};
 	}
 	__self.manifest.count++;
@@ -85,10 +84,32 @@ Bitbucket_enterprise.prototype.getRepositories = function (data, cb) {
 		}
 		return cb(null, {
 			records: records && records.values && records.values.length > 0 ? records.values : [],
-			next : !records.isLastPage
+			next: !records.isLastPage
 		});
 		
 	});
+};
+
+Bitbucket_enterprise.prototype.getOwner = function () {
+	let __self = this;
+	return __self.username;
+};
+
+Bitbucket_enterprise.prototype.getOrganizations = function (data, cb) {
+	let __self = this;
+	helper.getProjects(__self, data, (err, records) => {
+		if (err) {
+			return cb(err);
+		}
+		let projects = [];
+		if (records && records.values && records.values.length > 0) {
+			records.values.forEach((project) => {
+				projects.push(project.name);
+			});
+		}
+		return cb(null, projects);
+	});
+	
 };
 
 module.exports = Bitbucket_enterprise;
