@@ -9,7 +9,6 @@
 "use strict";
 const colName = "git";
 const core = require("soajs");
-//const async = require("async");
 const Mongo = core.mongo;
 
 let indexing = {};
@@ -76,7 +75,6 @@ Git.prototype.checkIfAccountExists = function (data, cb) {
 
 Git.prototype.getAccount = function (data, cb) {
 	let __self = this;
-	
 	if (!data || !(data.id || data._id)) {
 		let error = new Error("Git: must provide id.");
 		return cb(error, error);
@@ -112,7 +110,7 @@ Git.prototype.saveNewAccount = function (data, cb) {
 
 Git.prototype.updateAccount = function (data, cb) {
 	let __self = this;
-	if (!data|| !(data.id || data.metadata)) {
+	if (!data|| !(data.id || data.metadata || Object.keys(data.metadata).length === 0)) {
 		let error = new Error("No data provided.");
 		return cb(error, error);
 	}
@@ -174,14 +172,14 @@ Git.prototype.syncRepository = function (data, cb) {
 	let options = {'upsert': true, 'safe': true};
 	let fields = {
 		'$pull': {
-			source: {
+			"source": {
 				ts: {
 					"$ne": data.ts
 				}
 			}
 		}
 	};
-	__self.mongoCore.updateOne(colName, condition, fields, options, (err, response) => {
+	__self.mongoCore.updateMany(colName, condition, fields, options, (err, response) => {
 		return cb(err, response);
 	});
 };
@@ -196,23 +194,44 @@ Git.prototype.getAccounts = function (cb) {
 	});
 };
 
-Git.prototype.getAccount = function (data, cb) {
+Git.prototype.deleteAccount = function (data, cb) {
 	let __self = this;
-	if (!data || !(data.id)) {
+	if (!data || !(data._id)) {
 		let error = new Error("Git: must provide id");
 		return cb(error, error);
 	}
 	let condition = {
-		type: "account"
+		type: "account",
+		_id: data._id
 	};
-	__self.validateId(data.id, (err, id) => {
-		if (err) {
-			return cb(err, null);
-		}
-		condition = {'_id': id};
-		__self.mongoCore.findOne(colName, condition, (err, response) => {
-			return cb(err, response);
-		});
+	__self.mongoCore.deleteOne(colName, condition, (err, response) => {
+		return cb(err, response);
 	});
 };
+
+Git.prototype.removeRepositories = function (data, cb) {
+	let __self = this;
+	if (!data || !(data.owner)) {
+		let error = new Error("Git: must provide owner.");
+		return cb(error, error);
+	}
+	let condition = {
+		"source.name": data.owner,
+		type: "repository"
+	};
+	let options = {'upsert': true, 'safe': true};
+	let fields = {
+		'$pull': {
+			source: {
+				name: {
+					"$eq": data.owner
+				}
+			}
+		}
+	};
+	__self.mongoCore.updateMany(colName, condition, fields, options, (err, response) => {
+		return cb(err, response);
+	});
+};
+
 module.exports = Git;

@@ -8,6 +8,7 @@
 
 'use strict';
 const lib = require("../lib/index.js");
+const async = require("async");
 
 let bl = {
 	"modelObj": null,
@@ -50,6 +51,119 @@ let bl = {
 	/**
 	 * Git
 	 */
+	
+	/**
+	 * Get
+	 */
+	
+	"get": (soajs, inputmaskData, cb) => {
+		let modelObj = bl.mp.getModel(soajs);
+		let data = {
+			id : inputmaskData.id
+		};
+		modelObj.getAccount(data, (err, accountRecords) => {
+			bl.mp.closeModel(soajs, modelObj);
+			if (err) {
+				return cb(bl.handleError(soajs, 602, err), null);
+			}
+			return cb(null, accountRecords);
+		});
+	},
+	
+	"list": (soajs, inputmaskData, cb) => {
+		let modelObj = bl.mp.getModel(soajs);
+		
+		modelObj.getAccounts((err, accountRecords) => {
+			bl.mp.closeModel(soajs, modelObj);
+			if (err) {
+				return cb(bl.handleError(soajs, 602, err), null);
+			}
+			return cb(null, accountRecords);
+		});
+	},
+	
+	"getRepo": (soajs, inputmaskData, cb) => {
+		let modelObj = bl.mp.getModel(soajs);
+		let data = {
+			id : inputmaskData.id
+		};
+		modelObj.getRepository(data, (err, repository) => {
+			bl.mp.closeModel(soajs, modelObj);
+			if (err) {
+				return cb(bl.handleError(soajs, 602, err), null);
+			}
+			if (!repository) {
+				return cb(bl.handleError(soajs, 405, err), null);
+			}
+			return cb(null, repository);
+		});
+	},
+	
+	"getBranches": (soajs, inputmaskData, cb) => {
+		let modelObj = bl.mp.getModel(soajs);
+		let data = {
+			id : inputmaskData.id
+		};
+		modelObj.getRepository(data, (err, repository) => {
+			bl.mp.closeModel(soajs, modelObj);
+			if (err) {
+				return cb(bl.handleError(soajs, 602, err), null);
+			}
+			if (!repository) {
+				return cb(bl.handleError(soajs, 405, err), null);
+			}
+			return cb(null, repository.branches ? repository.branches : []);
+		});
+	},
+	
+	"search": (soajs, inputmaskData, cb) => {
+		return cb(null, true);
+	},
+	
+	/**
+	 * Delete
+	 */
+	
+	"logout": (soajs, inputmaskData, cb) => {
+		let modelObj = bl.mp.getModel(soajs);
+		let data = {
+			id : inputmaskData.id
+		};
+		modelObj.getAccount(data, (err, repository) => {
+			bl.mp.closeModel(soajs, modelObj);
+			if (err) {
+				return cb(bl.handleError(soajs, 602, err), null);
+			}
+			if (!repository) {
+				return cb(bl.handleError(soajs, 405, err), null);
+			}
+			async.parallel([
+					function(callback) {
+						let data = {
+							_id : repository._id
+						};
+						modelObj.deleteAccount(data, callback);
+					},
+					function(callback) {
+						let data = {
+							owner : repository.owner
+						};
+						modelObj.removeRepositories(data, callback);
+					}
+				],
+				function(err) {
+					if (err) {
+						return cb(bl.handleError(soajs, 602, err), null);
+					}
+					return cb(null, `Your account ${repository.owner} has been successfully logged out!`);
+				});
+		});
+	},
+	
+	/**
+	 * Post
+	 */
+	
 	"login": (soajs, inputmaskData, cb) => {
 		let modelObj = bl.mp.getModel(soajs);
 		if (!(inputmaskData.username) && !(inputmaskData.token)) {
@@ -98,7 +212,12 @@ let bl = {
 			});
 		});
 	},
-	"sync": (soajs, inputmaskData, cb) => {
+	
+	/**
+	 * Put
+	 */
+	
+	"syncAccount": (soajs, inputmaskData, cb) => {
 		let modelObj = bl.mp.getModel(soajs);
 		let data = {
 			id: inputmaskData.id
@@ -127,31 +246,33 @@ let bl = {
 		});
 	},
 	
-	"list": (soajs, inputmaskData, cb) => {
-		let modelObj = bl.mp.getModel(soajs);
-		
-		modelObj.getAccounts((err, accountRecords) => {
-			bl.mp.closeModel(soajs, modelObj);
-			if (err) {
-				return cb(bl.handleError(soajs, 602, err), null);
-			}
-			return cb(null, accountRecords);
-		});
+	"upgrade": (soajs, inputmaskData, cb) => {
+		return cb(null, true);
 	},
 	
-	"get": (soajs, inputmaskData, cb) => {
-		let modelObj = bl.mp.getModel(soajs);
-		let data = {
-			id : inputmaskData.id
-		};
-		modelObj.getAccount(data, (err, accountRecords) => {
-			bl.mp.closeModel(soajs, modelObj);
-			if (err) {
-				return cb(bl.handleError(soajs, 602, err), null);
-			}
-			return cb(null, accountRecords);
-		});
-	}
+	"activateRepo": (soajs, inputmaskData, cb) => {
+		return cb(null, true);
+	},
+	
+	"deactivateRepo": (soajs, inputmaskData, cb) => {
+		return cb(null, true);
+	},
+	
+	"activateBranch": (soajs, inputmaskData, cb) => {
+		return cb(null, true);
+	},
+	
+	"deactivateBranch": (soajs, inputmaskData, cb) => {
+		return cb(null, true);
+	},
+	
+	"syncRepo": (soajs, inputmaskData, cb) => {
+		return cb(null, true);
+	},
+	
+	"syncBranch": (soajs, inputmaskData, cb) => {
+		return cb(null, true);
+	},
 };
 
 module.exports = bl;

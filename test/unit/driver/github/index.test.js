@@ -173,4 +173,75 @@ describe("Unit test for: Drivers - github, index", () => {
 			});
 		});
 	});
+	
+	describe("Testing getOwner", () => {
+		before((done) => {
+			let data = {
+				"provider": "github",
+				"domain": "github.com",
+				"label": "Soajs",
+				"username": "soajs",
+				"type": "personal",
+				"access": "private",
+				"password": "***",
+				"on2fa": "123"
+			};
+			driver = new Github(service, data);
+			
+			done();
+		});
+		
+		afterEach((done) => {
+			sinon.restore();
+			done();
+		});
+		after(function (done) {
+			done();
+		});
+		
+		it("Success", (done) => {
+			let res = driver.getOwner();
+			assert.deepEqual(res, "soajs");
+			done();
+		});
+	});
+	
+	describe("Testing getOrganizations", () => {
+		before((done) => {
+			let data = {
+				"provider": "github",
+				"domain": "github.com",
+				"label": "Soajs",
+				"username": "soajs",
+				"type": "personal",
+				"access": "private",
+				"password": "***",
+				"on2fa": "123"
+			};
+			sinon.stub(githelper, 'getOrganizations').callsFake(function fakeFn(self, cb) {
+				return cb(null, [{
+					login: "html link"
+				}]);
+			});
+			driver = new Github(service, data);
+			
+			done();
+		});
+		
+		afterEach((done) => {
+			sinon.restore();
+			done();
+		});
+		after(function (done) {
+			done();
+		});
+		
+		it("Success", (done) => {
+			let data = {};
+			driver.getOrganizations(data, (err, id) => {
+				assert.ok(id);
+				done();
+			});
+		});
+	});
 });

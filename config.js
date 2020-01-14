@@ -55,6 +55,7 @@ module.exports = {
 		402: "User account already exists",
 		403: "Git Account does not exist",
 		404: "Account not found. Login first.",
+		405: "Repository not found",
 		601: "Model not found",
 		602: "Model error: ",
 		603: "Provider not found",
@@ -62,16 +63,16 @@ module.exports = {
 	},
 	"schema": {
 		"get": {
-			"/git/accounts/list": {
-				"_apiInfo": {
-					"l": "Get All Accounts",
-					"group": "Git Accounts"
-				}
-			},
 			"/git/accounts": {
 				"_apiInfo": {
-					"l": "Get account owner information and organization(s)",
-					"group": "Git Accounts"
+					"l": "Get accounts information and their organization(s)",
+					"group": "Account information"
+				}
+			},
+			"/git/account": {
+				"_apiInfo": {
+					"l": "Get account information and its organization(s)",
+					"group": "Account information"
 				},
 				"id": {
 					"source": ['query.id'],
@@ -80,10 +81,55 @@ module.exports = {
 						"type": "string"
 					}
 				},
+			},
+			"/git/repo": {
+				"_apiInfo": {
+					"l": "Get repository information",
+					"group": "Repository information"
+				},
+				"id": {
+					"source": ['query.id'],
+					"required": true,
+					"validation": {
+						"type": "string"
+					}
+				},
+			},
+			"/git/branches": {
+				"_apiInfo": {
+					"l": "Get repository branches",
+					"group": "Repository information"
+				},
+				"id": {
+					"source": ['query.id'],
+					"required": true,
+					"validation": {
+						"type": "string"
+					}
+				},
+			},
+			"/git/repos": {
+				"_apiInfo": {
+					"l": "Search and filter repository",
+					"group": "Repository information"
+				},
+				"id": {
+					"source": ['query.id'],
+					"required": true,
+					"validation": {
+						"type": "string"
+					}
+				},
+			},
+			"/git/repo/file": {
+				"_apiInfo": {
+					"l": "Get a file from repository",
+					"group": "Repository management"
+				}
 			}
 		},
 		"post": {
-			"/gitAccounts/login": {
+			"/git/account": {
 				"_apiInfo": {
 					"l": "Login and add account",
 					"group": "Git Accounts"
@@ -166,7 +212,7 @@ module.exports = {
 		"put": {
 			"/git/sync/account": {
 				"_apiInfo": {
-					"l": "Sync account and add all repositories by account owner and organization(s)",
+					"l": "Sync account and all its repositories",
 					"group": "Git Accounts"
 				},
 				"id": {
@@ -176,8 +222,64 @@ module.exports = {
 						"type": "string"
 					}
 				}
-			}
+			},
+			"/git/account": {
+				"_apiInfo": {
+					"l": "Upgrade account",
+					"group": "Account management"
+				}
+			},
+			"/git/repo/activate": {
+				"_apiInfo": {
+					"l": "Activate repository and sync branches",
+					"group": "Repository management"
+				}
+			},
+			"/git/repo/deactivate": {
+				"_apiInfo": {
+					"l": "Deactivate repository",
+					"group": "Repository management"
+				}
+			},
+			"/git/branch/activate": {
+				"_apiInfo": {
+					"l": "Activate branch",
+					"group": "Repository management"
+				}
+			},
+			"/git/branch/deactivate": {
+				"_apiInfo": {
+					"l": "Deactivate branch",
+					"group": "Repository management"
+				}
+			},
+			"/git/sync/repository": {
+				"_apiInfo": {
+					"l": "Sync repository and all its branches",
+					"group": "Repository management"
+				}
+			},
+			"/git/sync/branch": {
+				"_apiInfo": {
+					"l": "Sync branch and update the corresponding catalog",
+					"group": "Repository management"
+				}
+			},
+		},
+		"delete": {
+			"/git/account": {
+				"_apiInfo": {
+					"l": "Logout and delete account",
+					"group": "Account management"
+				},
+				"id": {
+					"source": ['query.id'],
+					"required": true,
+					"validation": {
+						"type": "string"
+					}
+				},
+			},
 		}
-		
 	}
 };

@@ -25,31 +25,97 @@ service.init(() => {
 		
 		//GET methods
 		
-		service.get("/git/accounts/list", function (req, res) {
-			bl.git.list(req.soajs, req.soajs.inputmaskData, (error, data) => {
+		service.get("/git/account", function (req, res) {
+			bl.git.get(req.soajs, req.soajs.inputmaskData, (error, data) => {
 				return res.json(req.soajs.buildResponse(error, data));
 			});
 		});
 		
 		service.get("/git/accounts", function (req, res) {
-			bl.git.get(req.soajs, req.soajs.inputmaskData, (error, data) => {
+			bl.git.list(req.soajs, req.soajs.inputmaskData, (error, data) => {
+				return res.json(req.soajs.buildResponse(error, data));
+			});
+		});
+		
+		service.get("/git/repo", function (req, res) {
+			bl.git.getRepo(req.soajs, req.soajs.inputmaskData, (error, data) => {
+				return res.json(req.soajs.buildResponse(error, data));
+			});
+		});
+		
+		service.get("/git/branches", function (req, res) {
+			bl.git.getBranches(req.soajs, req.soajs.inputmaskData, (error, data) => {
+				return res.json(req.soajs.buildResponse(error, data));
+			});
+		});
+		
+		service.get("/git/repos", function (req, res) {
+			bl.git.search(req.soajs, req.soajs.inputmaskData, (error, data) => {
 				return res.json(req.soajs.buildResponse(error, data));
 			});
 		});
 		
 		//DELETE methods
 		
+		service.delete("/git/account", function (req, res) {
+			bl.git.logout(req.soajs, req.soajs.inputmaskData, (error, data) => {
+				return res.json(req.soajs.buildResponse(error, data));
+			});
+		});
+		
 		//PUT methods
 		
 		service.put("/git/sync/account", function (req, res) {
-			bl.git.sync(req.soajs, req.soajs.inputmaskData, (error, data) => {
+			bl.git.syncAccount(req.soajs, req.soajs.inputmaskData, (error, data) => {
+				return res.json(req.soajs.buildResponse(error, data));
+			});
+		});
+		
+		service.put("/git/account", function (req, res) {
+			bl.git.upgrade(req.soajs, req.soajs.inputmaskData, (error, data) => {
+				return res.json(req.soajs.buildResponse(error, data));
+			});
+		});
+		
+		service.put("/git/repo/activate", function (req, res) {
+			bl.git.activateRepo(req.soajs, req.soajs.inputmaskData, (error, data) => {
+				return res.json(req.soajs.buildResponse(error, data));
+			});
+		});
+		
+		service.put("/git/repo/deactivate", function (req, res) {
+			bl.git.deactivateRepo(req.soajs, req.soajs.inputmaskData, (error, data) => {
+				return res.json(req.soajs.buildResponse(error, data));
+			});
+		});
+		
+		service.put("/git/branch/activate", function (req, res) {
+			bl.git.activateBranch(req.soajs, req.soajs.inputmaskData, (error, data) => {
+				return res.json(req.soajs.buildResponse(error, data));
+			});
+		});
+		
+		service.put("/git/branch/deactivate", function (req, res) {
+			bl.git.deactivateBranch(req.soajs, req.soajs.inputmaskData, (error, data) => {
+				return res.json(req.soajs.buildResponse(error, data));
+			});
+		});
+		
+		service.put("/git/sync/repository", function (req, res) {
+			bl.git.syncRepo(req.soajs, req.soajs.inputmaskData, (error, data) => {
+				return res.json(req.soajs.buildResponse(error, data));
+			});
+		});
+		
+		service.put("/git/sync/branch", function (req, res) {
+			bl.git.syncBranch(req.soajs, req.soajs.inputmaskData, (error, data) => {
 				return res.json(req.soajs.buildResponse(error, data));
 			});
 		});
 		
 		//POST methods
 		
-		service.post("/gitAccounts/login", function (req, res) {
+		service.post("/git/account", function (req, res) {
 			bl.git.login(req.soajs, req.soajs.inputmaskData, (error, data) => {
 				return res.json(req.soajs.buildResponse(error, data));
 			});

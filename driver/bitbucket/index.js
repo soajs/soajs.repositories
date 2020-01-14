@@ -22,8 +22,7 @@ function Bitbucket(service, data) {
 	if (data.token) {
 		__self.token = data.token;
 		__self.tokenInfo = data.tokenInfo;
-	}
-	else if (__self.access === "private") {
+	} else if (__self.access === "private") {
 		__self.password = data.password;
 		__self.oauthKey = data.oauthKey;
 		__self.oauthSecret = data.oauthSecret;
@@ -41,7 +40,7 @@ Bitbucket.prototype.createRepositoryRecord = function (data) {
 		provider: __self.provider,
 		source: {
 			name: __self.username,
-			ts : data.ts
+			ts: data.ts
 		},
 		domain: __self.domain,
 		ts: data.ts
@@ -93,7 +92,7 @@ Bitbucket.prototype.login = function (data, cb) {
 
 Bitbucket.prototype.getRepositories = function (data, cb) {
 	let __self = this;
-	helper.checkManifest(__self, data, (err)=>{
+	helper.checkManifest(__self, data, (err) => {
 		if (err) {
 			return cb(err);
 		}
@@ -103,8 +102,8 @@ Bitbucket.prototype.getRepositories = function (data, cb) {
 			}
 			return cb(null, {
 				records: records.length > 0 ? records : [],
-				pages : __self.manifest.total,
-				next : __self.manifest.iterator < __self.manifest.total
+				pages: __self.manifest.total,
+				next: __self.manifest.iterator < __self.manifest.total
 			});
 		});
 	});
@@ -117,7 +116,7 @@ Bitbucket.prototype.getOwner = function () {
 
 Bitbucket.prototype.getOrganizations = function (data, cb) {
 	let __self = this;
-	return cb(null, __self.teams);
+	return cb(null, __self.teams ? __self.teams : []);
 };
 
 module.exports = Bitbucket;

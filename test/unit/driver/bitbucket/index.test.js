@@ -175,4 +175,64 @@ describe("Unit test for: Drivers - bitbucket, index", () => {
 			});
 		});
 	});
+	
+	describe("Testing getOwner", () => {
+		before((done) => {
+			let data = {
+				"provider": "github",
+				"domain": "github.com",
+				"label": "Soajs",
+				"username": "soajs",
+				"type": "personal",
+				"access": "private",
+				"password": "***",
+				"on2fa": "123"
+			};
+			driver = new Bitbucket(service, data);
+			done();
+		});
+		
+		afterEach((done) => {
+			done();
+		});
+		after(function (done) {
+			done();
+		});
+		
+		it("Success", (done) => {
+			let res = driver.getOwner();
+			assert.deepEqual(res, "soajs");
+			done();
+		});
+	});
+	
+	describe("Testing getOrganizations", () => {
+		before((done) => {
+			let data = {
+				"provider": "github",
+				"domain": "github.com",
+				"label": "Soajs",
+				"username": "soajs",
+				"type": "personal",
+				"access": "private",
+				"password": "***",
+				"on2fa": "123"
+			};
+			driver = new Bitbucket(service, data);
+			done();
+		});
+		
+		afterEach((done) => {
+			done();
+		});
+		after(function (done) {
+			done();
+		});
+		
+		it("Success", (done) => {
+			driver.getOrganizations({}, () => {
+				done();
+			});
+		});
+	});
 });

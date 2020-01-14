@@ -455,7 +455,11 @@ describe("Unit test for: Drivers - bitbucket, helper", () => {
 							}
 						},
 						"iterator": 0
-					}
+					},
+					"teams": [
+						"ragheborg",
+						"teamragheb"
+					]
 				});
 				done();
 			});
