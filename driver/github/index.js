@@ -15,8 +15,7 @@ function Github(service, data) {
 	let __self = this;
 	
 	let auth = {};
-	
-	__self.type = data.type;
+	__self.type = data.accountType || data.type;
 	__self.access = data.access;
 	__self.provider = data.provider;
 	__self.domain = data.domain;
@@ -26,11 +25,12 @@ function Github(service, data) {
 	if (data.token) {
 		auth.token = data.token;
 		__self.token = data.token;
+		__self.tokenId = data.tokenId;
 	} else if (__self.access === "private") {
-		if (data.password && data.username) {
+		if (data.password && __self.username) {
 			auth.token = {
 				password: data.password,
-				username: data.username
+				username: __self.username
 			};
 			__self.password = data.password;
 		}
@@ -42,7 +42,6 @@ function Github(service, data) {
 		};
 		__self.on2fa = data.on2fa;
 	}
-	
 	__self.service.log.debug("Github Git Init!");
 	if (Object.keys(auth).length > 0) {
 		__self.github = new Octokit({auth: auth.token});
@@ -59,12 +58,13 @@ Github.prototype.getRepositories = function (data, cb) {
 			count: 0
 		};
 	}
-	__self.manifest.count++;
-	data.page = __self.manifest.count;
+	
 	helper.getRepositories(__self, data, (err, records, headers) => {
 		if (err) {
 			return cb(err);
 		}
+		__self.manifest.count++;
+		data.page = __self.manifest.count;
 		if (__self.manifest.count === 1) {
 			helper.getRepoPages(headers, (err, pages) => {
 				__self.manifest.total = Number(pages);
@@ -109,6 +109,7 @@ Github.prototype.login = function (data, cb) {
 					return cb(err);
 				} else {
 					account.token = result.token;
+					account.tokenId = result.id;
 					return cb(null, account);
 				}
 			});
@@ -148,12 +149,68 @@ Github.prototype.getOrganizations = function (data, cb) {
 			return cb(err);
 		}
 		let organizations = [];
-		if (orgs && orgs.length > 0){
-			orgs.forEach((org)=>{
+		if (orgs && orgs.length > 0) {
+			orgs.forEach((org) => {
 				organizations.push(org.login);
 			});
 		}
 		return cb(null, organizations);
+	});
+};
+
+Github.prototype.logout = function (cb) {
+	let __self = this;
+	helper.deleteToken(__self, cb);
+};
+
+Github.prototype.getFile = function (data, cb) {
+	let __self = this;
+	helper.getFile(__self, data, (err, response) => {
+		if (err) {
+			return cb(err);
+		}
+		return cb(null, {
+			downloadLink: response.download_url,
+			content: response.content ? new Buffer(response.content, 'base64').toString() : response,
+			sha: response.sha
+		})
+	});
+};
+
+Github.prototype.listBranches = function (data, cb) {
+	let __self = this;
+	helper.listBranches(__self, data, (err, response) => {
+		if (err) {
+			return cb(err);
+		}
+		let branches = [];
+		if (response && response.length > 0) {
+			response.forEach((branch) => {
+				let temp = {};
+				temp.name = branch.name;
+				branches.push(temp);
+			});
+		}
+		return cb(null, branches);
+	});
+};
+
+Github.prototype.getBranch = function (data, cb) {
+	let __self = this;
+	helper.getBranch(__self, data, (err, response) => {
+		if (err) {
+			return cb(err);
+		}
+		if (response){
+			return cb(null, {
+				name : response.name,
+				sha: response.commit.sha
+			});
+		}
+		//no branch
+		else {
+			return cb(true);
+		}
 	});
 };
 

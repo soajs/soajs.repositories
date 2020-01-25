@@ -9,8 +9,8 @@
 'use strict';
 
 module.exports = {
-	type: 'service',
-	prerequisites: {
+	"type": 'service',
+	"prerequisites": {
 		cpu: '',
 		memory: ''
 	},
@@ -33,9 +33,14 @@ module.exports = {
 				"validateUser": '/users/%USERNAME%',
 				"getAllRepos": '/repositories/%USERNAME%',
 				"getUserTeams": '/user/permissions/teams',
+				"getContent": '/repositories/%USERNAME%/%REPO_NAME%/src/%BRANCH%/%FILE_PATH%',
+				"getBranches": '/repositories/%USERNAME%/%REPO_NAME%/refs/branches'
 			},
 			"oauth": {
 				"domain": 'https://bitbucket.org/site/oauth2/access_token'
+			},
+			"hash": {
+				"algorithm": "sha256"
 			}
 		},
 		"bitbucket_enterprise": {
@@ -43,22 +48,37 @@ module.exports = {
 			"routes": {
 				"validateUser": '/users/%USERNAME%',
 				"getUserProjects": '/projects',
-				"getAllRepos": '/repos'
+				"getAllRepos": '/repos',
+				"getContent": '/projects/%PROJECT_NAME%/repos/%REPO_NAME%/browse',
+				"getBranches": '/projects/%PROJECT_NAME%/repos/%REPO_NAME%/branches'
+			},
+			"hash": {
+				"algorithm": "sha256"
 			},
 		}
 	},
 	
+	"catalogs" : ["custom", "service", "daemon", "static", "config"],
 	"errors": {
 		400: "Business logic required data are missing",
 		
-		401: "Username or Token required",
-		402: "User account already exists",
-		403: "Git Account does not exist",
+		401: "Username or Token required.",
+		402: "User account already exists.",
+		403: "Git Account does not exist.",
 		404: "Account not found. Login first.",
-		405: "Repository not found",
-		601: "Model not found",
+		405: "Repository not found.",
+		406: "Username not found.",
+		407: "No need to upgrade.",
+		408: "Repository already active.",
+		409: "Repository is not active.",
+		410: "Branch is is not found",
+		411: "Catalog validation",
+		412: "Branch is already active",
+		
+		500: "Invalid soa.json file schema",
+		601: "Model not found.",
 		602: "Model error: ",
-		603: "Provider not found",
+		603: "Provider not found.",
 		
 	},
 	"schema": {
@@ -227,13 +247,76 @@ module.exports = {
 				"_apiInfo": {
 					"l": "Upgrade account",
 					"group": "Account management"
+				},
+				"id": {
+					"source": ['query.id'],
+					"required": true,
+					"validation": {
+						"type": "string"
+					}
+				},
+				"username": {
+					"source": ['body.username'],
+					"required": true,
+					"validation": {
+						"type": "string"
+					}
+				},
+				"password": {
+					"source": ['body.password'],
+					"required": true,
+					"validation": {
+						"type": "string"
+					}
+				},
+				"on2fa": {
+					"source": ['body.on2fa'],
+					"required": false,
+					"validation": {
+						"type": "string",
+					}
+				},
+				"oauthKey": {
+					"source": ['body.oauthKey'],
+					"required": false,
+					"validation": {
+						"type": "string"
+					}
+				},
+				"oauthSecret": {
+					"source": ['body.oauthSecret'],
+					"required": false,
+					"validation": {
+						"type": "string"
+					}
 				}
 			},
 			"/git/repo/activate": {
 				"_apiInfo": {
 					"l": "Activate repository and sync branches",
 					"group": "Repository management"
-				}
+				},
+				"id": {
+					"source": ['query.id'],
+					"required": true,
+					"validation": {
+						"type": "string"
+					}
+				},
+				"owner": {
+					"source": ['query.owner'],
+					"required": true,
+					"validation": {
+						"type": "string"
+					}
+				},
+				"provider": {
+					"source": ['query.provider'],
+					"required": true,
+					"validation": {
+						"type": "string"
+					}
+				},
 			},
 			"/git/repo/deactivate": {
 				"_apiInfo": {
@@ -245,7 +328,35 @@ module.exports = {
 				"_apiInfo": {
 					"l": "Activate branch",
 					"group": "Repository management"
-				}
+				},
+				"id": {
+					"source": ['query.id'],
+					"required": true,
+					"validation": {
+						"type": "string"
+					}
+				},
+				"owner": {
+					"source": ['query.owner'],
+					"required": true,
+					"validation": {
+						"type": "string"
+					}
+				},
+				"provider": {
+					"source": ['query.provider'],
+					"required": true,
+					"validation": {
+						"type": "string"
+					}
+				},
+				"branch": {
+					"source": ['query.branch'],
+					"required": true,
+					"validation": {
+						"type": "string"
+					}
+				},
 			},
 			"/git/branch/deactivate": {
 				"_apiInfo": {
@@ -271,6 +382,45 @@ module.exports = {
 				"_apiInfo": {
 					"l": "Logout and delete account",
 					"group": "Account management"
+				},
+				"id": {
+					"source": ['query.id'],
+					"required": true,
+					"validation": {
+						"type": "string"
+					}
+				},
+			},
+			"/git/catalog": {
+				"_apiInfo": {
+					"l": "Delete catalog",
+					"group": "Repository management"
+				},
+				"id": {
+					"source": ['query.id'],
+					"required": true,
+					"validation": {
+						"type": "string"
+					}
+				},
+			},
+			"/git/service": {
+				"_apiInfo": {
+					"l": "Delete service",
+					"group": "Repository management"
+				},
+				"id": {
+					"source": ['query.id'],
+					"required": true,
+					"validation": {
+						"type": "string"
+					}
+				},
+			},
+			"/git/daemon": {
+				"_apiInfo": {
+					"l": "Delete daemon",
+					"group": "Repository management"
 				},
 				"id": {
 					"source": ['query.id'],

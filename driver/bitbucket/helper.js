@@ -9,6 +9,7 @@
 "use strict";
 const request = require('request');
 const async = require('async');
+const crypto = require("crypto");
 
 function requester(options, cb) {
 	options.json = true;
@@ -104,8 +105,8 @@ const helper = {
 			method: 'GET',
 			url: data.url,
 			qs: {
-				pagelen: data.pagelen || 3,
-				page: data.page || 1,
+				pagelen: data.pagelen || 100,
+				page: data.page || 0,
 			}
 		};
 		if (data.token) {
@@ -263,7 +264,65 @@ const helper = {
 				});
 			}
 		}
-	}
+	},
+	"getContent": (self, data, cb) => {
+		let url = data.config.gitAccounts.bitbucket.apiDomain + data.config.gitAccounts.bitbucket.routes.getContent
+			.replace('%USERNAME%', self.user)
+			.replace('%REPO_NAME%', data.repo)
+			.replace('%BRANCH%', data.ref || 'master')
+			.replace('%FILE_PATH%', data.path);
+		const options = {
+			method: 'GET',
+			url: url
+		};
+		if (self.token) {
+			options.headers = {
+				authorization: 'Bearer ' + self.token
+			};
+		}
+		if (!options.headers) {
+			options.headers = {};
+		}
+		let configSHA = data.repo + data.path;
+		let hash = crypto.createHash(data.config.gitAccounts.bitbucket.hash.algorithm);
+		configSHA = hash.update(configSHA).digest('hex');
+		requester(options, function (error, response, body) {
+			if (error){
+				return cb(error);
+			}
+			return cb(null, {
+				downloadLink: url,
+				content: body,
+				configSHA
+			});
+		});
+	},
+	
+	"listBranches": (self, data, cb) => {
+		let repoInfo = data.repository.split('/');
+		let url = data.config.gitAccounts.bitbucket.apiDomain + data.config.gitAccounts.bitbucket.routes.getBranches
+			.replace('%USERNAME%', repoInfo[0])
+			.replace('%REPO_NAME%', repoInfo[1]);
+		const options = {
+			method: 'GET',
+			url: url
+		};
+		if (self.token) {
+			options.headers = {
+				authorization: 'Bearer ' + self.token
+			};
+		}
+		if (!options.headers) {
+			options.headers = {};
+		}
+		
+		requester(options, function (error, response) {
+			if (error){
+				return cb(error);
+			}
+			return cb(null, response);
+		});
+	},
 };
 
 module.exports = helper;

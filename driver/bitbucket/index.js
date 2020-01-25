@@ -12,7 +12,7 @@ const helper = require("./helper");
 function Bitbucket(service, data) {
 	let __self = this;
 	
-	__self.type = data.type;
+	__self.type = data.accountType || data.type;
 	__self.access = data.access;
 	__self.provider = data.provider;
 	__self.domain = data.domain;
@@ -117,6 +117,29 @@ Bitbucket.prototype.getOwner = function () {
 Bitbucket.prototype.getOrganizations = function (data, cb) {
 	let __self = this;
 	return cb(null, __self.teams ? __self.teams : []);
+};
+
+Bitbucket.prototype.listBranches = function (data, cb) {
+	let __self = this;
+	helper.listBranches(__self, data, (err, response) => {
+		if (err) {
+			return cb(err);
+		}
+		let branches = [];
+		if (response && response.values && response.values.length > 0){
+			response.values.forEach((oneValue)=>{
+				let temp = {};
+				temp.name = oneValue.name;
+				branches.push(temp);
+			});
+		}
+		return cb(null,branches);
+	});
+};
+
+Bitbucket.prototype.getFile = function () {
+	let __self = this;
+	return __self.username;
 };
 
 module.exports = Bitbucket;

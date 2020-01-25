@@ -60,7 +60,7 @@ const helper = {
 	"getOrganizations": (self, cb) => {
 		self.github.orgs.listForUser({
 			username: self.username
-		}) 	.then(({data}) => {
+		}).then(({data}) => {
 			return cb(null, data);
 		}).catch((err) => {
 			return cb(err);
@@ -102,6 +102,44 @@ const helper = {
 				return cb(err);
 			});
 		}
+	},
+	
+	"getFile": (self, data, cb) => {
+		let repoInfo = data.repository.split('/');
+		self.github.repos.getContents({
+			owner: repoInfo[0],
+			repo: repoInfo[1],
+			path: data.path,
+			ref: data.branch
+		}).then(({data}) => {
+			return cb(null, data);
+		}).catch((err) => {
+			return cb(err);
+		});
+	},
+	
+	"listBranches": (self, data, cb) => {
+		let repoInfo = data.repository.split('/');
+		self.github.repos.listBranches({
+			owner:repoInfo[0],
+			repo: repoInfo[1],
+		}).then(({data}) => {
+			return cb(null, data);
+		}).catch((err) => {
+			return cb(err);
+		});
+	},
+	"getBranch": (self, data, cb) => {
+		let repoInfo = data.repository.split('/');
+		self.github.repos.getBranch({
+			owner:repoInfo[0],
+			repo: repoInfo[1],
+			branch: data.branch,
+		}).then(({data}) => {
+			return cb(null, data);
+		}).catch((err) => {
+			return cb(err);
+		});
 	},
 };
 
