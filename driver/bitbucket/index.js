@@ -142,4 +142,10 @@ Bitbucket.prototype.getFile = function () {
 	return __self.username;
 };
 
+
+Bitbucket.prototype.logout = function (data, cb) {
+	return cb(null, true);
+};
+
+
 module.exports = Bitbucket;

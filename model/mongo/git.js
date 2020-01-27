@@ -33,7 +33,12 @@ function Git(service, options, mongoCore) {
 	}
 	if (indexing && !indexing[index]) {
 		indexing[index] = true;
-		//todo add indexes
+		__self.mongoCore.createIndex(colName, {'repository': "text"}, (err, index) => {
+			service.log.debug("Index: " + index + " created with error: " + err);
+		});
+		__self.mongoCore.createIndex(colName, {'name': 1, "type" : 1}, (err, index) => {
+			service.log.debug("Index: " + index + " created with error: " + err);
+		});
 		service.log.debug("Git: Indexes for " + index + " Updated!");
 	}
 }
@@ -64,7 +69,7 @@ Git.prototype.checkIfAccountExists = function (data, cb) {
 	
 	if (!data || !(data.id || data.provider)) {
 		let error = new Error("Git: must provide owner and provider.");
-		return cb(error, error);
+		return cb(error);
 	}
 	let condition = {
 		provider: data.provider,
@@ -75,9 +80,11 @@ Git.prototype.checkIfAccountExists = function (data, cb) {
 
 Git.prototype.getAccount = function (data, cb) {
 	let __self = this;
-	if (!data || !(data.id || !data._id) || !(data.provider && data.owner)) {
-		let error = new Error("Git: must provide id or _id or provider and an owner.");
-		return cb(error, error);
+	if (!data || !(data.id || data._id)) {
+		if (!(data.owner && data.provider)) {
+			let error = new Error("Git: must provide id or _id or provider and an owner.");
+			return cb(error);
+		}
 	}
 	let condition = {};
 	condition.type = "account";
@@ -89,11 +96,10 @@ Git.prototype.getAccount = function (data, cb) {
 			condition._id = id;
 			__self.mongoCore.findOne(colName, condition, cb);
 		});
-	} if (data._id) {
+	} else if (data._id) {
 		condition._id = data._id;
 		__self.mongoCore.findOne(colName, condition, cb);
-	}
-	else {
+	} else {
 		condition.provider = data.provider;
 		condition.owner = data.owner;
 		__self.mongoCore.findOne(colName, condition, cb);
@@ -104,7 +110,7 @@ Git.prototype.getRepository = function (data, cb) {
 	let __self = this;
 	if (!data || !(data.id || data._id)) {
 		let error = new Error("Git: must provide id.");
-		return cb(error, error);
+		return cb(error);
 	}
 	let condition = {};
 	condition.type = "repository";
@@ -122,11 +128,24 @@ Git.prototype.getRepository = function (data, cb) {
 	}
 };
 
+Git.prototype.checkActiveRepositories = function (data, cb) {
+	let __self = this;
+	if (!data || !data.owner) {
+		let error = new Error("Git: must provide owner.");
+		return cb(error);
+	}
+	let condition = {};
+	condition.type = "repository";
+	condition["source.name"] = data.owner;
+	condition.active = true;
+	__self.mongoCore.countDocuments(colName, condition, null, cb);
+};
+
 Git.prototype.saveNewAccount = function (data, cb) {
 	let __self = this;
 	if (!data) {
 		let error = new Error("No data provided.");
-		return cb(error, error);
+		return cb(error);
 	}
 	__self.mongoCore.insertOne(colName, data, (err, record) => {
 		return cb(err, {
@@ -139,7 +158,7 @@ Git.prototype.updateAccount = function (data, cb) {
 	let __self = this;
 	if (!data || !(data.id || data.metadata || Object.keys(data.metadata).length === 0)) {
 		let error = new Error("No data provided.");
-		return cb(error, error);
+		return cb(error);
 	}
 	let condition = {};
 	__self.validateId(data.id, (err, id) => {
@@ -162,7 +181,7 @@ Git.prototype.upgradeAccount = function (data, cb) {
 	let __self = this;
 	if (!data || !(data._id || data.set)) {
 		let error = new Error("No data provided.");
-		return cb(error, error);
+		return cb(error);
 	}
 	let condition = {
 		"_id": data._id
@@ -178,7 +197,7 @@ Git.prototype.updateRepository = function (data, cb) {
 	let __self = this;
 	if (!data || !(data.id || data.provider)) {
 		let error = new Error("Git: must provide owner and provider.");
-		return cb(error, error);
+		return cb(error);
 	}
 	let condition = {
 		repository: data.repository,
@@ -206,7 +225,7 @@ Git.prototype.syncRepository = function (data, cb) {
 	let __self = this;
 	if (!data || !(data.ts || data.owner)) {
 		let error = new Error("Git: must provide ts and owner.");
-		return cb(error, error);
+		return cb(error);
 	}
 	let condition = {
 		"source.name": data.owner,
@@ -241,7 +260,7 @@ Git.prototype.deleteAccount = function (data, cb) {
 	let __self = this;
 	if (!data || !(data._id)) {
 		let error = new Error("Git: must provide id");
-		return cb(error, error);
+		return cb(error);
 	}
 	let condition = {
 		type: "account",
@@ -256,7 +275,7 @@ Git.prototype.removeRepositories = function (data, cb) {
 	let __self = this;
 	if (!data || !(data.owner)) {
 		let error = new Error("Git: must provide owner.");
-		return cb(error, error);
+		return cb(error);
 	}
 	let condition = {
 		"source.name": data.owner,
@@ -277,11 +296,11 @@ Git.prototype.removeRepositories = function (data, cb) {
 	});
 };
 
-Git.prototype.activateRepo = function (data, cb) {
+Git.prototype.activateSyncRepo = function (data, cb) {
 	let __self = this;
 	if (!data || !(data._id)) {
 		let error = new Error("Git: must provide _id.");
-		return cb(error, error);
+		return cb(error);
 	}
 	let condition = {
 		type: "repository",
@@ -290,10 +309,12 @@ Git.prototype.activateRepo = function (data, cb) {
 	let options = {'upsert': false, 'safe': true};
 	let fields = {
 		'$set': {
-			branches : data.branches,
-			active: data.active
+			branches: data.branches
 		}
 	};
+	if (data.active) {
+		fields.$set.active = data.active;
+	}
 	__self.mongoCore.updateOne(colName, condition, fields, options, (err, response) => {
 		return cb(err, response);
 	});
@@ -303,7 +324,7 @@ Git.prototype.updateBranches = function (data, cb) {
 	let __self = this;
 	if (!data || !(data._id)) {
 		let error = new Error("Git: must provide _id.");
-		return cb(error, error);
+		return cb(error);
 	}
 	let condition = {
 		type: "repository",
@@ -315,15 +336,9 @@ Git.prototype.updateBranches = function (data, cb) {
 		'$set': {}
 	};
 	fields.$set["branches.$"] = {
-		name : data.name,
+		name: data.name,
 		active: data.active
 	};
-	if (data.configSHA){
-		fields.$set["branches.$"].configSHA = data.configSHA;
-	}
-	if (data.swaggerSHA){
-		fields.$set["branches.$"].swaggerSHA = data.swaggerSHA;
-	}
 	__self.mongoCore.updateOne(colName, condition, fields, options, (err, response) => {
 		return cb(err, response);
 	});
@@ -333,7 +348,7 @@ Git.prototype.removeRepository = function (data, cb) {
 	let __self = this;
 	if (!data || !(data._id)) {
 		let error = new Error("Git: must provide owner and provider.");
-		return cb(error, error);
+		return cb(error);
 	}
 	let condition = {
 		_id: data._id,
@@ -343,10 +358,57 @@ Git.prototype.removeRepository = function (data, cb) {
 	let fields = {
 		'$set': {
 			active: data.active,
-			branches: data.branches
+			branches: []
 		}
 	};
 	__self.mongoCore.updateOne(colName, condition, fields, options, cb);
+};
+
+Git.prototype.searchRepositories = function (data, cb) {
+	let __self = this;
+	if (!data) {
+		let error = new Error("Git: must provide data.");
+		return cb(error);
+	}
+	let condition = {
+		"type": "repository",
+	};
+	let options = {
+		"skip": 0,
+		"limit": 100,
+		"sort": {}
+	};
+	if (data.owner) {
+		condition.owner = data.owner;
+	}
+	if (data.domain) {
+		condition.domain = data.domain;
+	}
+	if (data.name) {
+		condition.name = data.name;
+	}
+	if (data.provider) {
+		condition.provider = data.provider;
+	}
+	if (data.active) {
+		condition.active = data.active;
+	}
+	
+	if (data.testSearch) {
+		condition.$text = {
+			$search: data.testSearch
+		};
+	}
+	
+	if (data.skip) {
+		options.skip = data.skip;
+	}
+	if (data.limit) {
+		options.limit = data.limit;
+	}
+	__self.mongoCore.find(colName, condition, options, (err, response) => {
+		return cb(err, response);
+	});
 };
 
 module.exports = Git;

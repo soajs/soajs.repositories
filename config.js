@@ -74,6 +74,11 @@ module.exports = {
 		410: "Branch is is not found",
 		411: "Catalog validation",
 		412: "Branch is already active",
+		413: "Unable to logout. One or more repositories are active.",
+		414: "Unable to deactivate repository, one or more branch is currently active.",
+		415: "Branch is not active",
+		
+		420: "Tow factor authentication is enabled. Verification code required",
 		
 		500: "Invalid soa.json file schema",
 		601: "Model not found.",
@@ -133,13 +138,62 @@ module.exports = {
 					"l": "Search and filter repository",
 					"group": "Repository information"
 				},
-				"id": {
-					"source": ['query.id'],
-					"required": true,
+				"owner": {
+					"source": ['query.owner'],
+					"required": false,
 					"validation": {
 						"type": "string"
 					}
 				},
+				"domain": {
+					"source": ['query.domain'],
+					"required": false,
+					"validation": {
+						"type": "string"
+					}
+				},
+				"name": {
+					"source": ['query.name'],
+					"required": false,
+					"validation": {
+						"type": "string"
+					}
+				},
+				"provider": {
+					"source": ['query.provider'],
+					"required": false,
+					"validation": {
+						"type": "string"
+					}
+				},
+				"active": {
+					"source": ['query.active'],
+					"required": false,
+					"validation": {
+						"type": "boolean"
+					}
+				},
+				"testSearch": {
+					"source": ['query.testSearch'],
+					"required": false,
+					"validation": {
+						"type": "string"
+					}
+				},
+				"skip": {
+					"source": ['query.skip'],
+					"required": false,
+					"validation": {
+						"type": "integer"
+					}
+				},
+				"limit": {
+					"source": ['query.limit'],
+					"required": false,
+					"validation": {
+						"type": "integer"
+					}
+				}
 			},
 			"/git/repo/file": {
 				"_apiInfo": {
@@ -390,46 +444,14 @@ module.exports = {
 						"type": "string"
 					}
 				},
-			},
-			"/git/catalog": {
-				"_apiInfo": {
-					"l": "Delete catalog",
-					"group": "Repository management"
-				},
-				"id": {
-					"source": ['query.id'],
+				"password": {
+					"source": ['query.password'],
 					"required": true,
 					"validation": {
 						"type": "string"
 					}
-				},
-			},
-			"/git/service": {
-				"_apiInfo": {
-					"l": "Delete service",
-					"group": "Repository management"
-				},
-				"id": {
-					"source": ['query.id'],
-					"required": true,
-					"validation": {
-						"type": "string"
-					}
-				},
-			},
-			"/git/daemon": {
-				"_apiInfo": {
-					"l": "Delete daemon",
-					"group": "Repository management"
-				},
-				"id": {
-					"source": ['query.id'],
-					"required": true,
-					"validation": {
-						"type": "string"
-					}
-				},
-			},
+				}
+			}
 		}
 	}
 };

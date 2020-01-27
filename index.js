@@ -63,24 +63,6 @@ service.init(() => {
 			});
 		});
 		
-		service.delete("/git/catalog", function (req, res) {
-			bl.marketplace.logout(req.soajs, req.soajs.inputmaskData, (error, data) => {
-				return res.json(req.soajs.buildResponse(error, data));
-			});
-		});
-		
-		service.delete("/git/service", function (req, res) {
-			bl.service.logout(req.soajs, req.soajs.inputmaskData, (error, data) => {
-				return res.json(req.soajs.buildResponse(error, data));
-			});
-		});
-		
-		service.delete("/git/daemon", function (req, res) {
-			bl.daemon.logout(req.soajs, req.soajs.inputmaskData, (error, data) => {
-				return res.json(req.soajs.buildResponse(error, data));
-			});
-		});
-		
 		//PUT methods
 		
 		service.put("/git/sync/account", function (req, res) {

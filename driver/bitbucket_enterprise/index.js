@@ -75,14 +75,12 @@ Bitbucket_enterprise.prototype.getRepositories = function (data, cb) {
 		__self.manifest = {
 			count: 0
 		};
-	}
+	}	data.page = __self.manifest.count;
 	helper.getRepositories(__self, data, (err, records) => {
 		__self.manifest.count++;
-		data.page = __self.manifest.count;
 		if (err) {
 			return cb(err);
 		}
-		console.log(JSON.stringify(records, null, 2))
 		return cb(null, {
 			records: records && records.values && records.values.length > 0 ? records.values : [],
 			next: !records.isLastPage
@@ -107,7 +105,6 @@ Bitbucket_enterprise.prototype.listBranches = function (data, cb) {
 			response.values.forEach((oneValue)=>{
 				let temp = {};
 				temp.name = oneValue.displayId;
-				temp.sha = oneValue.displayId;
 				branches.push(temp);
 			});
 		}
@@ -130,6 +127,10 @@ Bitbucket_enterprise.prototype.getOrganizations = function (data, cb) {
 		return cb(null, projects);
 	});
 	
+};
+
+Bitbucket_enterprise.prototype.logout = function (data, cb) {
+	return cb(null, true);
 };
 
 module.exports = Bitbucket_enterprise;

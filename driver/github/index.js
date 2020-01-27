@@ -22,11 +22,7 @@ function Github(service, data) {
 	__self.service = service;
 	__self.username = data.username || data.owner;
 	__self.label = data.label;
-	if (data.token) {
-		auth.token = data.token;
-		__self.token = data.token;
-		__self.tokenId = data.tokenId;
-	} else if (__self.access === "private") {
+	if (__self.access === "private") {
 		if (data.password && __self.username) {
 			auth.token = {
 				password: data.password,
@@ -35,7 +31,14 @@ function Github(service, data) {
 			__self.password = data.password;
 		}
 	}
-	
+	else if (data.token) {
+		auth.token = data.token;
+		__self.token = data.token;
+		
+	}
+	if (data.tokenId){
+		__self.tokenId = data.tokenId;
+	}
 	if (auth.token && data.on2fa) {
 		auth.on2fa = () => {
 			return Promise.resolve(data.on2fa);
@@ -58,13 +61,12 @@ Github.prototype.getRepositories = function (data, cb) {
 			count: 0
 		};
 	}
-	
+	__self.manifest.count++;
+	data.page = __self.manifest.count;
 	helper.getRepositories(__self, data, (err, records, headers) => {
 		if (err) {
 			return cb(err);
 		}
-		__self.manifest.count++;
-		data.page = __self.manifest.count;
 		if (__self.manifest.count === 1) {
 			helper.getRepoPages(headers, (err, pages) => {
 				__self.manifest.total = Number(pages);
@@ -88,6 +90,9 @@ Github.prototype.login = function (data, cb) {
 	let __self = this;
 	helper.validate(__self, (err, record) => {
 		if (err) {
+			if (err.message && err.message.indexOf("2FA required") > -1){
+				return cb(new Error("2FA required"));
+			}
 			return cb(err);
 		}
 		let account = {
@@ -158,7 +163,7 @@ Github.prototype.getOrganizations = function (data, cb) {
 	});
 };
 
-Github.prototype.logout = function (cb) {
+Github.prototype.logout = function (data, cb) {
 	let __self = this;
 	helper.deleteToken(__self, cb);
 };
@@ -173,7 +178,7 @@ Github.prototype.getFile = function (data, cb) {
 			downloadLink: response.download_url,
 			content: response.content ? new Buffer(response.content, 'base64').toString() : response,
 			sha: response.sha
-		})
+		});
 	});
 };
 
@@ -202,10 +207,7 @@ Github.prototype.getBranch = function (data, cb) {
 			return cb(err);
 		}
 		if (response){
-			return cb(null, {
-				name : response.name,
-				sha: response.commit.sha
-			});
+			return cb(null, response.name);
 		}
 		//no branch
 		else {

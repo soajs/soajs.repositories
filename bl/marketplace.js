@@ -34,20 +34,7 @@ let bl = {
 				modelObj.closeConnection();
 			}
 		}
-	},
-	"delete": (soajs, inputmaskData, cb) => {
-		let modelObj = bl.mp.getModel(soajs);
-		let data = {
-			id: inputmaskData.id
-		};
-		modelObj.removeCatalog(data, (err) => {
-			bl.mp.closeModel(soajs, modelObj);
-			if (err) {
-				return cb(bl.handleError(soajs, 602, err));
-			}
-			return cb(null, "Catalog Removed!");
-		});
-	},
+	}
 };
 
 module.exports = bl;

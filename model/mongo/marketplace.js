@@ -33,7 +33,24 @@ function Marketplace(service, options, mongoCore) {
 	}
 	if (indexing && !indexing[index]) {
 		indexing[index] = true;
-		//todo add indexes
+		__self.mongoCore.createIndex(colName,
+			{'source.provider': 1, "source.name": 1, "source.owner": 1},
+			{
+				unique: true,
+				partialFilterExpression: {
+					"source.owner": {
+						"$exists": true
+					},
+					"source.provider": {
+						"$exists": true
+					},
+					"source.name": {
+						"$exists": true
+					}
+				}
+			}, (err, index) => {
+				service.log.debug("Index: " + index + " created with error: " + err);
+			});
 		service.log.debug("Marketplace: Indexes for " + index + " Updated!");
 	}
 }
@@ -61,13 +78,12 @@ Marketplace.prototype.validateId = function (id, cb) {
 
 Marketplace.prototype.updateCatalog = function (data, cb) {
 	let __self = this;
-	if (!data ) {
+	if (!data) {
 		let error = new Error("Git: must provide data");
 		return cb(error, error);
 	}
 	let condition = {
-		name: data.name,
-		type: "service"
+		name: data.name
 	};
 	let options = {'upsert': true, 'safe': true};
 	let fields = {
@@ -89,26 +105,21 @@ Marketplace.prototype.getCatalog = function (data, cb) {
 	__self.mongoCore.findOne(colName, condition, cb);
 };
 
-Marketplace.prototype.removeCatalog = function (data, cb) {
+Marketplace.prototype.getCatalogs = function (data, cb) {
 	let __self = this;
-	if (!data || !data.id) {
-		let error = new Error("No data provided.");
+	if (!data || !(data.name || data.type)) {
+		let error = new Error("Git: must provide name and type.");
 		return cb(error, error);
 	}
-	__self.validateId(data.id, (err, id) => {
-		if (err) {
-			return cb(err, null);
-		}
-		let condition = {
-			_id: data.id
-		};
-		__self.mongoCore.deleteOne(colName, condition, (err, response) => {
-			return cb(err, response);
-		});
-	});
+	let condition = {
+		"src.provider": data.provider,
+		"src.owner": data.owner,
+		"src.repo": data.repo
+	};
+	__self.mongoCore.find(colName, condition, cb);
 };
 
-Marketplace.prototype.removeRepository = function (data, cb) {
+Marketplace.prototype.removeRepositories = function (data, cb) {
 	let __self = this;
 	if (!data || !(data.source || data.owner || data.repo)) {
 		let error = new Error("No data provided.");
@@ -116,17 +127,17 @@ Marketplace.prototype.removeRepository = function (data, cb) {
 	}
 	
 	let condition = {
-		"src.source": data.source,
+		"src.provider": data.provider,
 		"src.owner": data.owner,
 		"src.repo": data.repo
 	};
 	let options = {'upsert': false, 'safe': true};
 	let fields = {
 		'$set': {
-			src : {}
+			src: {}
 		}
 	};
-	__self.mongoCore.updateOne(colName, condition, fields, options, cb);
+	__self.mongoCore.updateMany(colName, condition, fields, options, cb);
 };
 
 module.exports = Marketplace;

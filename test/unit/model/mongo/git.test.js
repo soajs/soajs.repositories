@@ -361,7 +361,7 @@ describe("Unit test for: Model - git", () => {
 			let data = {
 				owner: "HerronTech",
 			};
-			model.removeRepositories(data, (err, record) => {
+			model.removeRepositories(data, () => {
 				done();
 			});
 		});

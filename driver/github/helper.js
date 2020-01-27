@@ -141,6 +141,15 @@ const helper = {
 			return cb(err);
 		});
 	},
+	"deleteToken": (self, cb) => {
+		self.github.oauthAuthorizations.deleteAuthorization({
+			authorization_id: self.tokenId
+		}).then(({data}) => {
+			return cb(null, data);
+		}).catch((err) => {
+			return cb(err);
+		});
+	},
 };
 
 module.exports = helper;

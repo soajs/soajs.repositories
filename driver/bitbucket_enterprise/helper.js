@@ -73,7 +73,6 @@ const helper = {
 				Authorization: 'Basic ' + self.token
 			};
 		}
-		// console.log(JSON.stringify(options, null, 2))
 		requester(options, cb);
 	},
 	"getProjects": (self, data, cb) => {
@@ -93,8 +92,8 @@ const helper = {
 		let repoInfo = data.repository.split('/');
 		const options = {
 			method: 'GET',
-			url: data.config.gitAccounts.bitbucket_enterprise.apiDomain.replace("%PROVIDER_DOMAIN%", self.domain)
-				+ data.config.gitAccounts.bitbucket_enterprise.routes.getBranches.replace('%PROJECT_NAME%', repoInfo[0]).replace('%REPO_NAME%', repoInfo[1])
+			url: data.config.gitAccounts.bitbucket_enterprise.apiDomain.replace("%PROVIDER_DOMAIN%", self.domain) +
+				data.config.gitAccounts.bitbucket_enterprise.routes.getBranches.replace('%PROJECT_NAME%', repoInfo[0]).replace('%REPO_NAME%', repoInfo[1])
 		};
 		if (self.token) {
 			options.headers = {
