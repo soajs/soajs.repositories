@@ -43,6 +43,12 @@ service.init(() => {
 			});
 		});
 		
+		service.get("/git/repo/file", function (req, res) {
+			bl.git.getRepoFile(req.soajs, req.soajs.inputmaskData, (error, data) => {
+				return res.json(req.soajs.buildResponse(error, data));
+			});
+		});
+		
 		service.get("/git/branches", function (req, res) {
 			bl.git.getBranches(req.soajs, req.soajs.inputmaskData, (error, data) => {
 				return res.json(req.soajs.buildResponse(error, data));

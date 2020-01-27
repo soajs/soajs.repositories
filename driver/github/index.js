@@ -175,9 +175,7 @@ Github.prototype.getFile = function (data, cb) {
 			return cb(err);
 		}
 		return cb(null, {
-			downloadLink: response.download_url,
 			content: response.content ? new Buffer(response.content, 'base64').toString() : response,
-			sha: response.sha
 		});
 	});
 };

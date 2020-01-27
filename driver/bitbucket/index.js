@@ -137,11 +137,34 @@ Bitbucket.prototype.listBranches = function (data, cb) {
 	});
 };
 
-Bitbucket.prototype.getFile = function () {
+Bitbucket.prototype.getFile = function (data, cb) {
 	let __self = this;
-	return __self.username;
+	helper.getFile(__self, data, (err, response) => {
+		if (err) {
+			return cb(err);
+		}
+		return cb(null, {
+			content: response,
+		});
+	});
 };
 
+
+Bitbucket.prototype.getBranch = function (data, cb) {
+	let __self = this;
+	helper.getBranch(__self, data, (err, response) => {
+		if (err) {
+			return cb(err);
+		}
+		if (response){
+			return cb(null, response.name);
+		}
+		//no branch
+		else {
+			return cb(true);
+		}
+	});
+};
 
 Bitbucket.prototype.logout = function (data, cb) {
 	return cb(null, true);

@@ -34,7 +34,8 @@ module.exports = {
 				"getAllRepos": '/repositories/%USERNAME%',
 				"getUserTeams": '/user/permissions/teams',
 				"getContent": '/repositories/%USERNAME%/%REPO_NAME%/src/%BRANCH%/%FILE_PATH%',
-				"getBranches": '/repositories/%USERNAME%/%REPO_NAME%/refs/branches'
+				"getBranches": '/repositories/%USERNAME%/%REPO_NAME%/refs/branches',
+				"getBranch": '/repositories/%USERNAME%/%REPO_NAME%/refs/branches/%BRANCH%'
 			},
 			"oauth": {
 				"domain": 'https://bitbucket.org/site/oauth2/access_token'
@@ -200,6 +201,34 @@ module.exports = {
 				"_apiInfo": {
 					"l": "Get a file from repository",
 					"group": "Repository management"
+				},
+				"accountId": {
+					"source": ['query.id'],
+					"required": true,
+					"validation": {
+						"type": "string"
+					}
+				},
+				"repo": {
+					"source": ['query.repo'],
+					"required": true,
+					"validation": {
+						"type": "string"
+					}
+				},
+				"filepath": {
+					"source": ['query.filepath'],
+					"required": true,
+					"validation": {
+						"type": "string"
+					}
+				},
+				"branch": {
+					"source": ['query.branch'],
+					"required": true,
+					"validation": {
+						"type": "string"
+					}
 				}
 			}
 		},

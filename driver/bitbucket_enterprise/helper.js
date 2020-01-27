@@ -95,12 +95,66 @@ const helper = {
 			url: data.config.gitAccounts.bitbucket_enterprise.apiDomain.replace("%PROVIDER_DOMAIN%", self.domain) +
 				data.config.gitAccounts.bitbucket_enterprise.routes.getBranches.replace('%PROJECT_NAME%', repoInfo[0]).replace('%REPO_NAME%', repoInfo[1])
 		};
+		if (data.branch){
+			options.qs = {
+				filterText : data.branch
+			};
+		}
 		if (self.token) {
 			options.headers = {
 				Authorization: 'Basic ' + self.token
 			};
 		}
 		requester(options, cb);
+	},
+	"getFile": (self, data, cb) => {
+		let repoInfo = data.repository.split('/');
+		const options = {
+			method: 'GET',
+			url: data.config.gitAccounts.bitbucket_enterprise.apiDomain.replace("%PROVIDER_DOMAIN%", self.domain) +
+				data.config.gitAccounts.bitbucket_enterprise.routes.getContent
+					.replace('%PROJECT_NAME%', repoInfo[0])
+					.replace('%REPO_NAME%', repoInfo[1]) + data.path
+		};
+		options.qs = {
+			"limit": 1000,
+			"at": options.ref
+		};
+		
+		if (self.token) {
+			options.headers = {
+				Authorization: 'Basic ' + self.token
+			};
+		}
+		let lines = [];
+		
+		let max = 1000 * 1000;
+		function getFile (start, cb){
+			options.qs.start = start;
+			requester(options, (err, response) => {
+				if (err) {
+					return cb(err);
+				}
+				if (response.errors){
+					return cb(response.errors);
+				}
+				if (response["status-code"] === 404){
+					return cb(response);
+				}
+				if (response.lines){
+					lines = lines.concat(response.lines);
+				}
+				if (options.qs.start > max){
+					return cb ({message: "File is too Large"});
+				}
+				if (!response.isLastPage) {
+					return getFile((response.start + response.size), cb);
+				} else {
+					return cb(null, {lines: lines});
+				}
+			});
+		}
+		getFile(0, cb);
 	}
 };
 

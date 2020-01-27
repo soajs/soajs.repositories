@@ -75,7 +75,8 @@ Bitbucket_enterprise.prototype.getRepositories = function (data, cb) {
 		__self.manifest = {
 			count: 0
 		};
-	}	data.page = __self.manifest.count;
+	}
+	data.page = __self.manifest.count;
 	helper.getRepositories(__self, data, (err, records) => {
 		__self.manifest.count++;
 		if (err) {
@@ -101,14 +102,14 @@ Bitbucket_enterprise.prototype.listBranches = function (data, cb) {
 			return cb(err);
 		}
 		let branches = [];
-		if (response && response.values && response.values.length > 0){
-			response.values.forEach((oneValue)=>{
+		if (response && response.values && response.values.length > 0) {
+			response.values.forEach((oneValue) => {
 				let temp = {};
 				temp.name = oneValue.displayId;
 				branches.push(temp);
 			});
 		}
-		return cb(null,branches);
+		return cb(null, branches);
 	});
 };
 
@@ -127,6 +128,42 @@ Bitbucket_enterprise.prototype.getOrganizations = function (data, cb) {
 		return cb(null, projects);
 	});
 	
+};
+
+Bitbucket_enterprise.prototype.listBranches = function (data, cb) {
+	let __self = this;
+	helper.listBranches(__self, data, (err, response) => {
+		if (err) {
+			return cb(err);
+		}
+		let branch = null;
+		if (response && response.values && response.values.length > 0) {
+			response.values.forEach((oneValue) => {
+				if (oneValue.displayId === data.branch){
+					branch = {
+						name : data.branch
+					};
+				}
+			});
+		}
+		return cb(!!branch, branch);
+	});
+};
+
+Bitbucket_enterprise.prototype.getFile = function (data, cb) {
+	let __self = this;
+	helper.getFile(__self, data, (err, response) => {
+		if (err) {
+			return cb(err);
+		}
+		let content = "";
+		for (let i = 0; i < response.lines.length; ++i) {
+			content += response.lines[i].text + "\n";
+		}
+		return cb(null, {
+			content: content.toString(),
+		});
+	});
 };
 
 Bitbucket_enterprise.prototype.logout = function (data, cb) {
