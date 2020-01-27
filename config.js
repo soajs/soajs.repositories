@@ -77,6 +77,7 @@ module.exports = {
 		413: "Unable to logout. One or more repositories are active.",
 		414: "Unable to deactivate repository, one or more branch is currently active.",
 		415: "Branch is not active",
+		417: "Catalog Entry with same DNA detected!",
 		
 		420: "Tow factor authentication is enabled. Verification code required",
 		
@@ -84,7 +85,7 @@ module.exports = {
 		601: "Model not found.",
 		602: "Model error: ",
 		603: "Provider not found.",
-		
+		604: "error: "
 	},
 	"schema": {
 		"get": {

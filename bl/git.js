@@ -125,9 +125,9 @@ let bl = {
 					return cb(bl.handleError(soajs, 602, err));
 				}
 				let response = {
-					start : inputmaskData.skip ? inputmaskData.skip : 0,
-					limit : inputmaskData.skip ? inputmaskData.skip : 100,
-					size : repositories.length,
+					start: inputmaskData.skip ? inputmaskData.skip : 0,
+					limit: inputmaskData.skip ? inputmaskData.skip : 100,
+					size: repositories.length,
 					repositories
 				};
 				return cb(null, response);
@@ -547,7 +547,13 @@ let bl = {
 						repo: results.repo,
 						branch: branch
 					};
-					lib.computeCatalog(bl, soajs, driver, models, opts, cb);
+					lib.computeCatalog(bl, soajs, driver, models, opts, (err) => {
+						marketplace.mp.closeModel(soajs, modelObjMarketPlace);
+						bl.mp.closeModel(soajs, modelObj);
+						if (err) {
+							return cb(err);
+						}
+					});
 				});
 			});
 		},
