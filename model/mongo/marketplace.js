@@ -82,9 +82,15 @@ Marketplace.prototype.updateCatalog = function (data, cb) {
 		let error = new Error("Git: must provide data");
 		return cb(error, error);
 	}
-	let condition = {
-		name: data.name
-	};
+	let condition = {};
+	if (data._id) {
+		condition._id = data._id;
+	} else {
+		condition = {
+			name: data.name,
+			type: data.type
+		};
+	}
 	let options = {'upsert': true, 'safe': true};
 	let fields = {
 		'$set': data
@@ -107,8 +113,8 @@ Marketplace.prototype.getCatalog = function (data, cb) {
 
 Marketplace.prototype.getCatalogs = function (data, cb) {
 	let __self = this;
-	if (!data || !(data.name || data.type)) {
-		let error = new Error("Git: must provide name and type.");
+	if (!data || !(data.provider && data.owner && data.repo)) {
+		let error = new Error("Git: must provide provider owner and repo.");
 		return cb(error, error);
 	}
 	let condition = {
@@ -119,7 +125,7 @@ Marketplace.prototype.getCatalogs = function (data, cb) {
 	__self.mongoCore.find(colName, condition, cb);
 };
 
-Marketplace.prototype.removeRepositories = function (data, cb) {
+Marketplace.prototype.removeCatalogs = function (data, cb) {
 	let __self = this;
 	if (!data || !(data.source || data.owner || data.repo)) {
 		let error = new Error("No data provided.");

@@ -103,9 +103,9 @@ let bl = {
 	"getRepoFile": (soajs, inputmaskData, cb) => {
 		let modelObj = bl.mp.getModel(soajs);
 		let data = {
-			id : inputmaskData.accountId
+			id: inputmaskData.accountId
 		};
-		modelObj.getAccount(data, (err, account)=>{
+		modelObj.getAccount(data, (err, account) => {
 			if (err) {
 				bl.mp.closeModel(soajs, modelObj);
 				return cb(bl.handleError(soajs, 602, err));
@@ -132,8 +132,8 @@ let bl = {
 					return cb(bl.handleError(soajs, 604, error));
 				}
 				return cb(null, {
-					content : fileContent.content,
-					path : inputmaskData.filepath,
+					content: fileContent.content,
+					path: inputmaskData.filepath,
 					repository: inputmaskData.repo,
 				});
 			});
@@ -451,7 +451,7 @@ let bl = {
 					active: true,
 					_id: results.repo._id
 				};
-				modelObj.activateRepo(data, (err) => {
+				modelObj.activateSyncRepo(data, (err) => {
 					bl.mp.closeModel(soajs, modelObj);
 					marketplace.mp.closeModel(soajs, modelObj);
 					if (err) {
@@ -487,7 +487,7 @@ let bl = {
 					}
 				});
 			}
-			if (!activeBranch) {
+			if (activeBranch) {
 				bl.mp.closeModel(soajs, modelObj);
 				return cb(bl.handleError(soajs, 414, err));
 			}
@@ -501,7 +501,7 @@ let bl = {
 							owner: repo.repository.split("/")[0],
 							repo: repo.repository.split("/")[1],
 						};
-						modelObjMarketPlace.removeRepository(opts, callback);
+						modelObjMarketPlace.removeCatalogs(opts, callback);
 					}
 				],
 				() => {
@@ -587,12 +587,13 @@ let bl = {
 					repo: results.repo,
 					branch: branch
 				};
-				lib.computeCatalog(bl, soajs, driver, models, opts, (err) => {
+				lib.computeCatalog(bl, soajs, driver, models, opts, (err, response) => {
 					marketplace.mp.closeModel(soajs, modelObjMarketPlace);
 					bl.mp.closeModel(soajs, modelObj);
 					if (err) {
 						return cb(err);
 					}
+					return cb(null, response);
 				});
 			});
 		});
@@ -615,23 +616,27 @@ let bl = {
 					return modelObj.getRepository(data, callback);
 				}
 			}, function (err, results) {
-				bl.mp.closeModel(soajs, modelObj);
 				if (err) {
+					bl.mp.closeModel(soajs, modelObj);
 					return cb(bl.handleError(soajs, 602, err));
 				}
 				if (!results.account) {
+					bl.mp.closeModel(soajs, modelObj);
 					return cb(bl.handleError(soajs, 403, err));
 				}
 				
 				let driver = bl.mp.getDriver(results.account);
 				
 				if (!driver) {
+					bl.mp.closeModel(soajs, modelObj);
 					return cb(bl.handleError(soajs, 603, null));
 				}
 				if (!results.repo) {
+					bl.mp.closeModel(soajs, modelObj);
 					return cb(bl.handleError(soajs, 405, err));
 				}
 				if (!results.repo.active) {
+					bl.mp.closeModel(soajs, modelObj);
 					return cb(bl.handleError(soajs, 409, err));
 				}
 				if (results.repo.branches && results.repo.branches.length > 0) {
@@ -642,14 +647,15 @@ let bl = {
 							break;
 						}
 					}
-					if (found) {
-						return cb(bl.handleError(soajs, 412, err));
+					if (!found) {
+						bl.mp.closeModel(soajs, modelObj);
+						return cb(bl.handleError(soajs, 410, err));
 					}
 				}
 				let opts = {
-					provider: results.provider,
-					owner: results.owner,
-					repo: results.repo
+					provider: results.repo.provider,
+					owner: results.repo.owner,
+					repo: results.repo.name
 				};
 				let modelObjMarketPlace = marketplace.mp.getModel(soajs);
 				let ts = new Date().getTime();
@@ -674,14 +680,27 @@ let bl = {
 						}, function () {
 							repo.ts = ts;
 							repo.versions = newVersions;
-							modelObjMarketPlace.updateCatalog(opts, callback);
+							delete repo._id;
+							modelObjMarketPlace.updateCatalog(repo, callback);
 						});
-					}, function () {
+					}, function (error) {
 						marketplace.mp.closeModel(soajs, modelObjMarketPlace);
 						if (error) {
-							return cb(bl.handleError(soajs, 602, err));
+							bl.mp.closeModel(soajs, modelObj);
+							return cb(bl.handleError(soajs, 602, error));
 						}
-						return cb(null, "Branch Successfully deactivated!");
+						let opts = {
+							name: inputmaskData.branch,
+							_id: results.repo._id,
+							active: false
+						};
+						modelObj.updateBranches(opts, (err) => {
+							bl.mp.closeModel(soajs, modelObj);
+							if (err) {
+								return cb(bl.handleError(soajs, 602, err));
+							}
+							return cb(null, `Branch ${inputmaskData.branch} deactivated!`);
+						});
 					});
 				});
 			}
@@ -740,14 +759,14 @@ let bl = {
 				data = {
 					_id: results.repo._id
 				};
-				data.branches = _.unionBy(branches, results.repo.branches ? results.repo.branches : [], "name");
+				data.branches = _.unionBy(results.repo.branches ? results.repo.branches : [], branches, "name");
 				modelObj.activateSyncRepo(data, (err) => {
 					bl.mp.closeModel(soajs, modelObj);
 					marketplace.mp.closeModel(soajs, modelObj);
 					if (err) {
 						return cb(bl.handleError(soajs, 602, err));
 					}
-					return cb(null, `Repository ${results.repo.repository} is active!`);
+					return cb(null, `Repository ${results.repo.repository} is synchronized!`);
 				});
 			});
 		});

@@ -36,7 +36,7 @@ function Git(service, options, mongoCore) {
 		__self.mongoCore.createIndex(colName, {'repository': "text"}, (err, index) => {
 			service.log.debug("Index: " + index + " created with error: " + err);
 		});
-		__self.mongoCore.createIndex(colName, {'name': 1, "type" : 1}, (err, index) => {
+		__self.mongoCore.createIndex(colName, {'name': 1, "type": 1}, (err, index) => {
 			service.log.debug("Index: " + index + " created with error: " + err);
 		});
 		service.log.debug("Git: Indexes for " + index + " Updated!");
@@ -339,6 +339,9 @@ Git.prototype.updateBranches = function (data, cb) {
 		name: data.name,
 		active: data.active
 	};
+	if (data.active) {
+		fields.$set["branches.$"].ts = new Date().getTime();
+	}
 	__self.mongoCore.updateOne(colName, condition, fields, options, (err, response) => {
 		return cb(err, response);
 	});
