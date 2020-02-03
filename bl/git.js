@@ -295,10 +295,10 @@ let bl = {
 		let modelObj = bl.mp.getModel(soajs);
 		async.parallel({
 			search: function (callback) {
-				modelObj.searchRepositories(inputmaskData, callback)
+				modelObj.searchRepositories(inputmaskData, callback);
 			},
 			count: function (callback) {
-				modelObj.countSearchRepositories(inputmaskData, callback)
+				modelObj.countSearchRepositories(inputmaskData, callback);
 			}
 		}, function (err, results) {
 			bl.mp.closeModel(soajs, modelObj);
