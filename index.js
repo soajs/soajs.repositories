@@ -55,12 +55,6 @@ service.init(() => {
 			});
 		});
 		
-		service.get("/git/repos", function (req, res) {
-			bl.git.search(req.soajs, req.soajs.inputmaskData, (error, data) => {
-				return res.json(req.soajs.buildResponse(error, data));
-			});
-		});
-		
 		//DELETE methods
 		
 		service.delete("/git/account", function (req, res) {
@@ -123,6 +117,12 @@ service.init(() => {
 		
 		service.post("/git/account", function (req, res) {
 			bl.git.login(req.soajs, req.soajs.inputmaskData, (error, data) => {
+				return res.json(req.soajs.buildResponse(error, data));
+			});
+		});
+		
+		service.post("/git/repos", function (req, res) {
+			bl.git.search(req.soajs, req.soajs.inputmaskData, (error, data) => {
 				return res.json(req.soajs.buildResponse(error, data));
 			});
 		});

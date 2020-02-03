@@ -157,23 +157,6 @@ let bl = {
 		});
 	},
 	
-	"search": (soajs, inputmaskData, cb) => {
-		let modelObj = bl.mp.getModel(soajs);
-		modelObj.searchRepositories(inputmaskData, (err, repositories) => {
-			bl.mp.closeModel(soajs, modelObj);
-			if (err) {
-				return cb(bl.handleError(soajs, 602, err));
-			}
-			let response = {
-				start: inputmaskData.skip ? inputmaskData.skip : 0,
-				limit: inputmaskData.skip ? inputmaskData.skip : 100,
-				size: repositories.length,
-				repositories
-			};
-			return cb(null, response);
-		});
-	},
-	
 	/**
 	 * Delete
 	 */
@@ -193,6 +176,9 @@ let bl = {
 				return cb(bl.handleError(soajs, 403, err));
 			}
 			account.password = inputmaskData.password;
+			if (inputmaskData.on2fa){
+				account.on2fa = inputmaskData.on2fa;
+			}
 			let driver = bl.mp.getDriver(account);
 			if (!driver) {
 				return cb(bl.handleError(soajs, 603, null));
@@ -232,7 +218,12 @@ let bl = {
 					function (err) {
 						bl.mp.closeModel(soajs, modelObj);
 						if (err) {
-							return cb(bl.handleError(soajs, 602, err));
+							if (err.message && err.message === "2FA required") {
+								return cb(bl.handleError(soajs, 420, err));
+							}
+							else {
+								return cb(bl.handleError(soajs, 602, err));
+							}
 						}
 						return cb(null, `Your account ${account.owner} has been successfully logged out!`);
 					});
@@ -297,6 +288,32 @@ let bl = {
 					}
 				});
 			});
+		});
+	},
+	
+	"search": (soajs, inputmaskData, cb) => {
+		let modelObj = bl.mp.getModel(soajs);
+		async.parallel({
+			search: function (callback) {
+				modelObj.searchRepositories(inputmaskData, callback)
+			},
+			count: function (callback) {
+				modelObj.countSearchRepositories(inputmaskData, callback)
+			}
+		}, function (err, results) {
+			bl.mp.closeModel(soajs, modelObj);
+			if (err) {
+				return cb(bl.handleError(soajs, 602, err));
+			}
+			let response = {
+				start: inputmaskData.skip ? inputmaskData.skip : 0,
+				limit: inputmaskData.limit ? inputmaskData.limit : 100,
+				size: results.search.length,
+				repositories: results.search,
+				count : results.count
+			};
+			
+			return cb(null, response);
 		});
 	},
 	
@@ -493,7 +510,7 @@ let bl = {
 			}
 			async.parallel([
 					function (callback) {
-						modelObj.removeRepositories(repo, callback);
+						modelObj.removeRepository(repo, callback);
 					},
 					function (callback) {
 						let opts = {

@@ -135,68 +135,6 @@ module.exports = {
 					}
 				},
 			},
-			"/git/repos": {
-				"_apiInfo": {
-					"l": "Search and filter repository",
-					"group": "Repository information"
-				},
-				"owner": {
-					"source": ['query.owner'],
-					"required": false,
-					"validation": {
-						"type": "string"
-					}
-				},
-				"domain": {
-					"source": ['query.domain'],
-					"required": false,
-					"validation": {
-						"type": "string"
-					}
-				},
-				"name": {
-					"source": ['query.name'],
-					"required": false,
-					"validation": {
-						"type": "string"
-					}
-				},
-				"provider": {
-					"source": ['query.provider'],
-					"required": false,
-					"validation": {
-						"type": "string"
-					}
-				},
-				"active": {
-					"source": ['query.active'],
-					"required": false,
-					"validation": {
-						"type": "boolean"
-					}
-				},
-				"testSearch": {
-					"source": ['query.testSearch'],
-					"required": false,
-					"validation": {
-						"type": "string"
-					}
-				},
-				"skip": {
-					"source": ['query.skip'],
-					"required": false,
-					"validation": {
-						"type": "integer"
-					}
-				},
-				"limit": {
-					"source": ['query.limit'],
-					"required": false,
-					"validation": {
-						"type": "integer"
-					}
-				}
-			},
 			"/git/repo/file": {
 				"_apiInfo": {
 					"l": "Get a file from repository",
@@ -311,7 +249,64 @@ module.exports = {
 						"type": "string"
 					}
 				}
-			}
+			},
+			"/git/repos": {
+				"_apiInfo": {
+					"l": "Search and filter repository",
+					"group": "Repository information"
+				},
+				"name": {
+					"source": ['body.name'],
+					"required": false,
+					"validation": {
+						"type": "string"
+					}
+				},
+				"provider": {
+					"source": ['body.provider'],
+					"required": false,
+					"validation": {
+						"type": "string"
+					}
+				},
+				"active": {
+					"source": ['body.active'],
+					"required": false,
+					"validation": {
+						"type": "boolean"
+					}
+				},
+				"owner": {
+					"source": ['body.owner'],
+					"required": false,
+					"validation": {
+						'type': 'array',
+						"uniqueItems": true,
+						'items': {'type': 'string'}
+					}
+				},
+				"textSearch": {
+					"source": ['body.textSearch'],
+					"required": false,
+					"validation": {
+						"type": "string"
+					}
+				},
+				"skip": {
+					"source": ['body.skip'],
+					"required": false,
+					"validation": {
+						"type": "integer"
+					}
+				},
+				"limit": {
+					"source": ['body.limit'],
+					"required": false,
+					"validation": {
+						"type": "integer"
+					}
+				}
+			},
 		},
 		"put": {
 			"/git/sync/account": {
@@ -574,9 +569,16 @@ module.exports = {
 				},
 				"password": {
 					"source": ['query.password'],
-					"required": true,
+					"required": false,
 					"validation": {
 						"type": "string"
+					}
+				},
+				"on2fa": {
+					"source": ['query.on2fa'],
+					"required": false,
+					"validation": {
+						"type": "string",
 					}
 				}
 			}

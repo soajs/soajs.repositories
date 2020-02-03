@@ -23,12 +23,17 @@ function Github(service, data) {
 	__self.username = data.username || data.owner;
 	__self.label = data.label;
 	if (__self.access === "private") {
-		if (data.password && __self.username) {
+		if (data.password) {
 			auth.token = {
 				password: data.password,
 				username: __self.username
 			};
 			__self.password = data.password;
+		}
+		else if (data.token) {
+			auth.token = data.token;
+			__self.token = data.token;
+			
 		}
 	}
 	else if (data.token) {
@@ -40,7 +45,7 @@ function Github(service, data) {
 		__self.tokenId = data.tokenId;
 	}
 	if (auth.token && data.on2fa) {
-		auth.on2fa = () => {
+		auth.token.on2fa = () => {
 			return Promise.resolve(data.on2fa);
 		};
 		__self.on2fa = data.on2fa;
@@ -69,6 +74,9 @@ Github.prototype.getRepositories = function (data, cb) {
 		}
 		if (__self.manifest.count === 1) {
 			helper.getRepoPages(headers, (err, pages) => {
+				if (err) {
+					return cb(err);
+				}
 				__self.manifest.total = Number(pages);
 				return cb(null, {
 					records: records && records.length > 0 ? records : [],
@@ -165,7 +173,15 @@ Github.prototype.getOrganizations = function (data, cb) {
 
 Github.prototype.logout = function (data, cb) {
 	let __self = this;
-	helper.deleteToken(__self, cb);
+	helper.deleteToken(__self, (err, record) => {
+		if (err) {
+			if (err.message && err.message.indexOf("2FA required") > -1){
+				return cb(new Error("2FA required"));
+			}
+			return cb(err);
+		}
+		return cb(null, record);
+	});
 };
 
 Github.prototype.getFile = function (data, cb) {

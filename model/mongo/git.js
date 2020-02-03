@@ -360,7 +360,7 @@ Git.prototype.removeRepository = function (data, cb) {
 	let options = {'upsert': false, 'safe': true};
 	let fields = {
 		'$set': {
-			active: data.active,
+			active: !!data.active,
 			branches: []
 		}
 	};
@@ -379,14 +379,8 @@ Git.prototype.searchRepositories = function (data, cb) {
 	let options = {
 		"skip": 0,
 		"limit": 100,
-		"sort": {}
+		// "sort": {}
 	};
-	if (data.owner) {
-		condition.owner = data.owner;
-	}
-	if (data.domain) {
-		condition.domain = data.domain;
-	}
 	if (data.name) {
 		condition.name = data.name;
 	}
@@ -396,10 +390,12 @@ Git.prototype.searchRepositories = function (data, cb) {
 	if (data.active) {
 		condition.active = data.active;
 	}
-	
-	if (data.testSearch) {
+	if (data.owner) {
+		condition.owner = { $in: data.owner};
+	}
+	if (data.textSearch) {
 		condition.$text = {
-			$search: data.testSearch
+			$search: data.textSearch
 		};
 	}
 	
@@ -409,9 +405,37 @@ Git.prototype.searchRepositories = function (data, cb) {
 	if (data.limit) {
 		options.limit = data.limit;
 	}
-	__self.mongoCore.find(colName, condition, options, (err, response) => {
-		return cb(err, response);
-	});
+	__self.mongoCore.find(colName, condition, options, cb);
+};
+
+Git.prototype.countSearchRepositories = function (data, cb) {
+	let __self = this;
+	if (!data) {
+		let error = new Error("Git: must provide data.");
+		return cb(error);
+	}
+	let condition = {
+		"type": "repository",
+	};
+	
+	if (data.name) {
+		condition.name = data.name;
+	}
+	if (data.provider) {
+		condition.provider = data.provider;
+	}
+	if (data.active) {
+		condition.active = data.active;
+	}
+	if (data.owner) {
+		condition.owner = { $in: data.owner};
+	}
+	if (data.textSearch) {
+		condition.$text = {
+			$search: data.textSearch
+		};
+	}
+	__self.mongoCore.count(colName, condition, cb);
 };
 
 module.exports = Git;
