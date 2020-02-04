@@ -81,7 +81,7 @@ Git.prototype.checkIfAccountExists = function (data, cb) {
 Git.prototype.getAccount = function (data, cb) {
 	let __self = this;
 	if (!data || !(data.id || data._id)) {
-		if (!(data.owner && data.provider)) {
+		if (!data || !(data.owner && data.provider)) {
 			let error = new Error("Git: must provide id or _id or provider and an owner.");
 			return cb(error);
 		}

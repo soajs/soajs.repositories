@@ -82,10 +82,10 @@ describe("Unit test for: Drivers - bitbucket_enterprise, index", () => {
 			
 			let response = driver.createRepositoryRecord(data);
 			assert.deepEqual(response, {
-				"repository": "newPr/test1",
+				"repository": "NEW/test1",
 				"name": "test1",
 				"type": "repository",
-				"owner": "newPr",
+				"owner": "NEW",
 				"provider": "bitbucket_enterprise",
 				"source": {
 					"name": "ragheb",

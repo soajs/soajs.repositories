@@ -261,7 +261,7 @@ describe("Unit test for: Drivers - bitbucket, helper", () => {
 			let self = {
 				username: "username",
 				account_id: "account_id",
-				token : 1
+				token: 1
 			};
 			let data = {
 				config
@@ -500,7 +500,7 @@ describe("Unit test for: Drivers - bitbucket, helper", () => {
 			nock(config.gitAccounts.bitbucket.apiDomain)
 				.get(config.gitAccounts.bitbucket.routes.getAllRepos.replace("%USERNAME%", self.account_id))
 				.query({
-					pagelen: 3,
+					pagelen: 100,
 					page: 1,
 				})
 				.reply(200, {
@@ -533,12 +533,14 @@ describe("Unit test for: Drivers - bitbucket, helper", () => {
 					"next": "2"
 				});
 			helperFile.execManifest(self, data, (err, res) => {
-				assert.deepEqual(res, [ { scm: 'git',
+				assert.deepEqual(res, [{
+					scm: 'git',
 					website: '',
 					has_wiki: false,
-					name: 'soajs.nodejs.express' },
-					{ scm: 'git', website: '', has_wiki: false, name: 'catalog' },
-					{ scm: 'git', website: null, has_wiki: false, name: 'dashboard' } ]);
+					name: 'soajs.nodejs.express'
+				},
+					{scm: 'git', website: '', has_wiki: false, name: 'catalog'},
+					{scm: 'git', website: null, has_wiki: false, name: 'dashboard'}]);
 				done();
 			});
 		});
@@ -565,7 +567,7 @@ describe("Unit test for: Drivers - bitbucket, helper", () => {
 			nock(config.gitAccounts.bitbucket.apiDomain)
 				.get(config.gitAccounts.bitbucket.routes.getAllRepos.replace("%USERNAME%", self.account_id))
 				.query({
-					pagelen: 3,
+					pagelen: 100,
 					page: 1,
 				})
 				.reply(200, {
@@ -598,12 +600,14 @@ describe("Unit test for: Drivers - bitbucket, helper", () => {
 					"next": "3"
 				});
 			helperFile.execManifest(self, data, (err, res) => {
-				assert.deepEqual(res, [ { scm: 'git',
+				assert.deepEqual(res, [{
+					scm: 'git',
 					website: '',
 					has_wiki: false,
-					name: 'soajs.nodejs.express' },
-					{ scm: 'git', website: '', has_wiki: false, name: 'catalog' },
-					{ scm: 'git', website: null, has_wiki: false, name: 'dashboard' } ]);
+					name: 'soajs.nodejs.express'
+				},
+					{scm: 'git', website: '', has_wiki: false, name: 'catalog'},
+					{scm: 'git', website: null, has_wiki: false, name: 'dashboard'}]);
 				done();
 			});
 		});

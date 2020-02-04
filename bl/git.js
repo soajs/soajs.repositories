@@ -310,7 +310,7 @@ let bl = {
 				limit: inputmaskData.limit ? inputmaskData.limit : 100,
 				size: results.search.length,
 				repositories: results.search,
-				count : results.count
+				count: results.count
 			};
 			
 			return cb(null, response);
