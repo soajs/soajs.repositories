@@ -571,7 +571,7 @@ describe("Unit test for: BL - Git", () => {
 				"id": "123",
 				"on2fa": 123
 			};
-			BL.logout(soajs, inputmaskData, (err, res) => {
+			BL.logout(soajs, inputmaskData, (err) => {
 				assert.ok(err);
 				done();
 			});
@@ -624,7 +624,7 @@ describe("Unit test for: BL - Git", () => {
 				"id": "123",
 				"on2fa": 123
 			};
-			BL.logout(soajs, inputmaskData, (err, res) => {
+			BL.logout(soajs, inputmaskData, (err) => {
 				assert.ok(err);
 				done();
 			});
@@ -659,7 +659,7 @@ describe("Unit test for: BL - Git", () => {
 				"id": "123",
 				"on2fa": 123
 			};
-			BL.logout(soajs, inputmaskData, (err, res) => {
+			BL.logout(soajs, inputmaskData, (err) => {
 				assert.ok(err);
 				done();
 			});
@@ -712,7 +712,7 @@ describe("Unit test for: BL - Git", () => {
 				"id": "123",
 				"on2fa": 123
 			};
-			BL.logout(soajs, inputmaskData, (err, res) => {
+			BL.logout(soajs, inputmaskData, (err) => {
 				assert.ok(err);
 				done();
 			});
@@ -878,175 +878,6 @@ describe("Unit test for: BL - Git", () => {
 		});
 	});
 	
-	describe("Testing get upgrade", () => {
-		afterEach((done) => {
-			BL.modelObj = null;
-			BL.drivers = {};
-			sinon.restore();
-			done();
-		});
-		
-		it("Success - get upgrade", (done) => {
-			
-			function Github() {
-				this.login = (data, cb) => {
-					return cb(null, {
-						owner: "soajs",
-						accountType: "personal",
-						access: "public",
-						provider: "github",
-						domain: "github.com",
-						label: "Soajs",
-						type: "account",
-						GID: "1111",
-						token: "token"
-					});
-				};
-				this.getRepositories = (data, cb) => {
-					return cb(null, {
-						pages: 2,
-						records: [
-							{
-								"id": 77149728,
-								"node_id": "jkhjk==",
-								"name": "soajs.urac.driver",
-								"full_name": "soajs/soajs.urac.driver",
-								"private": false,
-								"owner": {
-									"login": "soajs",
-									"id": 10834185,
-									"type": "Organization",
-									"site_admin": false
-								},
-								"ts": 1576078535254
-							}
-						]
-					});
-				};
-			}
-			
-			BL.modelObj = {
-				getAccount: (nullObject, cb) => {
-					return cb(null, {
-						_id: "5e1de864a34d5d3b94d10c07",
-						owner: "ragheb",
-						accountType: "personal",
-						access: "public",
-						provider: "github",
-						domain: "github.com",
-						label: "ragheb",
-						type: "account",
-						metadata: {
-							organizations: [
-								"soajs",
-								"HerronTech"
-							]
-						},
-						GID: 123,
-					});
-				},
-				upgradeAccount: (nullObject, cb) => {
-					return cb(null, true);
-				}
-			};
-			let inputmaskData = {
-				id: "5e1de864a34d5d3b94d10c07",
-				username: "ragheb",
-				password: "password",
-				on2fa: "on2fa123"
-			};
-			BL.drivers = {
-				"github": Github
-			};
-			sinon.stub(lib, 'handleRepositories').callsFake(function fakeFn(bl, soajs, driver, models, opts) {
-				return true;
-			});
-			BL.upgrade(soajs, inputmaskData, () => {
-				done();
-			});
-		});
-		
-		it("fail - get upgrade public", (done) => {
-			
-			function Github() {
-				this.login = (data, cb) => {
-					return cb(null, {
-						owner: "soajs",
-						accountType: "personal",
-						access: "private",
-						provider: "github",
-						domain: "github.com",
-						label: "Soajs",
-						type: "account",
-						GID: "1111",
-						token: "token"
-					});
-				};
-				this.getRepositories = (data, cb) => {
-					return cb(null, {
-						pages: 2,
-						records: [
-							{
-								"id": 77149728,
-								"node_id": "jkhjk==",
-								"name": "soajs.urac.driver",
-								"full_name": "soajs/soajs.urac.driver",
-								"private": false,
-								"owner": {
-									"login": "soajs",
-									"id": 10834185,
-									"type": "Organization",
-									"site_admin": false
-								},
-								"ts": 1576078535254
-							}
-						]
-					});
-				};
-			}
-			
-			BL.modelObj = {
-				getAccount: (nullObject, cb) => {
-					return cb(null, {
-						_id: "5e1de864a34d5d3b94d10c07",
-						owner: "ragheb",
-						accountType: "personal",
-						access: "private",
-						provider: "github",
-						domain: "github.com",
-						label: "ragheb",
-						type: "account",
-						metadata: {
-							organizations: [
-								"soajs",
-								"HerronTech"
-							]
-						},
-						GID: 123,
-					});
-				},
-				upgradeAccount: (nullObject, cb) => {
-					return cb(null, true);
-				}
-			};
-			let inputmaskData = {
-				id: "5e1de864a34d5d3b94d10c07",
-				username: "ragheb",
-				password: "password",
-				on2fa: "on2fa123"
-			};
-			BL.drivers = {
-				"github": Github
-			};
-			sinon.stub(lib, 'handleRepositories').callsFake(function fakeFn(bl, soajs, driver, models, opts) {
-				return (null, true);
-			});
-			BL.upgrade(soajs, inputmaskData, () => {
-				done();
-			});
-		});
-	});
-	
 	describe("Testing get syncAccount", () => {
 		afterEach((done) => {
 			BL.modelObj = null;
@@ -1151,6 +982,180 @@ describe("Unit test for: BL - Git", () => {
 		});
 	});
 	
+	describe("Testing get upgrade", () => {
+		afterEach((done) => {
+			BL.modelObj = null;
+			BL.drivers = {};
+			sinon.restore();
+			done();
+		});
+		
+		it("Success - get upgrade", (done) => {
+			
+			function Github() {
+				this.login = (data, cb) => {
+					return cb(null, {
+						owner: "soajs",
+						accountType: "personal",
+						access: "public",
+						provider: "github",
+						domain: "github.com",
+						label: "Soajs",
+						type: "account",
+						GID: "1111",
+						token: "token"
+					});
+				};
+				this.getRepositories = (data, cb) => {
+					return cb(null, {
+						pages: 2,
+						records: [
+							{
+								"id": 77149728,
+								"node_id": "jkhjk==",
+								"name": "soajs.urac.driver",
+								"full_name": "soajs/soajs.urac.driver",
+								"private": false,
+								"owner": {
+									"login": "soajs",
+									"id": 10834185,
+									"type": "Organization",
+									"site_admin": false
+								},
+								"ts": 1576078535254
+							}
+						]
+					});
+				};
+			}
+			
+			BL.modelObj = {
+				getAccount: (nullObject, cb) => {
+					return cb(null, {
+						_id: "5e1de864a34d5d3b94d10c07",
+						owner: "ragheb",
+						accountType: "personal",
+						access: "public",
+						provider: "github",
+						domain: "github.com",
+						label: "ragheb",
+						type: "account",
+						metadata: {
+							organizations: [
+								"soajs",
+								"HerronTech"
+							]
+						},
+						GID: 123,
+					});
+				},
+				upgradeAccount: (nullObject, cb) => {
+					return cb(null, true);
+				}
+			};
+			let inputmaskData = {
+				id: "5e1de864a34d5d3b94d10c07",
+				username: "ragheb",
+				password: "password",
+				on2fa: "on2fa123"
+			};
+			BL.drivers = {
+				"github": Github
+			};
+			sinon.stub(lib, 'handleRepositories').callsFake(function fakeFn() {
+				return true;
+			});
+			BL.upgrade(soajs, inputmaskData, (err, res) => {
+				assert.deepEqual(res, {
+					id : "5e1de864a34d5d3b94d10c07",
+					message: "Account Upgraded. Repositories are being updated..."
+				});
+				done();
+			});
+		});
+		
+		it("fail - get upgrade public", (done) => {
+			
+			function Github() {
+				this.login = (data, cb) => {
+					return cb(null, {
+						owner: "soajs",
+						accountType: "personal",
+						access: "private",
+						provider: "github",
+						domain: "github.com",
+						label: "Soajs",
+						type: "account",
+						GID: "1111",
+						token: "token"
+					});
+				};
+				this.getRepositories = (data, cb) => {
+					return cb(null, {
+						pages: 2,
+						records: [
+							{
+								"id": 77149728,
+								"node_id": "jkhjk==",
+								"name": "soajs.urac.driver",
+								"full_name": "soajs/soajs.urac.driver",
+								"private": false,
+								"owner": {
+									"login": "soajs",
+									"id": 10834185,
+									"type": "Organization",
+									"site_admin": false
+								},
+								"ts": 1576078535254
+							}
+						]
+					});
+				};
+			}
+			
+			BL.modelObj = {
+				getAccount: (nullObject, cb) => {
+					return cb(null, {
+						_id: "5e1de864a34d5d3b94d10c07",
+						owner: "ragheb",
+						accountType: "personal",
+						access: "private",
+						provider: "github",
+						domain: "github.com",
+						label: "ragheb",
+						type: "account",
+						metadata: {
+							organizations: [
+								"soajs",
+								"HerronTech"
+							]
+						},
+						GID: 123,
+					});
+				},
+				upgradeAccount: (nullObject, cb) => {
+					return cb(null, true);
+				}
+			};
+			let inputmaskData = {
+				id: "5e1de864a34d5d3b94d10c07",
+				username: "ragheb",
+				password: "password",
+				on2fa: "on2fa123"
+			};
+			BL.drivers = {
+				"github": Github
+			};
+			sinon.stub(lib, 'handleRepositories').callsFake(function fakeFn() {
+				return true;
+			});
+			BL.upgrade(soajs, inputmaskData, (err) => {
+				assert.ok(err);
+				done();
+			});
+		});
+	});
+	
 	describe("Testing get activateRepo", () => {
 		afterEach((done) => {
 			BL.modelObj = null;
@@ -1220,7 +1225,8 @@ describe("Unit test for: BL - Git", () => {
 			soajs.inputmaskData = {
 				"id": "123",
 			};
-			BL.activateRepo(soajs, {}, () => {
+			BL.activateRepo(soajs, {}, (err, res) => {
+				assert.deepEqual(res, `Repository RaghebAD/soajs is active!`);
 				done();
 			});
 		});
@@ -1284,7 +1290,8 @@ describe("Unit test for: BL - Git", () => {
 			soajs.inputmaskData = {
 				"id": "master",
 			};
-			BL.deactivateRepo(soajs, {}, () => {
+			BL.deactivateRepo(soajs, {}, (err, res) => {
+				assert.deepEqual(res, `Repository deactivated!`);
 				done();
 			});
 		});
@@ -1407,9 +1414,10 @@ describe("Unit test for: BL - Git", () => {
 				"branch": "master"
 			};
 			sinon.stub(lib, 'computeCatalog').callsFake(function fakeFn(bl, soajs, driver, models, opts, cb) {
-				return cb(null, true);
+				return cb(null, "this is the response");
 			});
-			BL.activateBranch(soajs, {}, () => {
+			BL.activateBranch(soajs, {}, (err, res) => {
+				assert.deepEqual(res, "this is the response");
 				done();
 			});
 		});
@@ -1590,7 +1598,8 @@ describe("Unit test for: BL - Git", () => {
 			BL.deactivateBranch(soajs, {
 				"id": "123",
 				"branch": "master"
-			}, () => {
+			}, (err, res) => {
+				assert.deepEqual(res, `Branch ${soajs.inputmaskData.branch} deactivated!`);
 				done();
 			});
 		});
@@ -1667,7 +1676,8 @@ describe("Unit test for: BL - Git", () => {
 				"id": "123",
 			};
 			
-			BL.syncRepo(soajs, {}, () => {
+			BL.syncRepo(soajs, {}, (err, res) => {
+				assert.deepEqual(res, `Repository RaghebAD/soajs is synchronized!`);
 				done();
 			});
 		});
