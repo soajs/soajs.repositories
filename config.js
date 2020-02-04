@@ -141,7 +141,7 @@ module.exports = {
 					"group": "Repository management"
 				},
 				"accountId": {
-					"source": ['query.id'],
+					"source": ['query.accountId'],
 					"required": true,
 					"validation": {
 						"type": "string"

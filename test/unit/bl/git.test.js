@@ -54,6 +54,671 @@ describe("Unit test for: BL - Git", () => {
 		}
 	};
 	
+	describe("Testing get account", () => {
+		afterEach((done) => {
+			BL.modelObj = null;
+			BL.drivers = {};
+			done();
+		});
+		
+		it("Success - get account", (done) => {
+			BL.modelObj = {
+				getAccount: (nullObject, cb) => {
+					return cb(null, {
+						_id: "123"
+					});
+				}
+			};
+			let inputmaskData = {
+				"id": "123"
+			};
+			soajs.inputmaskData = inputmaskData;
+			BL.get(soajs, inputmaskData, (err, response) => {
+				assert.deepEqual(response, {
+					_id: "123"
+				});
+				done();
+			});
+		});
+		
+		it("fail - get account", (done) => {
+			BL.modelObj = {
+				getAccount: (nullObject, cb) => {
+					return cb(new Error("Dummy hour"));
+				}
+			};
+			let inputmaskData = {
+				"id": "123"
+			};
+			soajs.inputmaskData = inputmaskData;
+			BL.get(soajs, inputmaskData, (err) => {
+				assert.ok(err);
+				done();
+			});
+		});
+	});
+	
+	describe("Testing get accounts", () => {
+		afterEach((done) => {
+			BL.modelObj = null;
+			BL.drivers = {};
+			done();
+		});
+		
+		it("Success - get accounts", (done) => {
+			BL.modelObj = {
+				getAccounts: (cb) => {
+					return cb(null, [{
+						_id: "123"
+					}]);
+				}
+			};
+			let inputmaskData = {
+				"id": "123"
+			};
+			soajs.inputmaskData = inputmaskData;
+			BL.list(soajs, inputmaskData, (err, response) => {
+				assert.deepEqual(response, [{
+					_id: "123"
+				}]);
+				done();
+			});
+		});
+		it("fail - get accounts", (done) => {
+			BL.modelObj = {
+				getAccounts: (cb) => {
+					return cb(new Error("Dummy hour"));
+				}
+			};
+			let inputmaskData = {
+				"id": "123"
+			};
+			soajs.inputmaskData = inputmaskData;
+			BL.list(soajs, inputmaskData, (err) => {
+				assert.ok(err);
+				done();
+			});
+		});
+	});
+	
+	describe("Testing get getRepo", () => {
+		afterEach((done) => {
+			BL.modelObj = null;
+			BL.drivers = {};
+			done();
+		});
+		
+		it("Success - get getRepo", (done) => {
+			BL.modelObj = {
+				getRepository: (nullObject, cb) => {
+					return cb(null, {
+						_id: "123"
+					});
+				}
+			};
+			let inputmaskData = {
+				"id": "123"
+			};
+			soajs.inputmaskData = inputmaskData;
+			BL.getRepo(soajs, inputmaskData, (err, response) => {
+				assert.deepEqual(response, {
+					_id: "123"
+				});
+				done();
+			});
+		});
+		
+		it("fail - get getRepo - err", (done) => {
+			BL.modelObj = {
+				getRepository: (nullObject, cb) => {
+					return cb(new Error("Dummy hour"));
+				}
+			};
+			let inputmaskData = {
+				"id": "123"
+			};
+			soajs.inputmaskData = inputmaskData;
+			BL.getRepo(soajs, inputmaskData, (err) => {
+				assert.ok(err);
+				done();
+			});
+		});
+		
+		it("fail - get getRepo - repo not found", (done) => {
+			BL.modelObj = {
+				getRepository: (nullObject, cb) => {
+					return cb(null, null);
+				}
+			};
+			let inputmaskData = {
+				"id": "123"
+			};
+			soajs.inputmaskData = inputmaskData;
+			BL.getRepo(soajs, inputmaskData, (err) => {
+				assert.ok(err);
+				done();
+			});
+		});
+	});
+	
+	describe("Testing get getRepoFile", () => {
+		afterEach((done) => {
+			BL.modelObj = null;
+			BL.drivers = {};
+			done();
+		});
+		
+		it("Success - get getRepoFile", (done) => {
+			BL.modelObj = {
+				getAccount: (nullObject, cb) => {
+					return cb(null, {
+						_id: "5e37f43f9248dc603616f7e7",
+						owner: "RaghebAD",
+						accountType: "personal",
+						access: "private",
+						provider: "github",
+						domain: "github.com",
+						label: "RaghebAD",
+						type: "account",
+						metadata: {
+							organizations: [
+								"soajs",
+								"HerronTech"
+							]
+						},
+						GID: 1,
+						token: "1",
+						tokenId: 1
+					});
+				}
+			};
+			BL.drivers = {
+				"github": Github
+			};
+			
+			function Github() {
+				this.getFile = (data, cb) => {
+					return cb(null, {
+						content: JSON.stringify({data: "test"})
+					});
+				};
+			}
+			
+			let inputmaskData = {
+				"accountId": "5e37f43f9248dc603616f7e7",
+				"repo": "RaghebAd/soajs.test",
+				"filepath": "soa.json",
+				"branch": "master"
+			};
+			soajs.inputmaskData = inputmaskData;
+			BL.getRepoFile(soajs, inputmaskData, (err, response) => {
+				assert.deepEqual(response, {
+					"content": JSON.stringify({data: "test"}),
+					"path": "soa.json",
+					"repository": "RaghebAd/soajs.test"
+				});
+				done();
+			});
+		});
+		it("fail - get getRepoFile", (done) => {
+			BL.modelObj = {
+				getAccount: (nullObject, cb) => {
+					return cb(new Error("Dummy Error"));
+				}
+			};
+			BL.drivers = {
+				"github": Github
+			};
+			
+			function Github() {
+				this.getFile = (data, cb) => {
+					return cb(null, {
+						content: JSON.stringify({data: "test"})
+					});
+				};
+			}
+			
+			let inputmaskData = {
+				"accountId": "5e37f43f9248dc603616f7e7",
+				"repo": "RaghebAd/soajs.test",
+				"filepath": "soa.json",
+				"branch": "master"
+			};
+			soajs.inputmaskData = inputmaskData;
+			BL.getRepoFile(soajs, inputmaskData, (err) => {
+				assert.ok(err);
+				done();
+			});
+		});
+		
+		it("fail - get getRepoFile no account", (done) => {
+			BL.modelObj = {
+				getAccount: (nullObject, cb) => {
+					return cb(null, null);
+				}
+			};
+			BL.drivers = {
+				"github": Github
+			};
+			
+			function Github() {
+				this.getFile = (data, cb) => {
+					return cb(null, {
+						content: JSON.stringify({data: "test"})
+					});
+				};
+			}
+			
+			let inputmaskData = {
+				"accountId": "5e37f43f9248dc603616f7e7",
+				"repo": "RaghebAd/soajs.test",
+				"filepath": "soa.json",
+				"branch": "master"
+			};
+			soajs.inputmaskData = inputmaskData;
+			BL.getRepoFile(soajs, inputmaskData, (err) => {
+				assert.ok(err);
+				done();
+			});
+		});
+		it("fail - get getRepoFile no account", (done) => {
+			BL.modelObj = {
+				getAccount: (nullObject, cb) => {
+					return cb(null, {
+						_id: "5e37f43f9248dc603616f7e7",
+						owner: "RaghebAD",
+						accountType: "personal",
+						access: "private",
+						provider: "github",
+						domain: "github.com",
+						label: "RaghebAD",
+						type: "account",
+						metadata: {
+							organizations: [
+								"soajs",
+								"HerronTech"
+							]
+						},
+						GID: 1,
+						token: "1",
+						tokenId: 1
+					});
+				}
+			};
+			BL.drivers = {
+				"github": Github
+			};
+			
+			function Github() {
+				this.getFile = (data, cb) => {
+					return cb(new Error("dummy error"));
+				};
+			}
+			
+			let inputmaskData = {
+				"accountId": "5e37f43f9248dc603616f7e7",
+				"repo": "RaghebAd/soajs.test",
+				"filepath": "soa.json",
+				"branch": "master"
+			};
+			soajs.inputmaskData = inputmaskData;
+			BL.getRepoFile(soajs, inputmaskData, (err) => {
+				assert.ok(err);
+				done();
+			});
+		});
+	});
+	
+	describe("Testing get getBranches", () => {
+		afterEach((done) => {
+			BL.modelObj = null;
+			BL.drivers = {};
+			done();
+		});
+		
+		it("Success - get getRepo", (done) => {
+			BL.modelObj = {
+				getRepository: (nullObject, cb) => {
+					return cb(null, {
+						_id: "123",
+						"branches": []
+					});
+				}
+			};
+			let inputmaskData = {
+				"id": "123"
+			};
+			soajs.inputmaskData = inputmaskData;
+			BL.getBranches(soajs, inputmaskData, (err, response) => {
+				assert.deepEqual(response, []);
+				done();
+			});
+		});
+		
+		it("fail - get getRepo", (done) => {
+			BL.modelObj = {
+				getRepository: (nullObject, cb) => {
+					return cb(new Error("dummy error"));
+				}
+			};
+			let inputmaskData = {
+				"id": "123"
+			};
+			soajs.inputmaskData = inputmaskData;
+			BL.getBranches(soajs, inputmaskData, (err) => {
+				assert.ok(err);
+				done();
+			});
+		});
+		
+		it("Success - get getRepo no repo", (done) => {
+			BL.modelObj = {
+				getRepository: (nullObject, cb) => {
+					return cb(null, null);
+				}
+			};
+			let inputmaskData = {
+				"id": "123"
+			};
+			soajs.inputmaskData = inputmaskData;
+			BL.getBranches(soajs, inputmaskData, (err) => {
+				assert.ok(err);
+				done();
+			});
+		});
+	});
+	
+	describe("Testing get logout", () => {
+		afterEach((done) => {
+			BL.modelObj = null;
+			BL.drivers = {};
+			done();
+		});
+		
+		it("Success - get logout", (done) => {
+			BL.modelObj = {
+				getAccount: (nullObject, cb) => {
+					return cb(null, {
+						_id: "5e37f43f9248dc603616f7e7",
+						owner: "RaghebAD",
+						accountType: "personal",
+						access: "private",
+						provider: "github",
+						domain: "github.com",
+						label: "RaghebAD",
+						type: "account",
+						metadata: {
+							organizations: [
+								"soajs",
+								"HerronTech"
+							]
+						},
+						GID: 1,
+						token: "1",
+						tokenId: 1
+					});
+				},
+				checkActiveRepositories: (nullObject, cb) => {
+					return cb(null, 0);
+				},
+				deleteAccount: (nullObject, cb) => {
+					return cb(null, true);
+				},
+				removeRepositories: (nullObject, cb) => {
+					return cb(null, true);
+				}
+			};
+			
+			function Github() {
+				this.logout = (data, cb) => {
+					return cb(null, true);
+				};
+			}
+			
+			BL.drivers = {
+				"github": Github
+			};
+			
+			let inputmaskData = {
+				"id": "123",
+				"on2fa": 123
+			};
+			BL.logout(soajs, inputmaskData, (err, res) => {
+				assert.deepEqual(res, `Your account RaghebAD has been successfully logged out!`);
+				done();
+			});
+		});
+		it("fail - get logout - model error 1", (done) => {
+			BL.modelObj = {
+				getAccount: (nullObject, cb) => {
+					return cb(new Error("dummy error"));
+				},
+				checkActiveRepositories: (nullObject, cb) => {
+					return cb(null, 0);
+				},
+				deleteAccount: (nullObject, cb) => {
+					return cb(null, true);
+				},
+				removeRepositories: (nullObject, cb) => {
+					return cb(null, true);
+				}
+			};
+			
+			function Github() {
+				this.logout = (data, cb) => {
+					return cb(null, true);
+				};
+			}
+			
+			BL.drivers = {
+				"github": Github
+			};
+			
+			let inputmaskData = {
+				"id": "123",
+				"on2fa": 123
+			};
+			BL.logout(soajs, inputmaskData, (err) => {
+				assert.ok(err);
+				done();
+			});
+		});
+		it("fail - get logout - model error 2", (done) => {
+			BL.modelObj = {
+				getAccount: (nullObject, cb) => {
+					return cb(null, {
+						_id: "5e37f43f9248dc603616f7e7",
+						owner: "RaghebAD",
+						accountType: "personal",
+						access: "private",
+						provider: "github",
+						domain: "github.com",
+						label: "RaghebAD",
+						type: "account",
+						metadata: {
+							organizations: [
+								"soajs",
+								"HerronTech"
+							]
+						},
+						GID: 1,
+						token: "1",
+						tokenId: 1
+					});
+				},
+				checkActiveRepositories: (nullObject, cb) => {
+					return cb(new Error("dummy error"));
+				},
+				deleteAccount: (nullObject, cb) => {
+					return cb(null, true);
+				},
+				removeRepositories: (nullObject, cb) => {
+					return cb(null, true);
+				}
+			};
+			
+			function Github() {
+				this.logout = (data, cb) => {
+					return cb(null, true);
+				};
+			}
+			
+			BL.drivers = {
+				"github": Github
+			};
+			
+			let inputmaskData = {
+				"id": "123",
+				"on2fa": 123
+			};
+			BL.logout(soajs, inputmaskData, (err, res) => {
+				assert.ok(err);
+				done();
+			});
+		});
+		it("fail - get logout - count not zero", (done) => {
+			BL.modelObj = {
+				getAccount: (nullObject, cb) => {
+					return cb(null, {
+						_id: "5e37f43f9248dc603616f7e7",
+						owner: "RaghebAD",
+						accountType: "personal",
+						access: "private",
+						provider: "github",
+						domain: "github.com",
+						label: "RaghebAD",
+						type: "account",
+						metadata: {
+							organizations: [
+								"soajs",
+								"HerronTech"
+							]
+						},
+						GID: 1,
+						token: "1",
+						tokenId: 1
+					});
+				},
+				checkActiveRepositories: (nullObject, cb) => {
+					return cb(null, 1);
+				},
+				deleteAccount: (nullObject, cb) => {
+					return cb(null, true);
+				},
+				removeRepositories: (nullObject, cb) => {
+					return cb(null, true);
+				}
+			};
+			
+			function Github() {
+				this.logout = (data, cb) => {
+					return cb(null, true);
+				};
+			}
+			
+			BL.drivers = {
+				"github": Github
+			};
+			
+			let inputmaskData = {
+				"id": "123",
+				"on2fa": 123
+			};
+			BL.logout(soajs, inputmaskData, (err, res) => {
+				assert.ok(err);
+				done();
+			});
+		});
+		it("fail - get logout - no account", (done) => {
+			BL.modelObj = {
+				getAccount: (nullObject, cb) => {
+					return cb(null, null);
+				},
+				checkActiveRepositories: (nullObject, cb) => {
+					return cb(null, 0);
+				},
+				deleteAccount: (nullObject, cb) => {
+					return cb(null, true);
+				},
+				removeRepositories: (nullObject, cb) => {
+					return cb(null, true);
+				}
+			};
+			
+			function Github() {
+				this.logout = (data, cb) => {
+					return cb(null, true);
+				};
+			}
+			
+			BL.drivers = {
+				"github": Github
+			};
+			
+			let inputmaskData = {
+				"id": "123",
+				"on2fa": 123
+			};
+			BL.logout(soajs, inputmaskData, (err, res) => {
+				assert.ok(err);
+				done();
+			});
+		});
+		it("fail - get logout - on2fa", (done) => {
+			BL.modelObj = {
+				getAccount: (nullObject, cb) => {
+					return cb(null, {
+						_id: "5e37f43f9248dc603616f7e7",
+						owner: "RaghebAD",
+						accountType: "personal",
+						access: "private",
+						provider: "github",
+						domain: "github.com",
+						label: "RaghebAD",
+						type: "account",
+						metadata: {
+							organizations: [
+								"soajs",
+								"HerronTech"
+							]
+						},
+						GID: 1,
+						token: "1",
+						tokenId: 1
+					});
+				},
+				checkActiveRepositories: (nullObject, cb) => {
+					return cb(null, 0);
+				},
+				deleteAccount: (nullObject, cb) => {
+					return cb(null, true);
+				},
+				removeRepositories: (nullObject, cb) => {
+					return cb(null, true);
+				}
+			};
+			
+			function Github() {
+				this.logout = (data, cb) => {
+					return cb(new Error("2FA required"), true);
+				};
+			}
+			
+			BL.drivers = {
+				"github": Github
+			};
+			
+			let inputmaskData = {
+				"id": "123",
+				"on2fa": 123
+			};
+			BL.logout(soajs, inputmaskData, (err, res) => {
+				assert.ok(err);
+				done();
+			});
+		});
+	});
+	
 	describe("Testing login Git Accounts", () => {
 		afterEach((done) => {
 			BL.modelObj = null;
@@ -155,117 +820,6 @@ describe("Unit test for: BL - Git", () => {
 		});
 	});
 	
-	describe("Testing get account", () => {
-		afterEach((done) => {
-			BL.modelObj = null;
-			BL.drivers = {};
-			done();
-		});
-		
-		it("Success - get account", (done) => {
-			BL.modelObj = {
-				getAccount: (nullObject, cb) => {
-					return cb(null, {
-						_id: "123"
-					});
-				}
-			};
-			let inputmaskData = {
-				"id": "123"
-			};
-			soajs.inputmaskData = inputmaskData;
-			BL.get(soajs, inputmaskData, (err, response) => {
-				assert.deepEqual(response, {
-					_id: "123"
-				});
-				done();
-			});
-		});
-	});
-	
-	describe("Testing get accounts", () => {
-		afterEach((done) => {
-			BL.modelObj = null;
-			BL.drivers = {};
-			done();
-		});
-		
-		it("Success - get accounts", (done) => {
-			BL.modelObj = {
-				getAccounts: (cb) => {
-					return cb(null, [{
-						_id: "123"
-					}]);
-				}
-			};
-			let inputmaskData = {
-				"id": "123"
-			};
-			soajs.inputmaskData = inputmaskData;
-			BL.list(soajs, inputmaskData, (err, response) => {
-				assert.deepEqual(response, [{
-					_id: "123"
-				}]);
-				done();
-			});
-		});
-	});
-	
-	describe("Testing get getRepo", () => {
-		afterEach((done) => {
-			BL.modelObj = null;
-			BL.drivers = {};
-			done();
-		});
-		
-		it("Success - get getRepo", (done) => {
-			BL.modelObj = {
-				getRepository: (nullObject, cb) => {
-					return cb(null, {
-						_id: "123"
-					});
-				}
-			};
-			let inputmaskData = {
-				"id": "123"
-			};
-			soajs.inputmaskData = inputmaskData;
-			BL.getRepo(soajs, inputmaskData, (err, response) => {
-				assert.deepEqual(response, {
-					_id: "123"
-				});
-				done();
-			});
-		});
-	});
-	
-	describe("Testing get getBranches", () => {
-		afterEach((done) => {
-			BL.modelObj = null;
-			BL.drivers = {};
-			done();
-		});
-		
-		it("Success - get getRepo", (done) => {
-			BL.modelObj = {
-				getRepository: (nullObject, cb) => {
-					return cb(null, {
-						_id: "123",
-						"branches": []
-					});
-				}
-			};
-			let inputmaskData = {
-				"id": "123"
-			};
-			soajs.inputmaskData = inputmaskData;
-			BL.getBranches(soajs, inputmaskData, (err, response) => {
-				assert.deepEqual(response, []);
-				done();
-			});
-		});
-	});
-	
 	describe("Testing get search", () => {
 		afterEach((done) => {
 			BL.modelObj = null;
@@ -324,24 +878,63 @@ describe("Unit test for: BL - Git", () => {
 		});
 	});
 	
-	describe("Testing get logout", () => {
+	describe("Testing get upgrade", () => {
 		afterEach((done) => {
 			BL.modelObj = null;
 			BL.drivers = {};
+			sinon.restore();
 			done();
 		});
 		
-		it("Success - get logout", (done) => {
+		it("Success - get upgrade", (done) => {
+			
+			function Github() {
+				this.login = (data, cb) => {
+					return cb(null, {
+						owner: "soajs",
+						accountType: "personal",
+						access: "public",
+						provider: "github",
+						domain: "github.com",
+						label: "Soajs",
+						type: "account",
+						GID: "1111",
+						token: "token"
+					});
+				};
+				this.getRepositories = (data, cb) => {
+					return cb(null, {
+						pages: 2,
+						records: [
+							{
+								"id": 77149728,
+								"node_id": "jkhjk==",
+								"name": "soajs.urac.driver",
+								"full_name": "soajs/soajs.urac.driver",
+								"private": false,
+								"owner": {
+									"login": "soajs",
+									"id": 10834185,
+									"type": "Organization",
+									"site_admin": false
+								},
+								"ts": 1576078535254
+							}
+						]
+					});
+				};
+			}
+			
 			BL.modelObj = {
 				getAccount: (nullObject, cb) => {
 					return cb(null, {
-						_id: "5e37f43f9248dc603616f7e7",
-						owner: "RaghebAD",
+						_id: "5e1de864a34d5d3b94d10c07",
+						owner: "ragheb",
 						accountType: "personal",
-						access: "private",
+						access: "public",
 						provider: "github",
 						domain: "github.com",
-						label: "RaghebAD",
+						label: "ragheb",
 						type: "account",
 						metadata: {
 							organizations: [
@@ -349,36 +942,106 @@ describe("Unit test for: BL - Git", () => {
 								"HerronTech"
 							]
 						},
-						GID: 1,
-						token: "1",
-						tokenId: 1
+						GID: 123,
 					});
 				},
-				checkActiveRepositories: (nullObject, cb) => {
-					return cb(null, 0);
-				},
-				deleteAccount: (nullObject, cb) => {
-					return cb(null, true);
-				},
-				removeRepositories: (nullObject, cb) => {
+				upgradeAccount: (nullObject, cb) => {
 					return cb(null, true);
 				}
 			};
-			
-			function Github() {
-				this.logout = (data, cb) => {
-					return cb(null, true);
-				};
-			}
-			
+			let inputmaskData = {
+				id: "5e1de864a34d5d3b94d10c07",
+				username: "ragheb",
+				password: "password",
+				on2fa: "on2fa123"
+			};
 			BL.drivers = {
 				"github": Github
 			};
+			sinon.stub(lib, 'handleRepositories').callsFake(function fakeFn(bl, soajs, driver, models, opts) {
+				return true;
+			});
+			BL.upgrade(soajs, inputmaskData, () => {
+				done();
+			});
+		});
+		
+		it("fail - get upgrade public", (done) => {
 			
-			let inputmaskData = {
-				"id": "123"
+			function Github() {
+				this.login = (data, cb) => {
+					return cb(null, {
+						owner: "soajs",
+						accountType: "personal",
+						access: "private",
+						provider: "github",
+						domain: "github.com",
+						label: "Soajs",
+						type: "account",
+						GID: "1111",
+						token: "token"
+					});
+				};
+				this.getRepositories = (data, cb) => {
+					return cb(null, {
+						pages: 2,
+						records: [
+							{
+								"id": 77149728,
+								"node_id": "jkhjk==",
+								"name": "soajs.urac.driver",
+								"full_name": "soajs/soajs.urac.driver",
+								"private": false,
+								"owner": {
+									"login": "soajs",
+									"id": 10834185,
+									"type": "Organization",
+									"site_admin": false
+								},
+								"ts": 1576078535254
+							}
+						]
+					});
+				};
+			}
+			
+			BL.modelObj = {
+				getAccount: (nullObject, cb) => {
+					return cb(null, {
+						_id: "5e1de864a34d5d3b94d10c07",
+						owner: "ragheb",
+						accountType: "personal",
+						access: "private",
+						provider: "github",
+						domain: "github.com",
+						label: "ragheb",
+						type: "account",
+						metadata: {
+							organizations: [
+								"soajs",
+								"HerronTech"
+							]
+						},
+						GID: 123,
+					});
+				},
+				upgradeAccount: (nullObject, cb) => {
+					return cb(null, true);
+				}
 			};
-			BL.logout(soajs, inputmaskData, () => {
+			let inputmaskData = {
+				id: "5e1de864a34d5d3b94d10c07",
+				username: "ragheb",
+				password: "password",
+				on2fa: "on2fa123"
+			};
+			BL.drivers = {
+				"github": Github
+			};
+			sinon.stub(lib, 'handleRepositories').callsFake(function fakeFn(bl, soajs, driver, models, opts) {
+				return (null, true);
+			});
+			BL.upgrade(soajs, inputmaskData, () => {
 				done();
 			});
 		});
@@ -483,104 +1146,6 @@ describe("Unit test for: BL - Git", () => {
 				"github": Github
 			};
 			BL.syncAccount(soajs, inputmaskData, () => {
-				done();
-			});
-		});
-	});
-	
-	describe("Testing get upgrade", () => {
-		afterEach((done) => {
-			BL.modelObj = null;
-			BL.drivers = {};
-			done();
-		});
-		
-		it("Success - get upgrade", (done) => {
-			BL.modelObj = {
-				getAccount: (nullObject, cb) => {
-					return cb(null, {
-						"provider": "github",
-						"domain": "github.com",
-						"label": "Soajs",
-						"username": "soajs",
-						"type": "personal",
-						"access": "private",
-						"token": "***"
-					});
-				},
-				upgradeAccount: (nullObject, cb) => {
-					return cb(null, {id: 1});
-				},
-				updateRepository: (nullObject, cb) => {
-					return cb(null, true);
-				}
-			};
-			BL.drivers = {
-				"github": Github
-			};
-			
-			function Github() {
-				this.login = (data, cb) => {
-					return cb(null, {
-						owner: "soajs",
-						accountType: "personal",
-						access: "private",
-						provider: "github",
-						domain: "github.com",
-						label: "Soajs",
-						type: "account",
-						GID: "1111",
-						token: "token"
-					});
-				};
-				this.getRepositories = (data, cb) => {
-					return cb(null, {
-						pages: 2,
-						records: [
-							{
-								"id": 77149728,
-								"node_id": "jkhjk==",
-								"name": "soajs.urac.driver",
-								"full_name": "soajs/soajs.urac.driver",
-								"private": false,
-								"owner": {
-									"login": "soajs",
-									"id": 10834185,
-									"type": "Organization",
-									"site_admin": false
-								},
-								"ts": 1576078535254
-							}
-						]
-					});
-				};
-				this.createRepositoryRecord = () => {
-					return {
-						domain: "github.com",
-						repository: "Soajs/soajs.core.drivers",
-						name: "soajs.core.drivers",
-						provider: "github",
-						type: "repository",
-						owner: "Soajs",
-						ts: 1576078535254.0,
-						source: [
-							{
-								name: "Soajs",
-								ts: 1576078535254.0
-							}
-						]
-					};
-				};
-				
-				this.getOrganizations = () => {
-					return ['soajs', 'test'];
-				};
-			}
-			
-			soajs.inputmaskData = {
-				"id": "123",
-			};
-			BL.upgrade(soajs, {}, () => {
 				done();
 			});
 		});
@@ -774,7 +1339,8 @@ describe("Unit test for: BL - Git", () => {
 						],
 						branches: [{
 							name: "master"
-						}]
+						}],
+						active: true
 					});
 				},
 				updateBranches: (nullObject, cb) => {
@@ -898,8 +1464,10 @@ describe("Unit test for: BL - Git", () => {
 							}
 						],
 						branches: [{
-							name: "master"
-						}]
+							name: "master",
+							active: true
+						}],
+						active: true
 					});
 				},
 				updateBranches: (nullObject, cb) => {
@@ -961,70 +1529,68 @@ describe("Unit test for: BL - Git", () => {
 				};
 			}
 			
-			sinon.stub(marketplace, 'mp').returns({
-				getModel: () => {
-					return {
-						getCatalogs: (nullObject, cb) => {
-							return cb(null, [{
-								_id: "5e388405efc9079372fe0b98",
-								name: "scheduler",
-								type: "service",
-								description: "ECOMP Scheduler API",
-								configuration: {
-									port: 32556,
-									group: "ECOMP",
-									requestTimeout: 30,
-									requestTimeoutRenewal: 6,
-									maintenance: {
-										port: {
-											type: "inherit"
-										},
-										readiness: "/heartbeat"
+			sinon.stub(marketplace.mp, 'getModel').callsFake(function () {
+				return {
+					getCatalogs: (nullObject, cb) => {
+						return cb(null, [{
+							_id: "5e388405efc9079372fe0b98",
+							name: "scheduler",
+							type: "service",
+							description: "ECOMP Scheduler API",
+							configuration: {
+								port: 32556,
+								group: "ECOMP",
+								requestTimeout: 30,
+								requestTimeoutRenewal: 6,
+								maintenance: {
+									port: {
+										type: "inherit"
 									},
-									swagger: true
+									readiness: "/heartbeat"
 								},
-								metadata: {
-									description: [
-										"scheduler",
-										"ecomp"
+								swagger: true
+							},
+							metadata: {
+								description: [
+									"scheduler",
+									"ecomp"
+								],
+								attributes: {
+									att1: [
+										"att1.1",
+										"att1.2"
 									],
-									attributes: {
-										att1: [
-											"att1.1",
-											"att1.2"
-										],
-										att2: [
-											"att2.1",
-											"att2.2"
-										]
-									},
-									program: [
-										"5G"
+									att2: [
+										"att2.1",
+										"att2.2"
 									]
 								},
-								src: {
-									provider: "github",
-									owner: "RaghebAD",
-									repo: "soajs.test"
-								},
-								versions: [],
-								ts: 1580762253665
-							}]);
-						},
-						updateCatalog: (nullObject, cb) => {
-							return cb(null, true);
-						}
-					};
-				},
-				closeModel: () => {
-					return true;
-				}
+								program: [
+									"5G"
+								]
+							},
+							src: {
+								provider: "github",
+								owner: "RaghebAD",
+								repo: "soajs.test"
+							},
+							versions: [],
+							ts: 1580762253665
+						}]);
+					},
+					updateCatalog: (nullObject, cb) => {
+						return cb(null, true);
+					}
+				};
 			});
 			soajs.inputmaskData = {
 				"id": "123",
 				"branch": "master"
 			};
-			BL.deactivateBranch(soajs, {}, () => {
+			BL.deactivateBranch(soajs, {
+				"id": "123",
+				"branch": "master"
+			}, () => {
 				done();
 			});
 		});
@@ -1075,7 +1641,8 @@ describe("Unit test for: BL - Git", () => {
 								name: "RaghebAD",
 								ts: 1580725311684
 							}
-						]
+						],
+						active: true
 					});
 				},
 				activateSyncRepo: (nullObject, cb) => {
@@ -1147,12 +1714,14 @@ describe("Unit test for: BL - Git", () => {
 						type: "repository",
 						owner: "RaghebAD",
 						ts: 1580725311684,
-						source: [
+						branches: [
 							{
-								name: "RaghebAD",
-								ts: 1580725311684
+								name: "master",
+								ts: 1580725311684,
+								active: true
 							}
-						]
+						],
+						active: true
 					});
 				}
 			};
@@ -1161,22 +1730,22 @@ describe("Unit test for: BL - Git", () => {
 			};
 			
 			function Github() {
-				this.listBranches = (data, cb) => {
-					return cb(null, [
-						{
-							name: "master",
-						}
-					]);
+				this.getBranch = (data, cb) => {
+					return cb(null, {
+						name: "master",
+					});
 				};
 			}
 			
 			soajs.inputmaskData = {
 				"id": "123",
+				"branch": "master"
 			};
 			sinon.stub(lib, 'computeCatalog').callsFake(function fakeFn(bl, soajs, driver, models, opts, cb) {
-				return cb(null, true);
+				return cb(null, "this is done");
 			});
-			BL.syncBranch(soajs, {}, () => {
+			BL.syncBranch(soajs, soajs.inputmaskData, (err, res) => {
+				assert.deepEqual(res, "this is done");
 				done();
 			});
 		});
