@@ -28,18 +28,18 @@
     "grunt-jsdoc": "2.4.0",
     "grunt-mocha-test": "0.13.3",
     "mocha": "6.2.2",
+    "nock": "11.7.2",
     "request": "2.88.0",
     "soajs.controller": "3.*",
-    "sinon": "^7.5.0"
+    "sinon": "8.1.1"
   },
   "dependencies": {
-    "@octokit/rest": "^16.35.0",
+    "@octokit/rest": "16.43.1",
     "async": "3.1.0",
-    "lodash": "^4.17.15",
-    "nock": "^11.7.0",
-    "parse-url": "^5.0.1",
-    "shortid": "^2.2.15",
-    "soajs": "2.5.23",
-    "yamljs": "^0.3.0"
+    "lodash": "4.17.15",
+    "parse-url": "5.0.1",
+    "shortid": "2.2.15",
+    "soajs": "2.6.5",
+    "yamljs": "0.3.0"
   }
 }

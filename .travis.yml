@@ -1,6 +1,6 @@
 language: node_js
 
-node_js: 8
+node_js: 10
 
 jobs:
   include:
@@ -8,14 +8,7 @@ jobs:
   - stage: install, check code style and coverage
     services:
     - mongodb
-    env:
-    - CXX=g++-4.8
     addons:
-      apt:
-        sources:
-        - ubuntu-toolchain-r-test
-        packages:
-        - g++-4.8
       hosts:
       - localhost
     before_script:
@@ -31,6 +24,7 @@ jobs:
     script:
     - echo "PUBLISH npm"
     deploy:
+      skip_cleanup: true
       provider: npm
       email: $NPM_EMAIL
       api_key: $NPM_TOKEN

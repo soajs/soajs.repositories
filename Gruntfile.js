@@ -108,7 +108,7 @@ module.exports = function (grunt) {
 				SOAJS_SRVIP: "127.0.0.1",
 				SOAJS_TEST: true,
 				SOAJS_SRVPORT: 4005,
-				APP_DIR_FOR_CODE_COVERAGE: '../test/coverage/instrument/'
+				APP_DIR_FOR_CODE_COVERAGE: '../'
 			},
 			coverage: {
 				SOAJS_ENV: "dashboard",
