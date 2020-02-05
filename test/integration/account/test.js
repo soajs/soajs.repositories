@@ -102,7 +102,7 @@ describe("Testing get Git API", () => {
 				accountId : accountId,
 				repo : repo.repository,
 				filepath : 'config.js',
-				branch: "master"
+				branch: "develop"
 			}
 		};
 		requester('/git/repo/file', 'get', params, (error, body) => {
@@ -149,7 +149,6 @@ describe("Testing get Git API", () => {
 				provider: account.provider
 			}
 		};
-		console.log(params)
 		requester('/git/repo/activate', 'put', params, (error, body) => {
 			assert.ifError(error);
 			assert.ok(body);
@@ -166,7 +165,6 @@ describe("Testing get Git API", () => {
 				provider: account.provider
 			}
 		};
-		console.log(params)
 		requester('/git/sync/repository', 'put', params, (error, body) => {
 			assert.ifError(error);
 			assert.ok(body);
@@ -180,7 +178,7 @@ describe("Testing get Git API", () => {
 				id : repo._id.toString(),
 				owner : account.owner,
 				provider: account.provider,
-				branch: "master"
+				branch: "develop"
 			}
 		};
 		requester('/git/branch/activate', 'put', params, (error, body) => {
@@ -196,7 +194,7 @@ describe("Testing get Git API", () => {
 				id : repo._id.toString(),
 				owner : account.owner,
 				provider: account.provider,
-				branch: "master"
+				branch: "develop"
 			}
 		};
 		requester('/git/sync/branch', 'put', params, (error, body) => {
@@ -212,7 +210,7 @@ describe("Testing get Git API", () => {
 				id : repo._id.toString(),
 				owner : account.owner,
 				provider: account.provider,
-				branch: "master"
+				branch: "develop"
 			}
 		};
 		requester('/git/branch/deactivate', 'put', params, (error, body) => {
