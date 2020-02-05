@@ -88,6 +88,12 @@ module.exports = {
 		603: "Provider not found.",
 		604: "error: "
 	},
+	"maintenance": {
+		"port": {
+			"type": "inherit"
+		},
+		"readiness": "/heartbeat"
+	},
 	"schema": {
 		"get": {
 			"/git/accounts": {
