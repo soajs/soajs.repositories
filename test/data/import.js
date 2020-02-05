@@ -373,7 +373,17 @@ module.exports = (profilePath, dataPath, callback) => {
                         return lib.tokens(dataPath + "urac/tokens/", clone_profile, cb);
                     } else
                         return cb(null);
-                }
+                },
+		        function (cb) {
+			        mongoConnection.dropCollection("git", () => {
+				        return cb();
+			        });
+		        },
+		        function (cb) {
+			        mongoConnection.dropCollection("marketplace", () => {
+				        return cb();
+			        });
+		        }
 
             ],
             (error) => {

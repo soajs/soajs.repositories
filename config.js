@@ -262,13 +262,6 @@ module.exports = {
 						"type": "string"
 					}
 				},
-				"provider": {
-					"source": ['body.provider'],
-					"required": false,
-					"validation": {
-						"type": "string"
-					}
-				},
 				"active": {
 					"source": ['body.active'],
 					"required": false,
@@ -278,6 +271,15 @@ module.exports = {
 				},
 				"owner": {
 					"source": ['body.owner'],
+					"required": false,
+					"validation": {
+						'type': 'array',
+						"uniqueItems": true,
+						'items': {'type': 'string'}
+					}
+				},
+				"provider": {
+					"source": ['body.provider'],
 					"required": false,
 					"validation": {
 						'type': 'array',

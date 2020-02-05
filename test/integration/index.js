@@ -13,7 +13,7 @@ let helper = require("../helper.js");
 
 let service, controller;
 
-describe.skip("starting integration tests", () => {
+describe("starting integration tests", () => {
 
     before((done) => {
         let rootPath = process.cwd();

@@ -22,7 +22,7 @@ describe("starting product integration tests", () => {
 	
 	it("loading product integration tests", (done) => {
 		// GET
-		//require("./get/get.test.js");
+		require("./account/test.js");
 		
 		// POST
 		//require("./post/post.test.js");

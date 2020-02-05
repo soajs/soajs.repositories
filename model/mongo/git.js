@@ -385,7 +385,7 @@ Git.prototype.searchRepositories = function (data, cb) {
 		condition.name = data.name;
 	}
 	if (data.provider) {
-		condition.provider = data.provider;
+		condition.provider = { $in: data.provider};
 	}
 	if (data.active) {
 		condition.active = data.active;
