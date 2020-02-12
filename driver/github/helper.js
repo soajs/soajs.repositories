@@ -20,10 +20,12 @@ const helper = {
 		let regex = /(?<=<)(.*?)(?=>)/gi;
 		let links = headers.link.match(regex);
 		let repo = [];
-		links.forEach((one) => {
-			let temp = parseUrl(one);
-			repo.push(temp);
-		});
+		if (links) {
+			links.forEach((one) => {
+				let temp = parseUrl(one);
+				repo.push(temp);
+			});
+		}
 		return cb(null, repo[1] ? repo[1].query.page : 1);
 	},
 	
@@ -121,7 +123,7 @@ const helper = {
 	"listBranches": (self, data, cb) => {
 		let repoInfo = data.repository.split('/');
 		self.github.repos.listBranches({
-			owner:repoInfo[0],
+			owner: repoInfo[0],
 			repo: repoInfo[1],
 		}).then(({data}) => {
 			return cb(null, data);
@@ -132,7 +134,7 @@ const helper = {
 	"getBranch": (self, data, cb) => {
 		let repoInfo = data.repository.split('/');
 		self.github.repos.getBranch({
-			owner:repoInfo[0],
+			owner: repoInfo[0],
 			repo: repoInfo[1],
 			branch: data.branch,
 		}).then(({data}) => {

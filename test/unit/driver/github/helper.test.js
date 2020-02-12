@@ -42,6 +42,18 @@ describe("Unit test for: Drivers - github, helper", () => {
 				done();
 			});
 		});
+		
+		it("Success bad link", (done) => {
+			let data = {
+				link:
+					'bad link',
+			};
+			helperFile.getRepoPages(data, (err, pages) => {
+				assert.ok(pages);
+				assert.equal(pages, 1);
+				done();
+			});
+		});
 		it("Success no headers", (done) => {
 			let data = {};
 			helperFile.getRepoPages(data, (err, pages) => {
@@ -264,10 +276,7 @@ describe("Unit test for: Drivers - github, helper", () => {
 					}
 				}
 			};
-			let data = {
-				per_page: '100',
-				page: 1,
-			};
+			let data = {};
 			helperFile.getRepositories(self, data, () => {
 				done();
 			});
@@ -317,10 +326,7 @@ describe("Unit test for: Drivers - github, helper", () => {
 					}
 				}
 			};
-			let data = {
-				per_page: '100',
-				page: 1,
-			};
+			let data = {};
 			helperFile.getRepositories(self, data, () => {
 				done();
 			});
@@ -368,11 +374,287 @@ describe("Unit test for: Drivers - github, helper", () => {
 					}
 				}
 			};
-			let data = {
-				per_page: '100',
-				page: 1,
-			};
+			let data = {};
 			helperFile.getRepositories(self, data, () => {
+				done();
+			});
+		});
+	});
+	
+	describe("Testing getOrganizations", () => {
+		before((done) => {
+			done();
+		});
+		
+		afterEach((done) => {
+			sinon.restore();
+			done();
+		});
+		after(function (done) {
+			done();
+		});
+		
+		it("Success ", (done) => {
+			let self = {
+				username: 'username',
+				github: {
+					orgs: {
+						listForUser: () => {
+							return new Promise((resolve, reject) => {
+								resolve({
+									body: true
+								});
+								reject(true);
+							});
+						}
+					}
+				}
+			};
+			helperFile.getOrganizations(self, () => {
+				done();
+			});
+		});
+		
+		it("fail ", (done) => {
+			let self = {
+				username: 'username',
+				github: {
+					orgs: {
+						listForUser: () => {
+							return new Promise((resolve, reject) => {
+								reject(true);
+							});
+						}
+					}
+				}
+			};
+			helperFile.getOrganizations(self, () => {
+				done();
+			});
+		});
+	});
+	
+	describe("Testing getFile", () => {
+		before((done) => {
+			done();
+		});
+		
+		afterEach((done) => {
+			sinon.restore();
+			done();
+		});
+		after(function (done) {
+			done();
+		});
+		
+		it("Success ", (done) => {
+			let self = {
+				github: {
+					repos: {
+						getContents: () => {
+							return new Promise((resolve, reject) => {
+								resolve({
+									body: true
+								});
+								reject(true);
+							});
+						}
+					}
+				}
+			};
+			let data = {
+				repository: "soajs/soajs.repositories",
+				path: "soa.json",
+				ref: "master"
+			};
+			helperFile.getFile(self, data, () => {
+				done();
+			});
+		});
+		
+		it("fail ", (done) => {
+			let self = {
+				github: {
+					repos: {
+						getContents: () => {
+							return new Promise((resolve, reject) => {
+								reject(true);
+							});
+						}
+					}
+				}
+			};
+			let data = {
+				repository: "soajs/soajs.repositories"
+			};
+			helperFile.getFile(self, data, () => {
+				done();
+			});
+		});
+	});
+	
+	describe("Testing listBranches", () => {
+		before((done) => {
+			done();
+		});
+		
+		afterEach((done) => {
+			sinon.restore();
+			done();
+		});
+		after(function (done) {
+			done();
+		});
+		
+		it("Success ", (done) => {
+			let self = {
+				github: {
+					repos: {
+						listBranches: () => {
+							return new Promise((resolve, reject) => {
+								resolve({
+									body: true
+								});
+								reject(true);
+							});
+						}
+					}
+				}
+			};
+			let data = {
+				repository: "soajs/soajs.repositories",
+			};
+			helperFile.listBranches(self, data, () => {
+				done();
+			});
+		});
+		
+		it("fail ", (done) => {
+			let self = {
+				github: {
+					repos: {
+						listBranches: () => {
+							return new Promise((resolve, reject) => {
+								reject(true);
+							});
+						}
+					}
+				}
+			};
+			let data = {
+				repository: "soajs/soajs.repositories"
+			};
+			helperFile.listBranches(self, data, () => {
+				done();
+			});
+		});
+	});
+	
+	describe("Testing getBranch", () => {
+		before((done) => {
+			done();
+		});
+		
+		afterEach((done) => {
+			sinon.restore();
+			done();
+		});
+		after(function (done) {
+			done();
+		});
+		
+		it("Success ", (done) => {
+			let self = {
+				github: {
+					repos: {
+						getBranch: () => {
+							return new Promise((resolve, reject) => {
+								resolve({
+									body: true
+								});
+								reject(true);
+							});
+						}
+					}
+				}
+			};
+			let data = {
+				repository: "soajs/soajs.repositories",
+				branch: "master"
+			};
+			helperFile.getBranch(self, data, () => {
+				done();
+			});
+		});
+		
+		it("fail ", (done) => {
+			let self = {
+				github: {
+					repos: {
+						getBranch: () => {
+							return new Promise((resolve, reject) => {
+								reject(true);
+							});
+						}
+					}
+				}
+			};
+			let data = {
+				repository: "soajs/soajs.repositories"
+			};
+			helperFile.getBranch(self, data, () => {
+				done();
+			});
+		});
+	});
+	
+	describe("Testing deleteToken", () => {
+		before((done) => {
+			done();
+		});
+		
+		afterEach((done) => {
+			sinon.restore();
+			done();
+		});
+		after(function (done) {
+			done();
+		});
+		
+		it("Success ", (done) => {
+			let self = {
+				tokenId: "!23",
+				github: {
+					oauthAuthorizations: {
+						deleteAuthorization: () => {
+							return new Promise((resolve, reject) => {
+								resolve({
+									body: true
+								});
+								reject(true);
+							});
+						}
+					}
+				}
+			};
+			helperFile.deleteToken(self, () => {
+				done();
+			});
+		});
+		
+		it("fail ", (done) => {
+			let self = {
+				github: {
+					oauthAuthorizations: {
+						deleteAuthorization: () => {
+							return new Promise((resolve, reject) => {
+								reject(true);
+							});
+						}
+					}
+				}
+			};
+			helperFile.deleteToken(self, () => {
 				done();
 			});
 		});

@@ -244,4 +244,158 @@ describe("Unit test for: Drivers - github, index", () => {
 			});
 		});
 	});
+	
+	describe("Testing logout", () => {
+		before((done) => {
+			let data = {
+				"provider": "github",
+				"domain": "github.com",
+				"label": "Soajs",
+				"username": "soajs",
+				"type": "personal",
+				"access": "private",
+				"password": "***",
+				"on2fa": "123"
+			};
+			sinon.stub(githelper, 'deleteToken').callsFake(function fakeFn(self, cb) {
+				return cb(null, true);
+			});
+			driver = new Github(service, data);
+			
+			done();
+		});
+		
+		afterEach((done) => {
+			sinon.restore();
+			done();
+		});
+		after(function (done) {
+			done();
+		});
+		
+		it("Success", (done) => {
+			let data = {};
+			driver.logout(data, (err) => {
+				assert.ifError(err);
+				done();
+			});
+		});
+	});
+	
+	describe("Testing listBranches", () => {
+		before((done) => {
+			let data = {
+				"provider": "github",
+				"domain": "github.com",
+				"label": "Soajs",
+				"username": "soajs",
+				"type": "personal",
+				"token": "***"
+			};
+			sinon.stub(githelper, 'listBranches').callsFake(function fakeFn(self, data, cb) {
+				return cb(null, [{
+					name : "master"
+				}]);
+			});
+			driver = new Github(service, data);
+			
+			done();
+		});
+		
+		afterEach((done) => {
+			sinon.restore();
+			done();
+		});
+		after(function (done) {
+			done();
+		});
+		
+		it("Success", (done) => {
+			let data = {};
+			driver.listBranches(data, (err, branches) => {
+				assert.ifError(err);
+				assert.deepEqual(branches, [{
+					name: "master"
+				}]);
+				done();
+			});
+		});
+	});
+	
+	describe("Testing getFile", () => {
+		before((done) => {
+			let data = {
+				"provider": "github",
+				"domain": "github.com",
+				"label": "Soajs",
+				"username": "soajs",
+				"type": "personal",
+				"token": "***"
+			};
+			sinon.stub(githelper, 'getFile').callsFake(function fakeFn(self, data, cb) {
+				return cb(null, {
+					content : "random content"
+				});
+			});
+			driver = new Github(service, data);
+			
+			done();
+		});
+		
+		afterEach((done) => {
+			sinon.restore();
+			done();
+		});
+		after(function (done) {
+			done();
+		});
+		
+		it("Success", (done) => {
+			let data = {};
+			driver.getFile(data, (err, res) => {
+				assert.ifError(err);
+				assert.deepEqual(res, {
+					content :  new Buffer("random content", 'base64').toString()
+				});
+				done();
+			});
+		});
+	});
+	
+	describe("Testing getBranch", () => {
+		before((done) => {
+			let data = {
+				"provider": "github",
+				"domain": "github.com",
+				"label": "Soajs",
+				"username": "soajs",
+				"type": "personal"
+			};
+			sinon.stub(githelper, 'getBranch').callsFake(function fakeFn(self, data, cb) {
+				return cb(null, {
+					name : "master"
+				});
+			});
+			driver = new Github(service, data);
+			
+			done();
+		});
+		
+		afterEach((done) => {
+			sinon.restore();
+			done();
+		});
+		after(function (done) {
+			done();
+		});
+		
+		it("Success", (done) => {
+			let data = {};
+			driver.getBranch(data, (err, branches) => {
+				assert.ifError(err);
+				assert.deepEqual(branches, "master");
+				done();
+			});
+		});
+	});
 });
