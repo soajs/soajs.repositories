@@ -71,7 +71,7 @@ describe("Unit test for: Drivers - github, index", () => {
 			};
 			
 			let response = driver.createRepositoryRecord(data);
-			assert.deepEqual(response, { repository: 'soajs/soajs.urac.driver',
+			assert.deepStrictEqual(response, { repository: 'soajs/soajs.urac.driver',
 				name: 'soajs.urac.driver',
 				type: 'repository',
 				owner: 'soajs',
@@ -136,8 +136,8 @@ describe("Unit test for: Drivers - github, index", () => {
 				"username": "soajs",
 				"type": "personal",
 				"access": "private",
-				"password": "***",
-				"on2fa": "123"
+				"token": "1234",
+				"tokenId": "1234"
 			};
 			sinon.stub(githelper, 'getRepositories').callsFake(function fakeFn(self, data, cb) {
 				return cb(null, {
@@ -201,7 +201,7 @@ describe("Unit test for: Drivers - github, index", () => {
 		
 		it("Success", (done) => {
 			let res = driver.getOwner();
-			assert.deepEqual(res, "soajs");
+			assert.deepStrictEqual(res, "soajs");
 			done();
 		});
 	});
@@ -314,7 +314,7 @@ describe("Unit test for: Drivers - github, index", () => {
 			let data = {};
 			driver.listBranches(data, (err, branches) => {
 				assert.ifError(err);
-				assert.deepEqual(branches, [{
+				assert.deepStrictEqual(branches, [{
 					name: "master"
 				}]);
 				done();
@@ -354,7 +354,7 @@ describe("Unit test for: Drivers - github, index", () => {
 			let data = {};
 			driver.getFile(data, (err, res) => {
 				assert.ifError(err);
-				assert.deepEqual(res, {
+				assert.deepStrictEqual(res, {
 					content :  new Buffer("random content", 'base64').toString()
 				});
 				done();
@@ -393,7 +393,7 @@ describe("Unit test for: Drivers - github, index", () => {
 			let data = {};
 			driver.getBranch(data, (err, branches) => {
 				assert.ifError(err);
-				assert.deepEqual(branches, "master");
+				assert.deepStrictEqual(branches, "master");
 				done();
 			});
 		});

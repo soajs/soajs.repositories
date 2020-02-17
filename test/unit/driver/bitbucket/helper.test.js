@@ -267,7 +267,7 @@ describe("Unit test for: Drivers - bitbucket, helper", () => {
 				config
 			};
 			helperFile.checkManifest(self, data, () => {
-				assert.deepEqual(self.manifest, {
+				assert.deepStrictEqual(self.manifest, {
 					total: 0,
 					auditor: {
 						[self.username]: {
@@ -297,7 +297,7 @@ describe("Unit test for: Drivers - bitbucket, helper", () => {
 					values: []
 				});
 			helperFile.checkManifest(self, data, () => {
-				assert.deepEqual(self.manifest, {
+				assert.deepStrictEqual(self.manifest, {
 					total: 0,
 					auditor: {
 						[self.username]: {
@@ -318,7 +318,7 @@ describe("Unit test for: Drivers - bitbucket, helper", () => {
 				config
 			};
 			helperFile.checkManifest(self, data, () => {
-				assert.deepEqual(self.manifest, 10);
+				assert.deepStrictEqual(self.manifest, 10);
 				done();
 			});
 		});
@@ -435,7 +435,7 @@ describe("Unit test for: Drivers - bitbucket, helper", () => {
 					"size": 2
 				});
 			helperFile.getUserTeams(self, data, () => {
-				assert.deepEqual(self, {
+				assert.deepStrictEqual(self, {
 					"username": "username",
 					"account_id": "account_id",
 					"manifest": {
@@ -533,7 +533,7 @@ describe("Unit test for: Drivers - bitbucket, helper", () => {
 					"next": "2"
 				});
 			helperFile.execManifest(self, data, (err, res) => {
-				assert.deepEqual(res, [{
+				assert.deepStrictEqual(res, [{
 					scm: 'git',
 					website: '',
 					has_wiki: false,
@@ -600,7 +600,7 @@ describe("Unit test for: Drivers - bitbucket, helper", () => {
 					"next": "3"
 				});
 			helperFile.execManifest(self, data, (err, res) => {
-				assert.deepEqual(res, [{
+				assert.deepStrictEqual(res, [{
 					scm: 'git',
 					website: '',
 					has_wiki: false,

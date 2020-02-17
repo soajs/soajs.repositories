@@ -74,7 +74,7 @@ describe("Unit test for: BL - Git", () => {
 			};
 			soajs.inputmaskData = inputmaskData;
 			BL.get(soajs, inputmaskData, (err, response) => {
-				assert.deepEqual(response, {
+				assert.deepStrictEqual(response, {
 					_id: "123"
 				});
 				done();
@@ -118,7 +118,7 @@ describe("Unit test for: BL - Git", () => {
 			};
 			soajs.inputmaskData = inputmaskData;
 			BL.list(soajs, inputmaskData, (err, response) => {
-				assert.deepEqual(response, [{
+				assert.deepStrictEqual(response, [{
 					_id: "123"
 				}]);
 				done();
@@ -161,7 +161,7 @@ describe("Unit test for: BL - Git", () => {
 			};
 			soajs.inputmaskData = inputmaskData;
 			BL.getRepo(soajs, inputmaskData, (err, response) => {
-				assert.deepEqual(response, {
+				assert.deepStrictEqual(response, {
 					_id: "123"
 				});
 				done();
@@ -252,7 +252,7 @@ describe("Unit test for: BL - Git", () => {
 			};
 			soajs.inputmaskData = inputmaskData;
 			BL.getRepoFile(soajs, inputmaskData, (err, response) => {
-				assert.deepEqual(response, {
+				assert.deepStrictEqual(response, {
 					"content": JSON.stringify({data: "test"}),
 					"path": "soa.json",
 					"repository": "RaghebAd/soajs.test"
@@ -390,7 +390,7 @@ describe("Unit test for: BL - Git", () => {
 			};
 			soajs.inputmaskData = inputmaskData;
 			BL.getBranches(soajs, inputmaskData, (err, response) => {
-				assert.deepEqual(response, []);
+				assert.deepStrictEqual(response, []);
 				done();
 			});
 		});
@@ -484,7 +484,7 @@ describe("Unit test for: BL - Git", () => {
 				"on2fa": 123
 			};
 			BL.logout(soajs, inputmaskData, (err, res) => {
-				assert.deepEqual(res, `Your account RaghebAD has been successfully logged out!`);
+				assert.deepStrictEqual(res, `Your account RaghebAD has been successfully logged out!`);
 				done();
 			});
 		});
@@ -811,8 +811,8 @@ describe("Unit test for: BL - Git", () => {
 			};
 			soajs.inputmaskData = inputmaskData;
 			BL.login(soajs, inputmaskData, (err, response) => {
-				assert.deepEqual(response, {
-					id: 1,
+				assert.deepStrictEqual(response, {
+					id: "1",
 					message: "Repositories are being added..."
 				});
 				done();
@@ -852,7 +852,7 @@ describe("Unit test for: BL - Git", () => {
 				}
 			};
 			BL.search(soajs, {}, (err, response) => {
-				assert.deepEqual(response, {
+				assert.deepStrictEqual(response, {
 					start: 0,
 					limit: 100,
 					size: 1,
@@ -1066,7 +1066,7 @@ describe("Unit test for: BL - Git", () => {
 				return true;
 			});
 			BL.upgrade(soajs, inputmaskData, (err, res) => {
-				assert.deepEqual(res, {
+				assert.deepStrictEqual(res, {
 					id : "5e1de864a34d5d3b94d10c07",
 					message: "Account Upgraded. Repositories are being updated..."
 				});
@@ -1226,7 +1226,7 @@ describe("Unit test for: BL - Git", () => {
 				"id": "123",
 			};
 			BL.activateRepo(soajs, {}, (err, res) => {
-				assert.deepEqual(res, `Repository RaghebAD/soajs is active!`);
+				assert.deepStrictEqual(res, `Repository RaghebAD/soajs is active!`);
 				done();
 			});
 		});
@@ -1291,7 +1291,7 @@ describe("Unit test for: BL - Git", () => {
 				"id": "master",
 			};
 			BL.deactivateRepo(soajs, {}, (err, res) => {
-				assert.deepEqual(res, `Repository deactivated!`);
+				assert.deepStrictEqual(res, `Repository deactivated!`);
 				done();
 			});
 		});
@@ -1417,7 +1417,7 @@ describe("Unit test for: BL - Git", () => {
 				return cb(null, "this is the response");
 			});
 			BL.activateBranch(soajs, {}, (err, res) => {
-				assert.deepEqual(res, "this is the response");
+				assert.deepStrictEqual(res, "this is the response");
 				done();
 			});
 		});
@@ -1599,7 +1599,7 @@ describe("Unit test for: BL - Git", () => {
 				"id": "123",
 				"branch": "master"
 			}, (err, res) => {
-				assert.deepEqual(res, `Branch ${soajs.inputmaskData.branch} deactivated!`);
+				assert.deepStrictEqual(res, `Branch ${soajs.inputmaskData.branch} deactivated!`);
 				done();
 			});
 		});
@@ -1677,7 +1677,7 @@ describe("Unit test for: BL - Git", () => {
 			};
 			
 			BL.syncRepo(soajs, {}, (err, res) => {
-				assert.deepEqual(res, `Repository RaghebAD/soajs is synchronized!`);
+				assert.deepStrictEqual(res, `Repository RaghebAD/soajs is synchronized!`);
 				done();
 			});
 		});
@@ -1755,7 +1755,7 @@ describe("Unit test for: BL - Git", () => {
 				return cb(null, "this is done");
 			});
 			BL.syncBranch(soajs, soajs.inputmaskData, (err, res) => {
-				assert.deepEqual(res, "this is done");
+				assert.deepStrictEqual(res, "this is done");
 				done();
 			});
 		});

@@ -81,7 +81,7 @@ describe("Unit test for: Drivers - bitbucket_enterprise, index", () => {
 			};
 			
 			let response = driver.createRepositoryRecord(data);
-			assert.deepEqual(response, {
+			assert.deepStrictEqual(response, {
 				"repository": "NEW/test1",
 				"name": "test1",
 				"type": "repository",
@@ -153,10 +153,43 @@ describe("Unit test for: Drivers - bitbucket_enterprise, index", () => {
 				done();
 			});
 		});
+		
+		it("fail", (done) => {
+			let data = {
+				"provider": "bitbucket_enterprise",
+				"domain": "http://localhost:7990",
+				"label": "Ragheb",
+				"username": "ragheb",
+				"type": "personal",
+				"access": "public",
+			};
+			sinon.stub(bitbucketHelper, 'validate').callsFake(function fakeFn(self, data, cb) {
+				self.id = 1;
+				return cb(true);
+			});
+			driver = new Bitbucket_enterprise(service, data);
+			let opts = {};
+			driver.login(opts, (err) => {
+				assert.ok(err);
+				done();
+			});
+		});
 	});
 	
 	describe("Testing getRepositories", () => {
 		before((done) => {
+			done();
+		});
+		
+		afterEach((done) => {
+			sinon.restore();
+			done();
+		});
+		after(function (done) {
+			done();
+		});
+		
+		it("Success", (done) => {
 			let data = {
 				"provider": "bitbucket_enterprise",
 				"domain": "http://localhost:7990",
@@ -175,21 +208,28 @@ describe("Unit test for: Drivers - bitbucket_enterprise, index", () => {
 				);
 			});
 			driver = new Bitbucket_enterprise(service, data);
-			done();
-		});
-		
-		afterEach((done) => {
-			sinon.restore();
-			done();
-		});
-		after(function (done) {
-			done();
-		});
-		
-		it("Success", (done) => {
-			let data = {};
 			driver.getRepositories(data, (err, records) => {
 				assert.ok(records);
+				done();
+			});
+		});
+		
+		it("fail", (done) => {
+			let data = {
+				"provider": "bitbucket_enterprise",
+				"domain": "http://localhost:7990",
+				"label": "Ragheb",
+				"username": "ragheb",
+				"type": "personal",
+				"access": "private",
+				"token": "123"
+			};
+			sinon.stub(bitbucketHelper, 'getRepositories').callsFake(function fakeFn(self, data, cb) {
+				return cb(true);
+			});
+			driver = new Bitbucket_enterprise(service, data);
+			driver.getRepositories(data, (err) => {
+				assert.ok(err);
 				done();
 			});
 		});
@@ -220,31 +260,13 @@ describe("Unit test for: Drivers - bitbucket_enterprise, index", () => {
 		
 		it("Success", (done) => {
 			let res = driver.getOwner();
-			assert.deepEqual(res, "ragheb");
+			assert.deepStrictEqual(res, "ragheb");
 			done();
 		});
 	});
 	
-	describe("Testing getRepositories", () => {
+	describe("Testing getOrganizations", () => {
 		before((done) => {
-			let data = {
-				"provider": "bitbucket_enterprise",
-				"domain": "http://localhost:7990",
-				"label": "Ragheb",
-				"username": "ragheb",
-				"type": "personal",
-				"access": "private",
-				"token": "123"
-			};
-			sinon.stub(bitbucketHelper, 'getProjects').callsFake(function fakeFn(self, data, cb) {
-				return cb(null, {
-						values : [{
-							name: "ptr"
-						}]
-					}
-				);
-			});
-			driver = new Bitbucket_enterprise(service, data);
 			done();
 		});
 		
@@ -257,9 +279,252 @@ describe("Unit test for: Drivers - bitbucket_enterprise, index", () => {
 		});
 		
 		it("Success", (done) => {
-			let data = {};
+			let data = {
+				"provider": "bitbucket_enterprise",
+				"domain": "http://localhost:7990",
+				"label": "Ragheb",
+				"username": "ragheb",
+				"type": "personal",
+				"access": "private",
+				"token": "123"
+			};
+			sinon.stub(bitbucketHelper, 'getProjects').callsFake(function fakeFn(self, data, cb) {
+				return cb(null, {
+						values: [{
+							name: "ptr"
+						}]
+					}
+				);
+			});
+			driver = new Bitbucket_enterprise(service, data);
 			driver.getOrganizations(data, (err, records) => {
 				assert.ok(records);
+				done();
+			});
+		});
+		
+		it("fail", (done) => {
+			let data = {
+				"provider": "bitbucket_enterprise",
+				"domain": "http://localhost:7990",
+				"label": "Ragheb",
+				"username": "ragheb",
+				"type": "personal",
+				"access": "private",
+				"token": "123"
+			};
+			sinon.stub(bitbucketHelper, 'getProjects').callsFake(function fakeFn(self, data, cb) {
+				return cb(true);
+			});
+			driver = new Bitbucket_enterprise(service, data);
+			driver.getOrganizations(data, (err) => {
+				assert.ok(err);
+				done();
+			});
+		});
+	});
+	
+	describe("Testing listBranches", () => {
+		before((done) => {
+			
+			done();
+		});
+		
+		afterEach((done) => {
+			sinon.restore();
+			done();
+		});
+		after(function (done) {
+			done();
+		});
+		
+		it("Success", (done) => {
+			let data = {
+				"provider": "bitbucket_enterprise",
+				"domain": "http://localhost:7990",
+				"label": "Ragheb",
+				"username": "ragheb",
+				"type": "personal",
+				"access": "private",
+				"token": "123"
+			};
+			sinon.stub(bitbucketHelper, 'listBranches').callsFake(function fakeFn(self, data, cb) {
+				return cb(null, {
+						values: [{
+							displayId: "master"
+						}]
+					}
+				);
+			});
+			driver = new Bitbucket_enterprise(service, data);
+			driver.listBranches(data, (err, records) => {
+				assert.ifError(err);
+				assert.ok(records);
+				assert.deepStrictEqual(records, [{
+					name: "master"
+				}]);
+				done();
+			});
+		});
+		
+		it("fail", (done) => {
+			let data = {
+				"provider": "bitbucket_enterprise",
+				"domain": "http://localhost:7990",
+				"label": "Ragheb",
+				"username": "ragheb",
+				"type": "personal",
+				"access": "private",
+				"token": "123"
+			};
+			sinon.stub(bitbucketHelper, 'listBranches').callsFake(function fakeFn(self, data, cb) {
+				return cb(true);
+			});
+			driver = new Bitbucket_enterprise(service, data);
+			driver.listBranches(data, (err) => {
+				assert.ok(err);
+				done();
+			});
+		});
+	});
+	
+	describe("Testing getBranch", () => {
+		before((done) => {
+			done();
+		});
+		
+		afterEach((done) => {
+			sinon.restore();
+			done();
+		});
+		after(function (done) {
+			done();
+		});
+		
+		it("Success", (done) => {
+			let data = {
+				"provider": "bitbucket_enterprise",
+				"domain": "http://localhost:7990",
+				"label": "Ragheb",
+				"username": "ragheb",
+				"type": "personal",
+				"access": "private",
+				"token": "123",
+				"branch": "master"
+			};
+			sinon.stub(bitbucketHelper, 'listBranches').callsFake(function fakeFn(self, data, cb) {
+				return cb(null, {
+						values: [{
+							displayId: "master"
+						}]
+					}
+				);
+			});
+			driver = new Bitbucket_enterprise(service, data);
+			driver.getBranch(data, (err, record) => {
+				assert.ok(record);
+				assert.deepStrictEqual(record, {name: 'master'});
+				done();
+			});
+		});
+		it("fail", (done) => {
+			let data = {
+				"provider": "bitbucket_enterprise",
+				"domain": "http://localhost:7990",
+				"label": "Ragheb",
+				"username": "ragheb",
+				"type": "personal",
+				"access": "private",
+				"token": "123",
+				"branch": "master"
+			};
+			sinon.stub(bitbucketHelper, 'listBranches').callsFake(function fakeFn(self, data, cb) {
+				return cb(true);
+			});
+			driver = new Bitbucket_enterprise(service, data);
+			driver.getBranch(data, (err) => {
+				assert.ok(err);
+				done();
+			});
+		});
+	});
+	
+	describe("Testing getFile", () => {
+		before((done) => {
+			done();
+		});
+		
+		afterEach((done) => {
+			sinon.restore();
+			done();
+		});
+		after(function (done) {
+			done();
+		});
+		
+		it("Success", (done) => {
+			let data = {
+				"provider": "bitbucket_enterprise",
+				"domain": "http://localhost:7990",
+				"label": "Ragheb",
+				"username": "ragheb",
+				"type": "personal",
+				"access": "private",
+				"token": "123",
+				"branch": "master"
+			};
+			sinon.stub(bitbucketHelper, 'getFile').callsFake(function fakeFn(self, data, cb) {
+				return cb(null, {
+						lines: [{text: "1st line"}, {text: "second line"}]
+					}
+				);
+			});
+			driver = new Bitbucket_enterprise(service, data);
+			driver.getFile(data, (err, record) => {
+				assert.ok(record);
+				assert.deepStrictEqual(record, {content: ["1st line", "second line"].join("\n")});
+				done();
+			});
+		});
+		
+		it("fail", (done) => {
+			let data = {
+				"provider": "bitbucket_enterprise",
+				"domain": "http://localhost:7990",
+				"label": "Ragheb",
+				"username": "ragheb",
+				"type": "personal",
+				"access": "private",
+				"token": "123",
+				"branch": "master"
+			};
+			sinon.stub(bitbucketHelper, 'getFile').callsFake(function fakeFn(self, data, cb) {
+				return cb(true);
+			});
+			driver = new Bitbucket_enterprise(service, data);
+			driver.getFile(data, (err) => {
+				assert.ok(err);
+				done();
+			});
+		});
+	});
+	
+	describe("Testing logout", () => {
+		before((done) => {
+			done();
+		});
+		
+		afterEach((done) => {
+			done();
+		});
+		after(function (done) {
+			done();
+		});
+		
+		it("Success", (done) => {
+			let data = {};
+			driver.logout(data, (err, record) => {
+				assert.ok(record);
 				done();
 			});
 		});

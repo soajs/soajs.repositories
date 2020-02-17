@@ -68,7 +68,7 @@ describe("Unit test for: Model - git", () => {
 				provider: "github"
 			};
 			model.checkIfAccountExists(data, (err, id) => {
-				assert.deepEqual(id, 0);
+				assert.deepStrictEqual(id, 0);
 				done();
 			});
 		});
@@ -136,7 +136,7 @@ describe("Unit test for: Model - git", () => {
 			};
 			model.saveNewAccount(data, (err, record) => {
 				accountID = record;
-				assert.deepEqual(Object.keys(record), ["id"]);
+				assert.deepStrictEqual(Object.keys(record), ["id"]);
 				done();
 			});
 		});
@@ -163,7 +163,7 @@ describe("Unit test for: Model - git", () => {
 				id: accountID.id.toString()
 			};
 			model.getAccount(data, (err, record) => {
-				assert.deepEqual(record._id, accountID.id);
+				assert.deepStrictEqual(record._id, accountID.id);
 				done();
 			});
 		});
@@ -173,7 +173,7 @@ describe("Unit test for: Model - git", () => {
 				_id: accountID.id
 			};
 			model.getAccount(data, (err, record) => {
-				assert.deepEqual(record._id, accountID.id);
+				assert.deepStrictEqual(record._id, accountID.id);
 				done();
 			});
 		});
@@ -214,7 +214,7 @@ describe("Unit test for: Model - git", () => {
 				}
 			};
 			model.updateAccount(data, (err, record) => {
-				assert.deepEqual(record.nModified, 1);
+				assert.deepStrictEqual(record.nModified, 1);
 				done();
 			});
 		});
@@ -264,7 +264,7 @@ describe("Unit test for: Model - git", () => {
 				}
 			};
 			model.updateRepository(data, (err, record) => {
-				assert.deepEqual(record.n, 1);
+				assert.deepStrictEqual(record.n, 1);
 				done();
 			});
 		});
@@ -292,7 +292,7 @@ describe("Unit test for: Model - git", () => {
 				ts: 123,
 			};
 			model.syncRepository(data, (err, record) => {
-				assert.deepEqual(record.nModified, 1);
+				assert.deepStrictEqual(record.nModified, 1);
 				done();
 			});
 		});
@@ -316,7 +316,7 @@ describe("Unit test for: Model - git", () => {
 		
 		it("Success", (done) => {
 			model.getAccounts((err, record) => {
-				assert.deepEqual(record.length, 1);
+				assert.deepStrictEqual(record.length, 1);
 				done();
 			});
 		});
@@ -336,7 +336,7 @@ describe("Unit test for: Model - git", () => {
 				_id: accountID.id
 			};
 			model.deleteAccount(data, (err, record) => {
-				assert.deepEqual(record.result.n, 1);
+				assert.deepStrictEqual(record.result.n, 1);
 				done();
 			});
 		});

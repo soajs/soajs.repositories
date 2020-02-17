@@ -130,7 +130,7 @@ Bitbucket_enterprise.prototype.getOrganizations = function (data, cb) {
 	
 };
 
-Bitbucket_enterprise.prototype.listBranches = function (data, cb) {
+Bitbucket_enterprise.prototype.getBranch = function (data, cb) {
 	let __self = this;
 	helper.listBranches(__self, data, (err, response) => {
 		if (err) {
@@ -139,14 +139,14 @@ Bitbucket_enterprise.prototype.listBranches = function (data, cb) {
 		let branch = null;
 		if (response && response.values && response.values.length > 0) {
 			response.values.forEach((oneValue) => {
-				if (oneValue.displayId === data.branch){
+				if (oneValue.displayId === data.branch) {
 					branch = {
-						name : data.branch
+						name: data.branch
 					};
 				}
 			});
 		}
-		return cb(!!branch, branch);
+		return cb(!branch, branch);
 	});
 };
 
@@ -158,7 +158,10 @@ Bitbucket_enterprise.prototype.getFile = function (data, cb) {
 		}
 		let content = "";
 		for (let i = 0; i < response.lines.length; ++i) {
-			content += response.lines[i].text + "\n";
+			content += response.lines[i].text;
+			if (response.lines.length - 1 !== i) {
+				content += "\n";
+			}
 		}
 		return cb(null, {
 			content: content.toString(),
