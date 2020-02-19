@@ -50,8 +50,8 @@ describe("Testing get Git API", () => {
 		requester('/git/accounts', 'get', params, (error, body) => {
 			assert.ifError(error);
 			assert.ok(body);
-			assert.deepEqual(body.data.length , 1);
-			assert.deepEqual(body.data[0]._id.toString(), accountId);
+			assert.deepStrictEqual(body.data.length , 1);
+			assert.deepStrictEqual(body.data[0]._id.toString(), accountId);
 			done();
 		});
 	});
@@ -65,7 +65,7 @@ describe("Testing get Git API", () => {
 		requester('/git/account', 'get', params, (error, body) => {
 			assert.ifError(error);
 			assert.ok(body);
-			assert.deepEqual(body.data._id.toString(), accountId);
+			assert.deepStrictEqual(body.data._id.toString(), accountId);
 			account = body.data;
 			done();
 		});
