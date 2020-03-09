@@ -266,6 +266,9 @@ const helper = {
 		}
 	},
 	"getContent": (self, data, cb) => {
+		if (data.path[0] === "/"){
+			data.path = data.path.substr(1);
+		}
 		let url = data.config.gitAccounts.bitbucket.apiDomain + data.config.gitAccounts.bitbucket.routes.getContent
 			.replace('%USERNAME%', self.user)
 			.replace('%REPO_NAME%', data.repo)
@@ -353,6 +356,9 @@ const helper = {
 	
 	"getFile": (self, data, cb) => {
 		let repoInfo = data.repository.split('/');
+		if (data.path[0] === "/"){
+			data.path = data.path.substr(1);
+		}
 		let url = data.config.gitAccounts.bitbucket.apiDomain + data.config.gitAccounts.bitbucket.routes.getContent
 			.replace('%USERNAME%', repoInfo[0])
 			.replace('%REPO_NAME%', repoInfo[1])

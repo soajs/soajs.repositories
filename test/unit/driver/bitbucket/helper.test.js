@@ -612,4 +612,164 @@ describe("Unit test for: Drivers - bitbucket, helper", () => {
 			});
 		});
 	});
+	
+	describe("Testing getContent", () => {
+		before((done) => {
+			done();
+		});
+		
+		afterEach((done) => {
+			done();
+		});
+		after(function (done) {
+			nock.cleanAll();
+			done();
+		});
+		
+		it("Success", (done) => {
+			let self = {
+				user: 'ragheb',
+				token: 'personal',
+			};
+			let data = {
+				config,
+				repo: "soajs.repository",
+				ref: 'MASTER',
+				path: '/SWAGGER.JSON'
+			};
+			nock(config.gitAccounts.bitbucket.apiDomain)
+				.get(config.gitAccounts.bitbucket.routes.getContent
+					.replace('%USERNAME%', self.user)
+					.replace('%REPO_NAME%', data.repo)
+					.replace('%BRANCH%', data.ref || 'master')
+					.replace('%FILE_PATH%', 'SWAGGER.JSON'))
+				.reply(200, {
+					account_id: 123
+				});
+			
+			helperFile.getContent(self, data, (err, res) => {
+				assert.ok(res);
+				done();
+			});
+		});
+	});
+	
+	describe("Testing listBranches", () => {
+		before((done) => {
+			done();
+		});
+		
+		afterEach((done) => {
+			done();
+		});
+		after(function (done) {
+			nock.cleanAll();
+			done();
+		});
+		
+		it("Success", (done) => {
+			let self = {
+				user: 'ragheb',
+				token: 'personal',
+			};
+			let data = {
+				config,
+				repository: "soajs/soajs.repository",
+			};
+			let repoInfo = data.repository.split('/');
+			nock(config.gitAccounts.bitbucket.apiDomain)
+				.get(config.gitAccounts.bitbucket.routes.getBranches
+					.replace('%USERNAME%', repoInfo[0])
+					.replace('%REPO_NAME%', repoInfo[1]))
+				.reply(200, {
+					account_id: 123
+				});
+			
+			helperFile.listBranches(self, data, (err, res) => {
+				assert.ok(res);
+				done();
+			});
+		});
+	});
+	
+	describe("Testing getBranch", () => {
+		before((done) => {
+			done();
+		});
+		
+		afterEach((done) => {
+			done();
+		});
+		after(function (done) {
+			nock.cleanAll();
+			done();
+		});
+		
+		it("Success", (done) => {
+			let self = {
+				user: 'ragheb',
+				token: 'personal',
+			};
+			let data = {
+				config,
+				repository: "soajs/soajs.repository",
+				branch: "master",
+			};
+			let repoInfo = data.repository.split('/');
+			nock(config.gitAccounts.bitbucket.apiDomain)
+				.get(config.gitAccounts.bitbucket.routes.getBranches
+					.replace('%USERNAME%', repoInfo[0])
+					.replace('%REPO_NAME%', repoInfo[1])
+					.replace('%BRANCH%',  data.branch))
+					.reply(200, {
+						account_id: 123
+					});
+			
+			helperFile.getBranch(self, data, (err, res) => {
+				assert.ok(res);
+				done();
+			});
+		});
+	});
+	describe("Testing getBranch", () => {
+		before((done) => {
+			done();
+		});
+		
+		afterEach((done) => {
+			done();
+		});
+		after(function (done) {
+			nock.cleanAll();
+			done();
+		});
+		
+		it("Success", (done) => {
+			let self = {
+				user: 'ragheb',
+				token: 'personal',
+			};
+			let data = {
+				config,
+				repository: "soajs/soajs.repository",
+				branch: "master",
+				path: "/swagger.json"
+			};
+			let repoInfo = data.repository.split('/');
+			nock(config.gitAccounts.bitbucket.apiDomain)
+				.get(config.gitAccounts.bitbucket.routes.getContent
+					.replace('%USERNAME%', repoInfo[0])
+					.replace('%REPO_NAME%', repoInfo[1])
+					.replace('%BRANCH%', data.branch)
+					.replace('%FILE_PATH%',"swagger.json"))
+					.reply(200, {
+						account_id: 123
+					});
+			
+			helperFile.getFile(self, data, (err, res) => {
+				assert.ok(res);
+				done();
+			});
+		});
+	});
 });

@@ -247,4 +247,143 @@ describe("Unit test for: Drivers - bitbucket_enterprise, helper", () => {
 			});
 		});
 	});
+	
+	describe("Testing getProjects", () => {
+		before((done) => {
+			done();
+		});
+		
+		afterEach((done) => {
+			done();
+		});
+		after(function (done) {
+			nock.cleanAll();
+			done();
+		});
+		
+		it("Success", (done) => {
+			let self = {
+				type: 'personal',
+				username: 'username',
+				domain: 'http://localhost:7990',
+				token: 'yes',
+			};
+			let data = {
+				config
+			};
+			nock(config.gitAccounts.bitbucket_enterprise.apiDomain.replace("%PROVIDER_DOMAIN%", self.domain))
+				.get(config.gitAccounts.bitbucket_enterprise.routes.getUserProjects)
+				.reply(200, {
+					"size": 1,
+					"limit": 100,
+					"isLastPage": true,
+					"values": [
+					
+					],
+					"start": 0
+				});
+			
+			helperFile.getProjects(self, data, (err, res) => {
+				assert.ok(res);
+				done();
+			});
+		});
+	});
+	
+	describe("Testing listBranches", () => {
+		before((done) => {
+			done();
+		});
+		
+		afterEach((done) => {
+			done();
+		});
+		after(function (done) {
+			nock.cleanAll();
+			done();
+		});
+		
+		it("Success", (done) => {
+			let self = {
+				type: 'personal',
+				username: 'username',
+				domain: 'http://localhost:7990',
+				token: 'yes',
+			};
+			let data = {
+				config,
+				repository: "soajs/soajs.repository",
+				branch: "master",
+			};
+			let repoInfo = data.repository.split('/');
+			nock(config.gitAccounts.bitbucket_enterprise.apiDomain.replace("%PROVIDER_DOMAIN%", self.domain))
+				.get(config.gitAccounts.bitbucket_enterprise.routes.getBranches.replace('%PROJECT_NAME%', repoInfo[0]).replace('%REPO_NAME%',  repoInfo[1]))
+				.query({
+					filterText: data.branch
+				})
+				.reply(200, {
+					"size": 1,
+					"limit": 100,
+					"isLastPage": true,
+					"values": [
+					{}
+					],
+					"start": 0
+				});
+			helperFile.listBranches(self, data, (err, res) => {
+				assert.ok(res);
+				done();
+			});
+		});
+	});
+	
+	describe("Testing getFile", () => {
+		before((done) => {
+			done();
+		});
+		
+		afterEach((done) => {
+			done();
+		});
+		after(function (done) {
+			nock.cleanAll();
+			done();
+		});
+		
+		it("Success", (done) => {
+			let self = {
+				type: 'personal',
+				username: 'username',
+				domain: 'http://localhost:7990',
+				token: 'yes',
+			};
+			let data = {
+				config,
+				repository: "soajs/soajs.repository",
+				branch: "master",
+				path: "swagger.json"
+			};
+			let repoInfo = data.repository.split('/');
+			nock(config.gitAccounts.bitbucket_enterprise.apiDomain.replace("%PROVIDER_DOMAIN%", self.domain))
+				.get(config.gitAccounts.bitbucket_enterprise.routes.getContent.replace('%PROJECT_NAME%', repoInfo[0]).replace('%REPO_NAME%',  repoInfo[1]) + "/" + data.path)
+				.query({
+					limit: 1000,
+					branch: data.branch,
+					start : 0
+				})
+				.reply(200, {
+					"size": 1,
+					"limit": 100,
+					"isLastPage": true,
+					"lines": [
+						"first line"
+					],
+					"start": 0
+				});
+			helperFile.getFile(self, data, (err, res) => {
+				assert.ok(res);
+				done();
+			});
+		});
+	});
 });

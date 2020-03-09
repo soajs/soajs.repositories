@@ -37,7 +37,7 @@ const helper = {
 			url: data.config.gitAccounts.bitbucket_enterprise.apiDomain.replace("%PROVIDER_DOMAIN%", self.domain) +
 				data.config.gitAccounts.bitbucket_enterprise.routes.validateUser.replace("%USERNAME%", self.username)
 		};
-		if (self.token){
+		if (self.token) {
 			options.headers = {
 				Authorization: 'Basic ' + self.token
 			};
@@ -95,9 +95,9 @@ const helper = {
 			url: data.config.gitAccounts.bitbucket_enterprise.apiDomain.replace("%PROVIDER_DOMAIN%", self.domain) +
 				data.config.gitAccounts.bitbucket_enterprise.routes.getBranches.replace('%PROJECT_NAME%', repoInfo[0]).replace('%REPO_NAME%', repoInfo[1])
 		};
-		if (data.branch){
+		if (data.branch) {
 			options.qs = {
-				filterText : data.branch
+				filterText: data.branch
 			};
 		}
 		if (self.token) {
@@ -109,6 +109,9 @@ const helper = {
 	},
 	"getFile": (self, data, cb) => {
 		let repoInfo = data.repository.split('/');
+		if (data.path[0] !== "/") {
+			data.path = "/" + data.path;
+		}
 		const options = {
 			method: 'GET',
 			url: data.config.gitAccounts.bitbucket_enterprise.apiDomain.replace("%PROVIDER_DOMAIN%", self.domain) +
@@ -118,7 +121,7 @@ const helper = {
 		};
 		options.qs = {
 			"limit": 1000,
-			"at": options.ref
+			"branch": data.branch
 		};
 		
 		if (self.token) {
@@ -129,23 +132,24 @@ const helper = {
 		let lines = [];
 		
 		let max = 1000 * 1000;
-		function getFile (start, cb){
+		
+		function getFile(start, cb) {
 			options.qs.start = start;
 			requester(options, (err, response) => {
 				if (err) {
 					return cb(err);
 				}
-				if (response.errors){
+				if (response.errors) {
 					return cb(response.errors);
 				}
-				if (response["status-code"] === 404){
+				if (response["status-code"] === 404) {
 					return cb(response);
 				}
-				if (response.lines){
+				if (response.lines) {
 					lines = lines.concat(response.lines);
 				}
-				if (options.qs.start > max){
-					return cb ({message: "File is too Large"});
+				if (options.qs.start > max) {
+					return cb({message: "File is too Large"});
 				}
 				if (!response.isLastPage) {
 					return getFile((response.start + response.size), cb);
@@ -154,6 +158,7 @@ const helper = {
 				}
 			});
 		}
+		
 		getFile(0, cb);
 	}
 };
