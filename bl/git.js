@@ -157,6 +157,111 @@ let bl = {
 		});
 	},
 	
+	"getTags": (soajs, inputmaskData, cb) => {
+		let modelObj = bl.mp.getModel(soajs);
+		let data = {
+			id: inputmaskData.id
+		};
+		modelObj.getRepository(data, (err, repo) => {
+			if (err) {
+				bl.mp.closeModel(soajs, modelObj);
+				return cb(bl.handleError(soajs, 602, err));
+			}
+			if (!repo) {
+				bl.mp.closeModel(soajs, modelObj);
+				return cb(bl.handleError(soajs, 405, err));
+			}
+			data = {
+				provider: repo.provider
+			};
+			
+			if (!repo.source || repo.source.length === 0) {
+				bl.mp.closeModel(soajs, modelObj);
+				return cb(bl.handleError(soajs, 409, err));
+			}
+			data.owner = repo.source[0].name;
+			
+			modelObj.getAccount(data, (err, accountRecord) => {
+				bl.mp.closeModel(soajs, modelObj);
+				if (err) {
+					return cb(bl.handleError(soajs, 602, err));
+				}
+				if (!accountRecord) {
+					return cb(bl.handleError(soajs, 404, null));
+				}
+				let driver = bl.mp.getDriver(accountRecord);
+				if (!driver) {
+					return cb(bl.handleError(soajs, 603, null));
+				}
+				data = {
+					config: bl.localConfig,
+					repository: repo.repository,
+					page: inputmaskData.page,
+					size: inputmaskData.size,
+				};
+				driver.listTags(data, (err, tags) => {
+					if (err) {
+						return cb(bl.handleError(soajs, 403, err));
+					}
+					return cb(null, {
+						tags: tags ? tags : []
+					});
+				});
+			});
+		});
+	},
+	
+	"getTag": (soajs, inputmaskData, cb) => {
+		let modelObj = bl.mp.getModel(soajs);
+		let data = {
+			id: inputmaskData.id
+		};
+		modelObj.getRepository(data, (err, repo) => {
+			if (err) {
+				bl.mp.closeModel(soajs, modelObj);
+				return cb(bl.handleError(soajs, 602, err));
+			}
+			if (!repo) {
+				bl.mp.closeModel(soajs, modelObj);
+				return cb(bl.handleError(soajs, 405, err));
+			}
+			data = {
+				provider: repo.provider
+			};
+			
+			if (!repo.source || repo.source.length === 0) {
+				bl.mp.closeModel(soajs, modelObj);
+				return cb(bl.handleError(soajs, 409, err));
+			}
+			data.owner = repo.source[0].name;
+			
+			modelObj.getAccount(data, (err, accountRecord) => {
+				bl.mp.closeModel(soajs, modelObj);
+				if (err) {
+					return cb(bl.handleError(soajs, 602, err));
+				}
+				if (!accountRecord) {
+					return cb(bl.handleError(soajs, 404, null));
+				}
+				let driver = bl.mp.getDriver(accountRecord);
+				if (!driver) {
+					return cb(bl.handleError(soajs, 603, null));
+				}
+				data = {
+					config: bl.localConfig,
+					repository: repo.repository,
+					tag: inputmaskData.tag
+				};
+				driver.getTag(data, (err, tag) => {
+					if (err || !tag) {
+						return cb(bl.handleError(soajs, 416, err));
+					}
+					return cb(null, tag);
+				});
+			});
+		});
+	},
+	
 	/**
 	 * Delete
 	 */
@@ -176,7 +281,7 @@ let bl = {
 				return cb(bl.handleError(soajs, 403, err));
 			}
 			account.password = inputmaskData.password;
-			if (inputmaskData.on2fa){
+			if (inputmaskData.on2fa) {
 				account.on2fa = inputmaskData.on2fa;
 			}
 			let driver = bl.mp.getDriver(account);
@@ -220,8 +325,7 @@ let bl = {
 						if (err) {
 							if (err.message && err.message === "2FA required") {
 								return cb(bl.handleError(soajs, 420, err));
-							}
-							else {
+							} else {
 								return cb(bl.handleError(soajs, 602, err));
 							}
 						}
@@ -253,7 +357,7 @@ let bl = {
 				if (err.message && err.message === "2FA required") {
 					return cb(bl.handleError(soajs, 420, err));
 				}
-				return cb(bl.handleError(soajs, 403, err));
+				return cb(bl.handleError(soajs, 604, err));
 			}
 			data = {
 				provider: inputmaskData.provider,
@@ -614,6 +718,198 @@ let bl = {
 				});
 			});
 		});
+	},
+	
+	"activateTag": (soajs, inputmaskData, cb) => {
+		let modelObj = bl.mp.getModel(soajs);
+		let modelObjMarketPlace = marketplace.mp.getModel(soajs);
+		
+		async.parallel({
+			account: function (callback) {
+				let data = {
+					provider: inputmaskData.provider,
+					owner: inputmaskData.owner
+				};
+				return modelObj.getAccount(data, callback);
+			},
+			repo: function (callback) {
+				let data = {
+					id: inputmaskData.id
+				};
+				return modelObj.getRepository(data, callback);
+			}
+		}, function (err, results) {
+			if (err) {
+				bl.mp.closeModel(soajs, modelObj);
+				return cb(bl.handleError(soajs, 602, err));
+			}
+			if (!results.account) {
+				bl.mp.closeModel(soajs, modelObj);
+				return cb(bl.handleError(soajs, 403, err));
+			}
+			
+			let driver = bl.mp.getDriver(results.account);
+			
+			if (!driver) {
+				bl.mp.closeModel(soajs, modelObj);
+				return cb(bl.handleError(soajs, 603, null));
+			}
+			if (!results.repo) {
+				bl.mp.closeModel(soajs, modelObj);
+				return cb(bl.handleError(soajs, 405, err));
+			}
+			if (!results.repo.active) {
+				bl.mp.closeModel(soajs, modelObj);
+				return cb(bl.handleError(soajs, 409, err));
+			}
+			if (results.repo.tags && results.repo.tags.length > 0) {
+				let found = false;
+				for (let x = 0; x < results.repo.tags.length; x++) {
+					if (results.repo.tags[x].name === inputmaskData.tags && results.repo.tags[x].active) {
+						found = true;
+						break;
+					}
+				}
+				if (found) {
+					bl.mp.closeModel(soajs, modelObj);
+					return cb(bl.handleError(soajs, 418, err));
+				}
+			}
+			let data = {
+				config: bl.localConfig,
+				repository: results.repo.repository,
+				tag: inputmaskData.tag
+			};
+			driver.getTag(data, (err, tag) => {
+				if (err || !tag) {
+					bl.mp.closeModel(soajs, modelObj);
+					return cb(bl.handleError(soajs, 416, err));
+				}
+				let models = {
+					modelObj, modelObjMarketPlace
+				};
+				let opts = {
+					repo: results.repo,
+					tag: tag.name
+				};
+				lib.computeCatalog(bl, soajs, driver, models, opts, (err, response) => {
+					marketplace.mp.closeModel(soajs, modelObjMarketPlace);
+					bl.mp.closeModel(soajs, modelObj);
+					if (err) {
+						return cb(err);
+					}
+					return cb(null, response);
+				});
+			});
+		});
+	},
+	
+	"deactivateTag": (soajs, inputmaskData, cb) => {
+		let modelObj = bl.mp.getModel(soajs);
+		async.parallel({
+				account: function (callback) {
+					let data = {
+						provider: inputmaskData.provider,
+						owner: inputmaskData.owner
+					};
+					return modelObj.getAccount(data, callback);
+				},
+				repo: function (callback) {
+					let data = {
+						id: inputmaskData.id
+					};
+					return modelObj.getRepository(data, callback);
+				}
+			}, function (err, results) {
+				if (err) {
+					bl.mp.closeModel(soajs, modelObj);
+					return cb(bl.handleError(soajs, 602, err));
+				}
+				if (!results.account) {
+					bl.mp.closeModel(soajs, modelObj);
+					return cb(bl.handleError(soajs, 403, err));
+				}
+				
+				let driver = bl.mp.getDriver(results.account);
+				
+				if (!driver) {
+					bl.mp.closeModel(soajs, modelObj);
+					return cb(bl.handleError(soajs, 603, null));
+				}
+				if (!results.repo) {
+					bl.mp.closeModel(soajs, modelObj);
+					return cb(bl.handleError(soajs, 405, err));
+				}
+				if (!results.repo.active) {
+					bl.mp.closeModel(soajs, modelObj);
+					return cb(bl.handleError(soajs, 409, err));
+				}
+				if (results.repo.tags && results.repo.tags.length > 0) {
+					let found = false;
+					for (let x = 0; x < results.repo.tags.length; x++) {
+						if (results.repo.tags[x].name === inputmaskData.tag && results.repo.tags[x].active) {
+							found = true;
+							break;
+						}
+					}
+					if (!found) {
+						bl.mp.closeModel(soajs, modelObj);
+						return cb(bl.handleError(soajs, 416, err));
+					}
+				}
+				let opts = {
+					provider: results.repo.provider,
+					owner: results.repo.owner,
+					repo: results.repo.name
+				};
+				let modelObjMarketPlace = marketplace.mp.getModel(soajs);
+				let ts = new Date().getTime();
+				modelObjMarketPlace.getCatalogs(opts, (error, multiRepo) => {
+					if (error) {
+						marketplace.mp.closeModel(soajs, modelObjMarketPlace);
+						return cb(bl.handleError(soajs, 602, err));
+					}
+					async.each(multiRepo, function (repo, callback) {
+						let newVersions = [];
+						async.each(repo, function (oneVersion, minorCallback) {
+							if (oneVersion.tags === inputmaskData.tag) {
+								let index = oneVersion.tags.indexOf(oneVersion);
+								if (index > -1) {
+									oneVersion.tags = oneVersion.tags.splice(index, 1);
+								}
+								if (oneVersion.tags.length > 0) {
+									newVersions.push(oneVersion);
+								}
+							}
+							minorCallback();
+						}, function () {
+							repo.ts = ts;
+							repo.versions = newVersions;
+							delete repo._id;
+							modelObjMarketPlace.updateCatalog(repo, callback);
+						});
+					}, function (error) {
+						marketplace.mp.closeModel(soajs, modelObjMarketPlace);
+						if (error) {
+							bl.mp.closeModel(soajs, modelObj);
+							return cb(bl.handleError(soajs, 602, error));
+						}
+						let opts = {
+							name: inputmaskData.tag,
+							_id: results.repo._id,
+							active: false
+						};
+						modelObj.updateTags(opts, (err) => {
+							bl.mp.closeModel(soajs, modelObj);
+							if (err) {
+								return cb(bl.handleError(soajs, 602, err));
+							}
+							return cb(null, `Tag ${inputmaskData.tag} deactivated!`);
+						});
+					});
+				});
+			}
+		);
 	},
 	
 	"deactivateBranch": (soajs, inputmaskData, cb) => {

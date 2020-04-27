@@ -55,6 +55,18 @@ service.init(() => {
 			});
 		});
 		
+		service.get("/git/tags", function (req, res) {
+			bl.git.getTags(req.soajs, req.soajs.inputmaskData, (error, data) => {
+				return res.json(req.soajs.buildResponse(error, data));
+			});
+		});
+		
+		service.get("/git/tag", function (req, res) {
+			bl.git.getTag(req.soajs, req.soajs.inputmaskData, (error, data) => {
+				return res.json(req.soajs.buildResponse(error, data));
+			});
+		});
+		
 		//DELETE methods
 		
 		service.delete("/git/account", function (req, res) {
@@ -97,6 +109,18 @@ service.init(() => {
 		
 		service.put("/git/branch/deactivate", function (req, res) {
 			bl.git.deactivateBranch(req.soajs, req.soajs.inputmaskData, (error, data) => {
+				return res.json(req.soajs.buildResponse(error, data));
+			});
+		});
+		
+		service.put("/git/tag/activate", function (req, res) {
+			bl.git.activateTag(req.soajs, req.soajs.inputmaskData, (error, data) => {
+				return res.json(req.soajs.buildResponse(error, data));
+			});
+		});
+		
+		service.put("/git/tag/deactivate", function (req, res) {
+			bl.git.deactivateTag(req.soajs, req.soajs.inputmaskData, (error, data) => {
 				return res.json(req.soajs.buildResponse(error, data));
 			});
 		});

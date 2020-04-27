@@ -143,6 +143,36 @@ const helper = {
 			return cb(err);
 		});
 	},
+	"listTags": (self, data, cb) => {
+		let repoInfo = data.repository.split('/');
+		let opts = {
+			owner: repoInfo[0],
+			repo: repoInfo[1],
+		};
+		if (data.page){
+			opts.page = data.page;
+		}
+		if (data.per_page){
+			opts.per_page = data.size;
+		}
+		self.github.repos.listTags(opts).then(({data}) => {
+			return cb(null, data);
+		}).catch((err) => {
+			return cb(err);
+		});
+	},
+	"getTag": (self, data, cb) => {
+		let repoInfo = data.repository.split('/');
+		self.github.git.getRef({
+			owner: repoInfo[0],
+			repo: repoInfo[1],
+			ref: "tags/" + data.tag
+		}).then(({data}) => {
+			return cb(null, data);
+		}).catch((err) => {
+			return cb(err);
+		});
+	},
 	"deleteToken": (self, cb) => {
 		self.github.oauthAuthorizations.deleteAuthorization({
 			authorization_id: self.tokenId

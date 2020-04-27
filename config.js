@@ -35,7 +35,9 @@ module.exports = {
 				"getUserTeams": '/user/permissions/teams',
 				"getContent": '/repositories/%USERNAME%/%REPO_NAME%/src/%BRANCH%/%FILE_PATH%',
 				"getBranches": '/repositories/%USERNAME%/%REPO_NAME%/refs/branches',
-				"getBranch": '/repositories/%USERNAME%/%REPO_NAME%/refs/branches/%BRANCH%'
+				"getTags": '/repositories/%USERNAME%/%REPO_NAME%/refs/tags',
+				"getBranch": '/repositories/%USERNAME%/%REPO_NAME%/refs/branches/%BRANCH%',
+				"getTag": '/repositories/%USERNAME%/%REPO_NAME%/refs/tags/%BRANCH%'
 			},
 			"oauth": {
 				"domain": 'https://bitbucket.org/site/oauth2/access_token'
@@ -51,7 +53,9 @@ module.exports = {
 				"getUserProjects": '/projects',
 				"getAllRepos": '/repos',
 				"getContent": '/projects/%PROJECT_NAME%/repos/%REPO_NAME%/browse',
-				"getBranches": '/projects/%PROJECT_NAME%/repos/%REPO_NAME%/branches'
+				"getBranches": '/projects/%PROJECT_NAME%/repos/%REPO_NAME%/branches',
+				"getTags": '/projects/%PROJECT_NAME%/repos/%REPO_NAME%/tags',
+				"getTag": '/projects/%PROJECT_NAME%/repos/%REPO_NAME%/tags/%TAG_NAME%'
 			},
 			"hash": {
 				"algorithm": "sha256"
@@ -78,7 +82,9 @@ module.exports = {
 		413: "Unable to logout. One or more repositories are active.",
 		414: "Unable to deactivate repository, one or more branch is currently active.",
 		415: "Branch is not active",
+		416: "Tag not found",
 		417: "Catalog Entry with same DNA detected!",
+		418: "Tag is already active",
 		
 		420: "Tow factor authentication is enabled. Verification code required",
 		
@@ -135,6 +141,53 @@ module.exports = {
 				},
 				"id": {
 					"source": ['query.id'],
+					"required": true,
+					"validation": {
+						"type": "string"
+					}
+				},
+			},
+			"/git/tags": {
+				"_apiInfo": {
+					"l": "Get repository tags",
+					"group": "Repository information"
+				},
+				"id": {
+					"source": ['query.id'],
+					"required": true,
+					"validation": {
+						"type": "string"
+					}
+				},
+				"page": {
+					"source": ['query.page'],
+					"required": false,
+					"validation": {
+						"type": "string"
+					}
+				},
+				"size": {
+					"source": ['query.size'],
+					"required": false,
+					"validation": {
+						"type": "string"
+					}
+				}
+			},
+			"/git/tag": {
+				"_apiInfo": {
+					"l": "Get repository tags",
+					"group": "Repository information"
+				},
+				"id": {
+					"source": ['query.id'],
+					"required": true,
+					"validation": {
+						"type": "string"
+					}
+				},
+				"tag": {
+					"source": ['query.tag'],
 					"required": true,
 					"validation": {
 						"type": "string"
@@ -494,6 +547,74 @@ module.exports = {
 				},
 				"branch": {
 					"source": ['query.branch'],
+					"required": true,
+					"validation": {
+						"type": "string"
+					}
+				}
+			},
+			"/git/tag/activate": {
+				"_apiInfo": {
+					"l": "Activate tag",
+					"group": "Repository management"
+				},
+				"id": {
+					"source": ['query.id'],
+					"required": true,
+					"validation": {
+						"type": "string"
+					}
+				},
+				"owner": {
+					"source": ['query.owner'],
+					"required": true,
+					"validation": {
+						"type": "string"
+					}
+				},
+				"provider": {
+					"source": ['query.provider'],
+					"required": true,
+					"validation": {
+						"type": "string"
+					}
+				},
+				"tag": {
+					"source": ['query.tag'],
+					"required": true,
+					"validation": {
+						"type": "string"
+					}
+				},
+			},
+			"/git/tag/deactivate": {
+				"_apiInfo": {
+					"l": "Deactivate tag",
+					"group": "Repository management"
+				},
+				"id": {
+					"source": ['query.id'],
+					"required": true,
+					"validation": {
+						"type": "string"
+					}
+				},
+				"owner": {
+					"source": ['query.owner'],
+					"required": true,
+					"validation": {
+						"type": "string"
+					}
+				},
+				"provider": {
+					"source": ['query.provider'],
+					"required": true,
+					"validation": {
+						"type": "string"
+					}
+				},
+				"tag": {
+					"source": ['query.tag'],
 					"required": true,
 					"validation": {
 						"type": "string"

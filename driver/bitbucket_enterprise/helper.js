@@ -52,6 +52,9 @@ const helper = {
 			if (record.errors) {
 				return cb(record.errors);
 			}
+			if (record.message && record.message.search("'status-code': 404")){
+				return cb({message: "Domain not found!"});
+			}
 			if (record.id) {
 				self.id = record.id;
 			}
@@ -100,6 +103,36 @@ const helper = {
 				filterText: data.branch
 			};
 		}
+		if (self.token) {
+			options.headers = {
+				Authorization: 'Basic ' + self.token
+			};
+		}
+		requester(options, cb);
+	},
+	
+	"listTags": (self, data, cb) => {
+		let repoInfo = data.repository.split('/');
+		const options = {
+			method: 'GET',
+			url: data.config.gitAccounts.bitbucket_enterprise.apiDomain.replace("%PROVIDER_DOMAIN%", self.domain) +
+				data.config.gitAccounts.bitbucket_enterprise.routes.getTags.replace('%PROJECT_NAME%', repoInfo[0]).replace('%REPO_NAME%', repoInfo[1])
+		};
+		if (self.token) {
+			options.headers = {
+				Authorization: 'Basic ' + self.token
+			};
+		}
+		requester(options, cb);
+	},
+	
+	"getTag": (self, data, cb) => {
+		let repoInfo = data.repository.split('/');
+		const options = {
+			method: 'GET',
+			url: data.config.gitAccounts.bitbucket_enterprise.apiDomain.replace("%PROVIDER_DOMAIN%", self.domain) +
+				data.config.gitAccounts.bitbucket_enterprise.routes.getTags.replace('%PROJECT_NAME%', repoInfo[0]).replace('%REPO_NAME%', repoInfo[1]).replace("%TAG_NAME%", data.tag)
+		};
 		if (self.token) {
 			options.headers = {
 				Authorization: 'Basic ' + self.token

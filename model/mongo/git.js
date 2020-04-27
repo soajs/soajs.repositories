@@ -281,7 +281,7 @@ Git.prototype.removeRepositories = function (data, cb) {
 		"source.name": data.owner,
 		"type": "repository"
 	};
-	let options = {'upsert': true, 'safe': true};
+	let options = {'upsert': false, 'safe': true};
 	let fields = {
 		'$pull': {
 			source: {
@@ -342,6 +342,44 @@ Git.prototype.updateBranches = function (data, cb) {
 	if (data.active) {
 		fields.$set["branches.$"].ts = new Date().getTime();
 	}
+	__self.mongoCore.updateOne(colName, condition, fields, options, (err, response) => {
+		return cb(err, response);
+	});
+};
+
+Git.prototype.updateTags = function (data, cb) {
+	let __self = this;
+	if (!data || !(data._id)) {
+		let error = new Error("Git: must provide _id.");
+		return cb(error);
+	}
+	let condition = {
+		type: "repository",
+		_id: data._id
+	};
+	let fields = {};
+	let options = {'upsert': false, 'safe': true};
+	if (data.active){
+		fields = {
+			'$push': {
+				tags: {
+					name: data.name,
+					active: data.active,
+					ts: new Date().getTime()
+				}
+			}
+		};
+	}
+	else {
+		fields = {
+			'$pull': {
+				tags: {
+					name: data.name
+				}
+			}
+		};
+	}
+	
 	__self.mongoCore.updateOne(colName, condition, fields, options, (err, response) => {
 		return cb(err, response);
 	});
@@ -435,7 +473,7 @@ Git.prototype.countSearchRepositories = function (data, cb) {
 			$search: data.textSearch
 		};
 	}
-	__self.mongoCore.count(colName, condition, cb);
+	__self.mongoCore.countDocuments(colName, condition, null, cb);
 };
 
 module.exports = Git;

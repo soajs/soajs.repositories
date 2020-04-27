@@ -30,7 +30,12 @@ describe("Starting Unit test", () => {
 	    require("./bl/git.test.js");
         done();
     });
-
+	
+	it("Unit test for Lib", (done) => {
+		require("./lib/index.test.js");
+		done();
+	});
+	
     it("Unit test for Model", (done) => {
 	   require("./model/mongo/git.test.js");
         done();

@@ -327,12 +327,65 @@ const helper = {
 		});
 	},
 	
+	"listTags": (self, data, cb) => {
+		let repoInfo = data.repository.split('/');
+		let url = data.config.gitAccounts.bitbucket.apiDomain + data.config.gitAccounts.bitbucket.routes.getTags
+			.replace('%USERNAME%', repoInfo[0])
+			.replace('%REPO_NAME%', repoInfo[1]);
+		const options = {
+			method: 'GET',
+			url: url
+		};
+		if (self.token) {
+			options.headers = {
+				authorization: 'Bearer ' + self.token
+			};
+		}
+		if (!options.headers) {
+			options.headers = {};
+		}
+		
+		requester(options, function (error, response) {
+			if (error){
+				return cb(error);
+			}
+			return cb(null, response);
+		});
+	},
+	
 	"getBranch": (self, data, cb) => {
 		let repoInfo = data.repository.split('/');
-		let url = data.config.gitAccounts.bitbucket.apiDomain + data.config.gitAccounts.bitbucket.routes.getBranches
+		let url = data.config.gitAccounts.bitbucket.apiDomain + data.config.gitAccounts.bitbucket.routes.getBranch
 			.replace('%USERNAME%', repoInfo[0])
 			.replace('%REPO_NAME%', repoInfo[1])
 			.replace('%BRANCH%',  data.branch);
+		const options = {
+			method: 'GET',
+			url: url
+		};
+		if (self.token) {
+			options.headers = {
+				authorization: 'Bearer ' + self.token
+			};
+		}
+		if (!options.headers) {
+			options.headers = {};
+		}
+		
+		requester(options, function (error, response) {
+			if (error){
+				return cb(error);
+			}
+			return cb(null, response);
+		});
+	},
+	
+	"getTag": (self, data, cb) => {
+		let repoInfo = data.repository.split('/');
+		let url = data.config.gitAccounts.bitbucket.apiDomain + data.config.gitAccounts.bitbucket.routes.getTag
+			.replace('%USERNAME%', repoInfo[0])
+			.replace('%REPO_NAME%', repoInfo[1])
+			.replace('%BRANCH%',  data.tag);
 		const options = {
 			method: 'GET',
 			url: url

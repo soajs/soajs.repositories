@@ -214,6 +214,37 @@ Github.prototype.listBranches = function (data, cb) {
 	});
 };
 
+Github.prototype.listTags = function (data, cb) {
+	let __self = this;
+	helper.listTags(__self, data, (err, response) => {
+		if (err) {
+			return cb(err);
+		}
+		let tags = [];
+		if (response && response.length > 0) {
+			response.forEach((tag) => {
+				let temp = {};
+				temp.name = tag.name;
+				tags.push(temp);
+			});
+		}
+		return cb(null, tags);
+	});
+};
+
+Github.prototype.getTag = function (data, cb) {
+	let __self = this;
+	
+	helper.getTag(__self, data, (err, response) => {
+		if (err) {
+			return cb(err);
+		}
+		return cb(null, {
+			name: response.ref.split("/")[2]
+		});
+	});
+};
+
 Github.prototype.getBranch = function (data, cb) {
 	let __self = this;
 	helper.getBranch(__self, data, (err, response) => {

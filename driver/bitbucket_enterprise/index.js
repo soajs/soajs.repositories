@@ -113,6 +113,24 @@ Bitbucket_enterprise.prototype.listBranches = function (data, cb) {
 	});
 };
 
+Bitbucket_enterprise.prototype.listTags = function (data, cb) {
+	let __self = this;
+	helper.listTags(__self, data, (err, response) => {
+		if (err) {
+			return cb(err);
+		}
+		let tags = [];
+		if (response && response.values && response.values.length > 0) {
+			response.values.forEach((oneValue) => {
+				let temp = {};
+				temp.name = oneValue.displayId;
+				tags.push(temp);
+			});
+		}
+		return cb(null, tags);
+	});
+};
+
 Bitbucket_enterprise.prototype.getOrganizations = function (data, cb) {
 	let __self = this;
 	helper.getProjects(__self, data, (err, records) => {
@@ -147,6 +165,16 @@ Bitbucket_enterprise.prototype.getBranch = function (data, cb) {
 			});
 		}
 		return cb(!branch, branch);
+	});
+};
+
+Bitbucket_enterprise.prototype.getTag = function (data, cb) {
+	let __self = this;
+	helper.getTag(__self, data, (err, response) => {
+		if (err) {
+			return cb(err);
+		}
+		return cb(!branch, response);
 	});
 };
 
