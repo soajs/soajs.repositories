@@ -1,0 +1,38 @@
+# Snyk (https://snyk.io) policy file, patches or ignores known vulnerabilities.
+version: v1.14.1
+ignore: {}
+# patches apply the minimum changes required to fix a vulnerability
+patch:
+  SNYK-JS-LODASH-567746:
+    - soajs > lodash:
+        patched: '2020-05-01T05:38:54.027Z'
+    - soajs > soajs.core.drivers > lodash:
+        patched: '2020-05-01T05:38:54.027Z'
+    - soajs > soajs.core.modules > elasticsearch > lodash:
+        patched: '2020-05-01T05:38:54.027Z'
+    - soajs > soajs.urac.driver > passport-azure-ad > lodash:
+        patched: '2020-05-01T05:38:54.027Z'
+    - soajs > soajs.core.drivers > aws-sdk > xmlbuilder > lodash:
+        patched: '2020-05-01T05:38:54.027Z'
+    - soajs > soajs.core.drivers > ms-rest-azure > async > lodash:
+        patched: '2020-05-01T05:38:54.027Z'
+    - soajs > soajs.core.drivers > googleapis > async > lodash:
+        patched: '2020-05-01T05:38:54.027Z'
+    - soajs > soajs.core.drivers > kubernetes-client > openid-client > lodash:
+        patched: '2020-05-01T05:38:54.027Z'
+    - soajs > soajs.core.drivers > soajs.core.modules > elasticsearch > lodash:
+        patched: '2020-05-01T05:38:54.027Z'
+    - soajs > soajs.urac.driver > soajs.core.modules > elasticsearch > lodash:
+        patched: '2020-05-01T05:38:54.027Z'
+    - soajs > soajs.core.drivers > aws-sdk > xml2js > xmlbuilder > lodash:
+        patched: '2020-05-01T05:38:54.027Z'
+    - soajs > soajs.core.drivers > azure-arm-compute > ms-rest-azure > async > lodash:
+        patched: '2020-05-01T05:38:54.027Z'
+    - soajs > soajs.core.drivers > azure-arm-network > ms-rest-azure > async > lodash:
+        patched: '2020-05-01T05:38:54.027Z'
+    - soajs > soajs.core.drivers > azure-arm-resource > ms-rest-azure > async > lodash:
+        patched: '2020-05-01T05:38:54.027Z'
+    - soajs > soajs.core.drivers > azure-arm-storage > ms-rest-azure > async > lodash:
+        patched: '2020-05-01T05:38:54.027Z'
+    - soajs > soajs.core.drivers > kubernetes-client > openid-client > node-jose > lodash:
+        patched: '2020-05-01T05:38:54.027Z'
