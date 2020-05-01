@@ -15,7 +15,9 @@
     "node": "*"
   },
   "scripts": {
-    "test": "grunt test"
+    "test": "grunt test",
+    "snyk-protect": "snyk protect",
+    "prepublish": "npm run snyk-protect"
   },
   "devDependencies": {
     "grunt": "1.0.4",
@@ -33,6 +35,8 @@
   },
   "dependencies": {
     "async": "3.1.0",
-    "soajs": "2.6.0"
-  }
+    "soajs": "2.6.0",
+    "snyk": "^1.316.1"
+  },
+  "snyk": true
 }
