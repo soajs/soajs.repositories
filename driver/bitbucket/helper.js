@@ -48,8 +48,8 @@ const helper = {
 			if (!record || typeof record !== "object") {
 				return cb({message: 'User does not exist'});
 			}
-			if (record.account_id) {
-				self.account_id = record.account_id;
+			if (record.uuid) {
+				self.account_id = record.uuid;
 			}
 			return cb(null, record);
 		});
@@ -429,7 +429,6 @@ const helper = {
 		if (!options.headers) {
 			options.headers = {};
 		}
-		
 		requester(options, function (error, response) {
 			if (error){
 				return cb(error);

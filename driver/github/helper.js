@@ -108,12 +108,13 @@ const helper = {
 	
 	"getFile": (self, data, cb) => {
 		let repoInfo = data.repository.split('/');
-		self.github.repos.getContents({
+		let opts = {
 			owner: repoInfo[0],
 			repo: repoInfo[1],
 			path: data.path,
-			ref: data.branch
-		}).then(({data}) => {
+			ref: data.branch || data.tag
+		};
+		self.github.repos.getContents(opts).then(({data}) => {
 			return cb(null, data);
 		}).catch((err) => {
 			return cb(err);

@@ -13,7 +13,7 @@ const fs = require("fs");
 
 let SSOT = {};
 let model = process.env.SOAJS_SERVICE_MODEL || "mongo";
-const BLs = ["git", "marketplace"];
+const BLs = ["git"];
 const DLs = ["bitbucket", "github", "bitbucket_enterprise"];
 
 let BL = {

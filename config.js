@@ -30,7 +30,7 @@ module.exports = {
 		"bitbucket": {
 			"apiDomain": 'https://api.bitbucket.org/2.0',
 			"routes": {
-				"validateUser": '/users/%USERNAME%',
+				"validateUser": '/workspaces/%USERNAME%',
 				"getAllRepos": '/repositories/%USERNAME%',
 				"getUserTeams": '/user/permissions/teams',
 				"getContent": '/repositories/%USERNAME%/%REPO_NAME%/src/%BRANCH%/%FILE_PATH%',
@@ -62,7 +62,10 @@ module.exports = {
 			},
 		}
 	},
-	
+	"interConnect": [{
+		"name": "marketplace",
+		"version": "1"
+	}],
 	"catalogs" : ["custom", "service", "daemon", "static", "config"],
 	"errors": {
 		400: "Business logic required data are missing",
@@ -89,16 +92,20 @@ module.exports = {
 		420: "Tow factor authentication is enabled. Verification code required",
 		
 		500: "Invalid soa.json file schema",
+		
 		601: "Model not found.",
 		602: "Model error: ",
 		603: "Provider not found.",
-		604: "error: "
+		604: "error: ",
+		605: "Service Error: ",
 	},
 	"maintenance": {
-		"port": {
-			"type": "inherit"
-		},
-		"readiness": "/heartbeat"
+		"readiness": "/heartbeat",
+		"port": {"type": "maintenance"},
+		"commands": [
+			{"label": "Reload Registry", "path": "/reloadRegistry", "icon": "fas fa-undo"},
+			{"label": "Resource Info", "path": "/resourceInfo", "icon": "fas fa-info"}
+		]
 	},
 	"schema": {
 		"get": {

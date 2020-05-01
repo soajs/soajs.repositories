@@ -126,14 +126,14 @@ Bitbucket.prototype.listBranches = function (data, cb) {
 			return cb(err);
 		}
 		let branches = [];
-		if (response && response.values && response.values.length > 0){
-			response.values.forEach((oneValue)=>{
+		if (response && response.values && response.values.length > 0) {
+			response.values.forEach((oneValue) => {
 				let temp = {};
 				temp.name = oneValue.name;
 				branches.push(temp);
 			});
 		}
-		return cb(null,branches);
+		return cb(null, branches);
 	});
 };
 
@@ -144,14 +144,14 @@ Bitbucket.prototype.listTags = function (data, cb) {
 			return cb(err);
 		}
 		let tags = [];
-		if (response && response.values && response.values.length > 0){
-			response.values.forEach((oneValue)=>{
+		if (response && response.values && response.values.length > 0) {
+			response.values.forEach((oneValue) => {
 				let temp = {};
 				temp.name = oneValue.name;
 				tags.push(temp);
 			});
 		}
-		return cb(null,tags);
+		return cb(null, tags);
 	});
 };
 
@@ -174,7 +174,7 @@ Bitbucket.prototype.getBranch = function (data, cb) {
 		if (err) {
 			return cb(err);
 		}
-		if (response){
+		if (response) {
 			return cb(null, response.name);
 		}
 		//no branch
@@ -190,7 +190,7 @@ Bitbucket.prototype.getTag = function (data, cb) {
 		if (err) {
 			return cb(err);
 		}
-		if (response){
+		if (response) {
 			return cb(null, response.name);
 		}
 		//no tag

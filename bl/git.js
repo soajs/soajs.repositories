@@ -8,9 +8,9 @@
 
 'use strict';
 const lib = require("../lib/index.js");
-const marketplace = require("./marketplace.js");
 const async = require("async");
 const _ = require("lodash");
+
 
 let bl = {
 	"modelObj": null,
@@ -19,12 +19,12 @@ let bl = {
 	"localConfig": null,
 	"drivers": null,
 	"handleError": (soajs, errCode, err) => {
-		if (err) {
-			soajs.log.error(err);
+		if (err && err.message) {
+			soajs.log.error(err.message);
 		}
 		return ({
 			"code": errCode,
-			"msg": bl.localConfig.errors[errCode] + ((err && (errCode === 602 || errCode === 604)) ? err.message : "")
+			"msg": bl.localConfig.errors[errCode] + ((err && (errCode === 602 || errCode === 604) || errCode === 605) ? err.message : "")
 		});
 	},
 	
@@ -574,7 +574,6 @@ let bl = {
 				};
 				modelObj.activateSyncRepo(data, (err) => {
 					bl.mp.closeModel(soajs, modelObj);
-					marketplace.mp.closeModel(soajs, modelObj);
 					if (err) {
 						return cb(bl.handleError(soajs, 602, err));
 					}
@@ -586,7 +585,6 @@ let bl = {
 	
 	"deactivateRepo": (soajs, inputmaskData, cb) => {
 		let modelObj = bl.mp.getModel(soajs);
-		let modelObjMarketPlace = marketplace.mp.getModel(soajs);
 		let data = {
 			id: inputmaskData.id
 		};
@@ -622,12 +620,11 @@ let bl = {
 							owner: repo.repository.split("/")[0],
 							repo: repo.repository.split("/")[1],
 						};
-						modelObjMarketPlace.removeCatalogs(opts, callback);
+						lib.deleteCatalog_src(soajs, opts, callback);
 					}
 				],
 				() => {
 					bl.mp.closeModel(soajs, modelObj);
-					marketplace.mp.closeModel(soajs, modelObj);
 					if (err) {
 						return cb(bl.handleError(soajs, 602, err));
 					}
@@ -638,7 +635,6 @@ let bl = {
 	
 	"activateBranch": (soajs, inputmaskData, cb) => {
 		let modelObj = bl.mp.getModel(soajs);
-		let modelObjMarketPlace = marketplace.mp.getModel(soajs);
 		
 		async.parallel({
 			account: function (callback) {
@@ -702,14 +698,13 @@ let bl = {
 					return cb(bl.handleError(soajs, 410, err));
 				}
 				let models = {
-					modelObj, modelObjMarketPlace
+					modelObj
 				};
 				let opts = {
 					repo: results.repo,
 					branch: branch
 				};
 				lib.computeCatalog(bl, soajs, driver, models, opts, (err, response) => {
-					marketplace.mp.closeModel(soajs, modelObjMarketPlace);
 					bl.mp.closeModel(soajs, modelObj);
 					if (err) {
 						return cb(err);
@@ -722,7 +717,6 @@ let bl = {
 	
 	"activateTag": (soajs, inputmaskData, cb) => {
 		let modelObj = bl.mp.getModel(soajs);
-		let modelObjMarketPlace = marketplace.mp.getModel(soajs);
 		
 		async.parallel({
 			account: function (callback) {
@@ -786,14 +780,13 @@ let bl = {
 					return cb(bl.handleError(soajs, 416, err));
 				}
 				let models = {
-					modelObj, modelObjMarketPlace
+					modelObj
 				};
 				let opts = {
 					repo: results.repo,
 					tag: tag.name
 				};
 				lib.computeCatalog(bl, soajs, driver, models, opts, (err, response) => {
-					marketplace.mp.closeModel(soajs, modelObjMarketPlace);
 					bl.mp.closeModel(soajs, modelObj);
 					if (err) {
 						return cb(err);
@@ -862,37 +855,21 @@ let bl = {
 					owner: results.repo.owner,
 					repo: results.repo.name
 				};
-				let modelObjMarketPlace = marketplace.mp.getModel(soajs);
-				let ts = new Date().getTime();
-				modelObjMarketPlace.getCatalogs(opts, (error, multiRepo) => {
+				lib.getCatalogs(soajs, opts, (error, multiRepo) => {
 					if (error) {
-						marketplace.mp.closeModel(soajs, modelObjMarketPlace);
-						return cb(bl.handleError(soajs, 602, err));
+						return cb(bl.handleError(soajs, 605, error));
 					}
-					async.each(multiRepo, function (repo, callback) {
-						let newVersions = [];
-						async.each(repo, function (oneVersion, minorCallback) {
-							if (oneVersion.tags === inputmaskData.tag) {
-								let index = oneVersion.tags.indexOf(oneVersion);
-								if (index > -1) {
-									oneVersion.tags = oneVersion.tags.splice(index, 1);
-								}
-								if (oneVersion.tags.length > 0) {
-									newVersions.push(oneVersion);
-								}
-							}
-							minorCallback();
-						}, function () {
-							repo.ts = ts;
-							repo.versions = newVersions;
-							delete repo._id;
-							modelObjMarketPlace.updateCatalog(repo, callback);
-						});
+					async.each(multiRepo, function (catalog, callback) {
+						let opts = {
+							"name": catalog.name,
+							"type": catalog.type,
+							"tag": inputmaskData.tag
+						};
+						lib.updateVersionTag(soajs, opts, callback);
 					}, function (error) {
-						marketplace.mp.closeModel(soajs, modelObjMarketPlace);
 						if (error) {
 							bl.mp.closeModel(soajs, modelObj);
-							return cb(bl.handleError(soajs, 602, error));
+							return cb(bl.handleError(soajs, 605, error));
 						}
 						let opts = {
 							name: inputmaskData.tag,
@@ -970,37 +947,21 @@ let bl = {
 					owner: results.repo.owner,
 					repo: results.repo.name
 				};
-				let modelObjMarketPlace = marketplace.mp.getModel(soajs);
-				let ts = new Date().getTime();
-				modelObjMarketPlace.getCatalogs(opts, (error, multiRepo) => {
+				lib.getCatalogs(soajs, opts, (error, multiRepo) => {
 					if (error) {
-						marketplace.mp.closeModel(soajs, modelObjMarketPlace);
-						return cb(bl.handleError(soajs, 602, err));
+						return cb(bl.handleError(soajs, 605, error));
 					}
-					async.each(multiRepo, function (repo, callback) {
-						let newVersions = [];
-						async.each(repo, function (oneVersion, minorCallback) {
-							if (oneVersion.branches === inputmaskData.branch) {
-								let index = oneVersion.branches.indexOf(oneVersion);
-								if (index > -1) {
-									oneVersion.branches = oneVersion.branches.splice(index, 1);
-								}
-								if (oneVersion.branches.length > 0) {
-									newVersions.push(oneVersion);
-								}
-							}
-							minorCallback();
-						}, function () {
-							repo.ts = ts;
-							repo.versions = newVersions;
-							delete repo._id;
-							modelObjMarketPlace.updateCatalog(repo, callback);
-						});
+					async.each(multiRepo, function (catalog, callback) {
+						let opts = {
+							"name": catalog.name,
+							"type": catalog.type,
+							"branch": inputmaskData.branch
+						};
+						lib.updateVersionBranch(soajs, opts, callback);
 					}, function (error) {
-						marketplace.mp.closeModel(soajs, modelObjMarketPlace);
 						if (error) {
 							bl.mp.closeModel(soajs, modelObj);
-							return cb(bl.handleError(soajs, 602, error));
+							return cb(bl.handleError(soajs, 605, error));
 						}
 						let opts = {
 							name: inputmaskData.branch,
@@ -1075,7 +1036,6 @@ let bl = {
 				data.branches = _.unionBy(results.repo.branches ? results.repo.branches : [], branches, "name");
 				modelObj.activateSyncRepo(data, (err) => {
 					bl.mp.closeModel(soajs, modelObj);
-					marketplace.mp.closeModel(soajs, modelObj);
 					if (err) {
 						return cb(bl.handleError(soajs, 602, err));
 					}
@@ -1087,7 +1047,6 @@ let bl = {
 	
 	"syncBranch": (soajs, inputmaskData, cb) => {
 		let modelObj = bl.mp.getModel(soajs);
-		let modelObjMarketPlace = marketplace.mp.getModel(soajs);
 		
 		async.parallel({
 			account: function (callback) {
@@ -1151,7 +1110,7 @@ let bl = {
 					return cb(bl.handleError(soajs, 410, err));
 				}
 				let models = {
-					modelObj, modelObjMarketPlace
+					modelObj
 				};
 				let opts = {
 					repo: results.repo,
