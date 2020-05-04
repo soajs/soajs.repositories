@@ -1,4 +1,3 @@
-
 /**
  * @license
  * Copyright SOAJS All Rights Reserved.
@@ -11,36 +10,43 @@
 const imported = require("../data/import.js");
 let helper = require("../helper.js");
 
-let service, controller;
+let service, controller, marketplace;
 
-describe.skip("starting integration tests", () => {
-
-    before((done) => {
-        let rootPath = process.cwd();
-        imported(rootPath + "/test/data/soajs_profile.js", rootPath + "/test/data/integration/", (err, msg) => {
-	        if (err) {
-		        console.log(err);
-	        }
-	        if (msg){
-		        console.log(msg);
-	        }
-            console.log("Starting Controller and GIT service");
-            controller = require("soajs.controller");
-            setTimeout(function () {
-	            service = helper.requireModule('./index');
-                setTimeout(function () {
-                    done();
-                }, 5000);
-            }, 1000);
-        });
-    });
-
-    it("loading tests", (done) => {
-	    require("./git.test.js");
-        done();
-    });
-
-    it("loading use cases", (done) => {
-        done();
-    });
+describe("starting integration tests", () => {
+	
+	before((done) => {
+		let rootPath = process.cwd();
+		imported(rootPath + "/test/data/soajs_profile.js", rootPath + "/test/data/integration/", (err, msg) => {
+			if (err) {
+				console.log(err);
+			}
+			if (msg) {
+				console.log(msg);
+			}
+			console.log("Starting Controller");
+			controller = require("soajs.controller/_index.js");
+			controller.runService(() => {
+				console.log("Starting marketplace ...");
+				marketplace = require('soajs.marketplace/_index.js');
+				marketplace.runService(() => {
+					console.log("Starting repositories ...");
+					service = helper.requireModule('./_index.js');
+					service.runService(() => {
+						setTimeout(function () {
+							done();
+						}, 5000);
+					});
+				});
+			});
+		});
+	});
+	
+	it("loading tests", (done) => {
+		require("./git.test.js");
+		done();
+	});
+	
+	it("loading use cases", (done) => {
+		done();
+	});
 });

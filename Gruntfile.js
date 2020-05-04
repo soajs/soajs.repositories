@@ -19,7 +19,7 @@ let lib = {
 	 * @method findRoot
 	 * @return String rootPath
 	 */
-	findRoot: function () {
+	findRoot: () => {
 		let cwd = process.cwd();
 		let rootPath = cwd;
 		let newRootPath = null;
@@ -41,8 +41,8 @@ let lib = {
 	 * @param grunt {Object} The grunt instance
 	 * @param tasks {Array} Array of tasks as string
 	 */
-	loadTasks: function (grunt, rootPath, tasks) {
-		tasks.forEach(function (name) {
+	loadTasks: (grunt, rootPath, tasks) => {
+		tasks.forEach((name) => {
 			if (name === 'grunt-cli') {
 				return;
 			}
@@ -54,7 +54,7 @@ let lib = {
 	}
 };
 
-module.exports = function (grunt) {
+module.exports = (grunt) => {
 	//Loading the needed plugins to run the grunt tasks
 	let pluginsRootPath = lib.findRoot();
 	lib.loadTasks(grunt, pluginsRootPath, ['grunt-contrib-jshint', 'grunt-jsdoc', 'grunt-contrib-clean', 'grunt-mocha-test', 'grunt-env', 'grunt-istanbul', 'grunt-coveralls', 'grunt-contrib-copy']);
@@ -95,7 +95,7 @@ module.exports = function (grunt) {
 				}
 			},
 			files: {
-				src: ['index.js', 'config.js', 'Gruntfile.js', 'bl/*.js', 'driver/*.js', 'lib/*.js', 'lib/**/*.js', 'lib/***/**/*.js', 'driver/**/*.js', 'model/mongo/*.js', 'test/helper.js', 'test/unit/**/*.js', 'test/integration/**/*.js']
+				src: ['_index.js', 'index.js', 'config.js', 'Gruntfile.js', 'bl/*.js', 'driver/*.js', 'lib/*.js', 'lib/**/*.js', 'lib/***/**/*.js', 'driver/**/*.js', 'model/mongo/*.js', 'test/helper.js', 'test/unit/**/*.js', 'test/integration/**/*.js']
 			},
 			gruntfile: {
 				src: 'Gruntfile.js'
@@ -104,17 +104,19 @@ module.exports = function (grunt) {
 		
 		env: {
 			mochaTest: {
+				SOAJS_IMPORTER_DROPDB: true,
 				SOAJS_ENV: "dashboard",
 				SOAJS_SRVIP: "127.0.0.1",
 				SOAJS_TEST: true,
-				SOAJS_SRVPORT: 4005,
+				//SOAJS_SRVPORT: 4006,
 				APP_DIR_FOR_CODE_COVERAGE: '../'
 			},
 			coverage: {
+				SOAJS_IMPORTER_DROPDB: true,
 				SOAJS_ENV: "dashboard",
 				SOAJS_SRVIP: "127.0.0.1",
 				SOAJS_TEST: true,
-				SOAJS_SRVPORT: 4005,
+				//SOAJS_SRVPORT: 4006,
 				APP_DIR_FOR_CODE_COVERAGE: '../test/coverage/instrument/'
 			}
 		},
@@ -144,7 +146,7 @@ module.exports = function (grunt) {
 		
 		
 		instrument: {
-			src: ['index.js', 'config.js', 'bl/*.js', 'model/mongo/*.js', 'driver/*.js', 'driver/**/*.js','lib/*.js', 'lib/catalog/**/*.js',],
+			src: ['index.js', 'config.js', '_index.js', 'Gruntfile.js', 'bl/*.js', 'model/mongo/*.js', 'driver/*.js', 'driver/**/*.js','lib/*.js', 'lib/catalog/**/*.js',],
 			options: {
 				lazy: false,
 				basePath: 'test/coverage/instrument/'

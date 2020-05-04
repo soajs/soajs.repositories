@@ -22,6 +22,7 @@ module.exports = {
 	"requestTimeoutRenewal": 5,
 	"oauth": true,
 	"extKeyRequired": true,
+	"description": "This service handles soajs integration with git providers.",
 	
 	"gitAccounts": {
 		"github" : {
