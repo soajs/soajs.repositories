@@ -335,6 +335,41 @@ let bl = {
 		});
 	},
 	
+	"deleteRepo": (soajs, inputmaskData, cb) => {
+		let modelObj = bl.mp.getModel(soajs);
+		let data = {
+			id: inputmaskData.id
+		};
+		modelObj.getRepository(data, (err, repository) => {
+			if (err) {
+				bl.mp.closeModel(soajs, modelObj);
+				return cb(bl.handleError(soajs, 602, err));
+			}
+			if (!repository) {
+				bl.mp.closeModel(soajs, modelObj);
+				return cb(bl.handleError(soajs, 405, err));
+			}
+			modelObj.deleteRepo(data, (err) => {
+				bl.mp.closeModel(soajs, modelObj);
+				if (err) {
+					return cb(bl.handleError(soajs, 602, err));
+				}
+				return cb(null, "Repository Deleted!");
+			});
+		});
+	},
+	
+	"deleteRepositories": (soajs, inputmaskData, cb) => {
+		let modelObj = bl.mp.getModel(soajs);
+		modelObj.deleteRepositories((err) => {
+			bl.mp.closeModel(soajs, modelObj);
+			if (err) {
+				return cb(bl.handleError(soajs, 602, err));
+			}
+			return cb(null, "Leaf Repositories Deleted!");
+		});
+	},
+	
 	/**
 	 * Post
 	 */

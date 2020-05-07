@@ -76,6 +76,18 @@ function run(serviceStartCb) {
 				});
 			});
 			
+			service.delete("/git/repo", function (req, res) {
+				bl.git.deleteRepo(req.soajs, req.soajs.inputmaskData, (error, data) => {
+					return res.json(req.soajs.buildResponse(error, data));
+				});
+			});
+			
+			service.delete("/git/repositories", function (req, res) {
+				bl.git.deleteRepositories(req.soajs, req.soajs.inputmaskData, (error, data) => {
+					return res.json(req.soajs.buildResponse(error, data));
+				});
+			});
+			
 			//PUT methods
 			
 			service.put("/git/sync/account", function (req, res) {

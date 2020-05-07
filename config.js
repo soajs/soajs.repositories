@@ -16,7 +16,7 @@ module.exports = {
 	},
 	"serviceVersion": 1,
 	"serviceName": "repositories",
-	"serviceGroup": "SOAJS Core Services",
+	"serviceGroup": "SOAJS-Core-Services",
 	"servicePort": 4006,
 	"requestTimeout": 30,
 	"requestTimeoutRenewal": 5,
@@ -374,6 +374,13 @@ module.exports = {
 					"validation": {
 						"type": "integer"
 					}
+				},
+				"leaf": {
+					"source": ['body.leaf'],
+					"required": false,
+					"validation": {
+						"type": "boolean"
+					}
 				}
 			},
 		},
@@ -717,6 +724,25 @@ module.exports = {
 					"validation": {
 						"type": "string",
 					}
+				}
+			},
+			"/git/repo": {
+				"_apiInfo": {
+					"l": "Delete Repository",
+					"group": "Account management"
+				},
+				"id": {
+					"source": ['query.id'],
+					"required": true,
+					"validation": {
+						"type": "string"
+					}
+				}
+			},
+			"/git/repositories": {
+				"_apiInfo": {
+					"l": "Delete Orphan Repositories",
+					"group": "Account management"
 				}
 			}
 		}

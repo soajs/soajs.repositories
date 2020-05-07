@@ -173,6 +173,9 @@ Github.prototype.getOrganizations = function (data, cb) {
 
 Github.prototype.logout = function (data, cb) {
 	let __self = this;
+	if (__self.access === "public"){
+		return cb(null, true);
+	}
 	helper.deleteToken(__self, (err, record) => {
 		if (err) {
 			if (err.message && err.message.indexOf("2FA required") > -1){

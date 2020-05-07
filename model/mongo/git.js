@@ -388,7 +388,7 @@ Git.prototype.updateTags = function (data, cb) {
 Git.prototype.removeRepository = function (data, cb) {
 	let __self = this;
 	if (!data || !(data._id)) {
-		let error = new Error("Git: must provide owner and provider.");
+		let error = new Error("Git: must provide id.");
 		return cb(error);
 	}
 	let condition = {
@@ -405,6 +405,45 @@ Git.prototype.removeRepository = function (data, cb) {
 	__self.mongoCore.updateOne(colName, condition, fields, options, cb);
 };
 
+Git.prototype.deleteRepo = function (data, cb) {
+	let __self = this;
+	if (!data || !(data.id || data._id)) {
+		let error = new Error("Git: must provide id.");
+		return cb(error);
+	}
+	let condition = {
+		source: {
+			$eq: []
+		}
+	};
+	condition.type = "repository";
+	if (data.id) {
+		__self.validateId(data.id, (err, id) => {
+			if (err) {
+				return cb(err, null);
+			}
+			condition._id = id;
+			__self.mongoCore.deleteOne(colName, condition, cb);
+		});
+	} else {
+		condition._id = data._id;
+		__self.mongoCore.deleteOne(colName, condition, cb);
+	}
+};
+
+Git.prototype.deleteRepositories = function (cb) {
+	let __self = this;
+	let condition = {
+		type: "repository",
+		source: {
+			$eq: []
+		}
+	};
+	__self.mongoCore.deleteMany(colName, condition, (err, response) => {
+		return cb(err, response);
+	});
+};
+
 Git.prototype.searchRepositories = function (data, cb) {
 	let __self = this;
 	if (!data) {
@@ -419,6 +458,7 @@ Git.prototype.searchRepositories = function (data, cb) {
 		"limit": 100,
 		// "sort": {}
 	};
+	
 	if (data.name) {
 		condition.name = data.name;
 	}
@@ -443,6 +483,13 @@ Git.prototype.searchRepositories = function (data, cb) {
 	if (data.limit) {
 		options.limit = data.limit;
 	}
+	
+	if (data.leaf) {
+		condition.source = {
+			$eq: []
+		};
+	}
+	
 	__self.mongoCore.find(colName, condition, options, cb);
 };
 
