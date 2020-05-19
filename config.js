@@ -18,7 +18,7 @@ module.exports = {
 	"serviceName": "repositories",
 	"serviceGroup": "SOAJS-Core-Services",
 	"servicePort": 4006,
-	"requestTimeout": 30,
+	"requestTimeout": 120,
 	"requestTimeoutRenewal": 5,
 	"oauth": true,
 	"extKeyRequired": true,

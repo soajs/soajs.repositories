@@ -174,7 +174,7 @@ Bitbucket_enterprise.prototype.getTag = function (data, cb) {
 		if (err) {
 			return cb(err);
 		}
-		return cb(!branch, response);
+		return cb(null, response);
 	});
 };
 
