@@ -12,7 +12,6 @@ const helper = require("../../helper.js");
 const BL = helper.requireModule('bl/git.js');
 const assert = require('assert');
 const sinon = require('sinon');
-const marketplace = helper.requireModule('bl/marketplace.js');
 const lib = helper.requireModule('lib/index.js');
 
 describe("Unit test for: BL - Git", () => {
@@ -1236,10 +1235,13 @@ describe("Unit test for: BL - Git", () => {
 		afterEach((done) => {
 			BL.modelObj = null;
 			BL.drivers = {};
+			sinon.restore();
 			done();
 		});
-		
 		it("Success - get deactivateRepo", (done) => {
+			sinon.stub(lib, 'deleteCatalog_src').callsFake(function fakeFn(soajs, opts, cb) {
+				return cb(null, true);
+			});
 			BL.modelObj = {
 				removeRepository: (nullObject, cb) => {
 					return cb(null, {
@@ -1432,6 +1434,16 @@ describe("Unit test for: BL - Git", () => {
 		});
 		
 		it("Success - get deactivateBranch", (done) => {
+			sinon.stub(lib, 'updateVersionBranch').callsFake(function fakeFn(soajs, opts, cb) {
+				return cb(null, true);
+			});
+			sinon.stub(lib, 'getCatalogs').callsFake(function fakeFn(soajs, opts, cb) {
+				return cb(null, [{
+					"name": "test",
+					"type": "service",
+					"branch": "master"
+				}]);
+			});
 			BL.modelObj = {
 				getAccount: (nullObject, cb) => {
 					return cb(null, {
@@ -1537,60 +1549,6 @@ describe("Unit test for: BL - Git", () => {
 				};
 			}
 			
-			sinon.stub(marketplace.mp, 'getModel').callsFake(function () {
-				return {
-					getCatalogs: (nullObject, cb) => {
-						return cb(null, [{
-							_id: "5e388405efc9079372fe0b98",
-							name: "scheduler",
-							type: "service",
-							description: "ECOMP Scheduler API",
-							configuration: {
-								port: 32556,
-								group: "ECOMP",
-								requestTimeout: 30,
-								requestTimeoutRenewal: 6,
-								maintenance: {
-									port: {
-										type: "inherit"
-									},
-									readiness: "/heartbeat"
-								},
-								swagger: true
-							},
-							metadata: {
-								description: [
-									"scheduler",
-									"ecomp"
-								],
-								attributes: {
-									att1: [
-										"att1.1",
-										"att1.2"
-									],
-									att2: [
-										"att2.1",
-										"att2.2"
-									]
-								},
-								program: [
-									"5G"
-								]
-							},
-							src: {
-								provider: "github",
-								owner: "RaghebAD",
-								repo: "soajs.test"
-							},
-							versions: [],
-							ts: 1580762253665
-						}]);
-					},
-					updateCatalog: (nullObject, cb) => {
-						return cb(null, true);
-					}
-				};
-			});
 			soajs.inputmaskData = {
 				"id": "123",
 				"branch": "master"

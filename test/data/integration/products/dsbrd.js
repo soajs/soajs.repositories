@@ -13,6 +13,11 @@ let prod = {
 					"1": {
 						access: true
 					}
+				},
+				marketplace: {
+					"1": {
+						access: false
+					}
 				}
 			}
 		}
@@ -29,6 +34,11 @@ let prod = {
 						{
 							version: "1"
 						}
+					],
+					marketplace: [
+						{
+							version: "1"
+						}
 					]
 				}
 			},
@@ -42,6 +52,11 @@ let prod = {
 			acl: {
 				dashboard: {
 					repositories: [
+						{
+							version: "1"
+						}
+					],
+					marketplace: [
 						{
 							version: "1"
 						}

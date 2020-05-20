@@ -41,7 +41,7 @@ describe("Testing get Git API", () => {
 			accountId = body.data.id.toString();
 			setTimeout(function(){
 				done();
-			}, 2000);
+			}, 10000);
 		});
 	});
 	
@@ -127,8 +127,21 @@ describe("Testing get Git API", () => {
 			done();
 		});
 	});
+	it("Step 8: get tags from repo", (done) => {
+		let params = {
+			qs: {
+				id : repo._id.toString(),
+			}
+		};
+		requester('/git/tags', 'get', params, (error, body) => {
+			assert.ifError(error);
+			assert.ok(body);
+			assert.ok(body.data);
+			done();
+		});
+	});
 	
-	it("Step 8: sync account", (done) => {
+	it("Step 9: sync account", (done) => {
 		let params = {
 			qs: {
 				id : accountId,
@@ -138,11 +151,29 @@ describe("Testing get Git API", () => {
 			assert.ifError(error);
 			assert.ok(body);
 			assert.ok(body.data);
-			done();
+			setTimeout(function(){
+				done();
+			}, 10000);
 		});
 	});
 	
-	it("Step 9: activate repo", (done) => {
+	it("Step 10: get repo", (done) => {
+		let params = {
+			qs: {
+				id : repo._id.toString(),
+			}
+		};
+		requester('/git/repo/', 'get', params, (error, body) => {
+			assert.ifError(error);
+			assert.ok(body);
+			assert.ok(body.data);
+			setTimeout(function(){
+				done();
+			}, 10000);
+		});
+	});
+	
+	it("Step 11: activate repo", (done) => {
 		let params = {
 			qs: {
 				id : repo._id.toString(),
@@ -158,7 +189,7 @@ describe("Testing get Git API", () => {
 		});
 	});
 	
-	it("Step 10: sync repo ", (done) => {
+	it("Step 12: sync repo ", (done) => {
 		let params = {
 			qs: {
 				id : repo._id.toString(),
@@ -173,7 +204,7 @@ describe("Testing get Git API", () => {
 			done();
 		});
 	});
-	it("Step 11: activate branch ", (done) => {
+	it("Step 13: activate branch ", (done) => {
 		let params = {
 			qs: {
 				id : repo._id.toString(),
@@ -189,7 +220,7 @@ describe("Testing get Git API", () => {
 			done();
 		});
 	});
-	it("Step 13: sync branch ", (done) => {
+	it("Step 14: sync branch ", (done) => {
 		let params = {
 			qs: {
 				id : repo._id.toString(),
@@ -205,7 +236,7 @@ describe("Testing get Git API", () => {
 			done();
 		});
 	});
-	it("Step 14: deactivate branch ", (done) => {
+	it("Step 15: deactivate branch ", (done) => {
 		let params = {
 			qs: {
 				id : repo._id.toString(),
@@ -221,7 +252,7 @@ describe("Testing get Git API", () => {
 			done();
 		});
 	});
-	it("Step 15: deactivate repo ", (done) => {
+	it("Step 16: deactivate repo ", (done) => {
 		let params = {
 			qs: {
 				id : repo._id.toString(),
@@ -230,6 +261,39 @@ describe("Testing get Git API", () => {
 			}
 		};
 		requester('/git/repo/deactivate', 'put', params, (error, body) => {
+			assert.ifError(error);
+			assert.ok(body);
+			assert.ok(body.data);
+			done();
+		});
+	});
+	it("Step 17: logout ", (done) => {
+		let params = {
+			qs: {
+				id : accountId,
+			}
+		};
+		requester('/git/account', 'delete', params, (error, body) => {
+			assert.ifError(error);
+			assert.ok(body);
+			assert.ok(body.data);
+			done();
+		});
+	});
+	
+	it("Step 18: delete repo ", (done) => {
+		let params = {
+			id : repo._id.toString()
+		};
+		requester('/git/repo', 'delete', params, (error, body) => {
+			assert.ifError(error);
+			assert.ok(body);
+			done();
+		});
+	});
+	it("Step 19: delete repo ", (done) => {
+		let params = {};
+		requester('/git/repositories', 'delete', params, (error, body) => {
 			assert.ifError(error);
 			assert.ok(body);
 			assert.ok(body.data);

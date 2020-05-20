@@ -717,7 +717,7 @@ describe("Unit test for: Drivers - bitbucket, helper", () => {
 			};
 			let repoInfo = data.repository.split('/');
 			nock(config.gitAccounts.bitbucket.apiDomain)
-				.get(config.gitAccounts.bitbucket.routes.getBranches
+				.get(config.gitAccounts.bitbucket.routes.getBranch
 					.replace('%USERNAME%', repoInfo[0])
 					.replace('%REPO_NAME%', repoInfo[1])
 					.replace('%BRANCH%',  data.branch))
