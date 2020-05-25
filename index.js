@@ -8,30 +8,5 @@
  * found in the LICENSE file at the root of this repository
  */
 
-const soajs = require('soajs');
-
-let config = require('./config.js');
-config.packagejson = require("./package.json");
-
-const bl = require("./bl/index.js");
-
-const service = new soajs.server.service(config);
-
-service.init(() => {
-    bl.init(service, config, (error) => {
-        if (error) {
-            throw new Error('Failed starting service');
-        }
-
-        //GET methods
-        
-        //DELETE methods
-   
-
-        //PUT methods
-
-        //POST methods
-
-        service.start();
-    });
-});
+const service = require('./_index.js');
+service.runService();

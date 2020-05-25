@@ -26,12 +26,32 @@ describe("Starting Unit test", () => {
     });
 
     it("Unit test for BL", (done) => {
+	    require("./bl/index.test.js");
+	    require("./bl/git.test.js");
         done();
     });
-
+	
+	it("Unit test for Lib", (done) => {
+		require("./lib/index.test.js");
+		done();
+	});
+	
     it("Unit test for Model", (done) => {
+	   require("./model/mongo/git.test.js");
         done();
     });
+	
+	it("Unit test for Drivers", (done) => {
+		
+		require("./driver/github/index.test.js");
+		require("./driver/github/helper.test.js");
+		require("./driver/bitbucket/index.test.js");
+		require("./driver/bitbucket/helper.test.js");
+		require("./driver/bitbucket_enterprise/index.test.js");
+		require("./driver/bitbucket_enterprise/helper.test.js");
+		done();
+	});
+	
 
     after((done) => {
         done();
