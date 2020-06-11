@@ -10,19 +10,20 @@
 
 module.exports = {
 	"type": 'service',
-	"prerequisites": {
+	'subType': 'soajs',
+	"description": "This service handles soajs integration with git providers.",
+		"prerequisites": {
 		cpu: '',
 		memory: ''
 	},
 	"serviceVersion": 1,
 	"serviceName": "repositories",
-	"serviceGroup": "SOAJS-Core-Services",
+	"serviceGroup": "Console",
 	"servicePort": 4006,
 	"requestTimeout": 180,
 	"requestTimeoutRenewal": 5,
 	"oauth": true,
 	"extKeyRequired": true,
-	"description": "This service handles soajs integration with git providers.",
 	
 	"gitAccounts": {
 		"github" : {
