@@ -32,6 +32,13 @@ function run(serviceStartCb) {
 				});
 			});
 			
+			service.get("/git/account/owner", function (req, res) {
+				req.soajs.inputmaskData.token = true;
+				bl.git.get_by_owner(req.soajs, req.soajs.inputmaskData, (error, data) => {
+					return res.json(req.soajs.buildResponse(error, data));
+				});
+			});
+			
 			service.get("/git/accounts", function (req, res) {
 				bl.git.list(req.soajs, req.soajs.inputmaskData, (error, data) => {
 					return res.json(req.soajs.buildResponse(error, data));

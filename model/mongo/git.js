@@ -88,6 +88,7 @@ Git.prototype.getAccount = function (data, cb) {
 	}
 	let condition = {};
 	condition.type = "account";
+	//todo add support to remove token
 	if (data.id) {
 		__self.validateId(data.id, (err, id) => {
 			if (err) {

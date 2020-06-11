@@ -129,6 +129,26 @@ module.exports = {
 					}
 				},
 			},
+			"/git/account/owner": {
+				"_apiInfo": {
+					"l": "Get account information and its organization(s)",
+					"group": "Internal"
+				},
+				"owner": {
+					"source": ['query.owner'],
+					"required": true,
+					"validation": {
+						"type": "string"
+					}
+				},
+				"provider": {
+					"source": ['query.provider'],
+					"required": true,
+					"validation": {
+						"type": "string"
+					}
+				},
+			},
 			"/git/repo": {
 				"_apiInfo": {
 					"l": "Get repository information",

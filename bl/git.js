@@ -72,6 +72,21 @@ let bl = {
 		});
 	},
 	
+	"get_by_owner": (soajs, inputmaskData, cb) => {
+		let modelObj = bl.mp.getModel(soajs);
+		let data = {
+			owner: inputmaskData.owner,
+			provider: inputmaskData.provider
+		};
+		modelObj.getAccount(data, (err, accountRecord) => {
+			bl.mp.closeModel(soajs, modelObj);
+			if (err) {
+				return cb(bl.handleError(soajs, 602, err));
+			}
+			return cb(null, accountRecord);
+		});
+	},
+	
 	"list": (soajs, inputmaskData, cb) => {
 		let modelObj = bl.mp.getModel(soajs);
 		modelObj.getAccounts((err, accountRecords) => {
