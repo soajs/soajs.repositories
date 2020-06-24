@@ -136,6 +136,9 @@ describe("Testing get Git API", () => {
 		requester('/git/tags', 'get', params, (error, body) => {
 			assert.ifError(error);
 			assert.ok(body);
+			if (!body.data){
+				console.log(JSON.stringify(body, null,  2));
+			}
 			assert.ok(body.data);
 			done();
 		});
@@ -216,6 +219,9 @@ describe("Testing get Git API", () => {
 		requester('/git/branch/activate', 'put', params, (error, body) => {
 			assert.ifError(error);
 			assert.ok(body);
+			if (!body.data){
+				console.log(JSON.stringify(body, null,  2));
+			}
 			assert.ok(body.data);
 			done();
 		});
@@ -232,6 +238,9 @@ describe("Testing get Git API", () => {
 		requester('/git/sync/branch', 'put', params, (error, body) => {
 			assert.ifError(error);
 			assert.ok(body);
+			if (!body.data){
+				console.log(JSON.stringify(body, null,  2));
+			}
 			assert.ok(body.data);
 			done();
 		});
@@ -248,6 +257,9 @@ describe("Testing get Git API", () => {
 		requester('/git/branch/deactivate', 'put', params, (error, body) => {
 			assert.ifError(error);
 			assert.ok(body);
+			if (!body.data){
+				console.log(JSON.stringify(body, null,  2));
+			}
 			assert.ok(body.data);
 			done();
 		});
