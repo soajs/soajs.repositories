@@ -89,21 +89,24 @@ Git.prototype.getAccount = function (data, cb) {
 	let condition = {};
 	condition.type = "account";
 	//todo add support to remove token
+	let options = {
+		"token": !!data.token
+	};
 	if (data.id) {
 		__self.validateId(data.id, (err, id) => {
 			if (err) {
 				return cb(err, null);
 			}
 			condition._id = id;
-			__self.mongoCore.findOne(colName, condition, cb);
+			__self.mongoCore.findOne(colName, condition, options, cb);
 		});
 	} else if (data._id) {
 		condition._id = data._id;
-		__self.mongoCore.findOne(colName, condition, cb);
+		__self.mongoCore.findOne(colName, condition, options, cb);
 	} else {
 		condition.provider = data.provider;
 		condition.owner = data.owner;
-		__self.mongoCore.findOne(colName, condition, cb);
+		__self.mongoCore.findOne(colName, condition, options, cb);
 	}
 };
 

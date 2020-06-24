@@ -163,6 +163,40 @@ module.exports = {
 					}
 				},
 			},
+			"/git/branch": {
+				"_apiInfo": {
+					"l": "Get repository branch information",
+					"group": "Repository information"
+				},
+				"owner": {
+					"source": ['query.owner'],
+					"required": true,
+					"validation": {
+						"type": "string"
+					}
+				},
+				"repo": {
+					"source": ['query.repo'],
+					"required": true,
+					"validation": {
+						"type": "string"
+					}
+				},
+				"provider": {
+					"source": ['query.provider'],
+					"required": true,
+					"validation": {
+						"type": "string"
+					}
+				},
+				"branch": {
+					"source": ['query.branch'],
+					"required": true,
+					"validation": {
+						"type": "string"
+					}
+				}
+			},
 			"/git/branches": {
 				"_apiInfo": {
 					"l": "Get repository branches",
@@ -205,7 +239,7 @@ module.exports = {
 			},
 			"/git/tag": {
 				"_apiInfo": {
-					"l": "Get repository tags",
+					"l": "Get repository tag",
 					"group": "Repository information"
 				},
 				"id": {
@@ -403,7 +437,7 @@ module.exports = {
 						"type": "boolean"
 					}
 				}
-			},
+			}
 		},
 		"put": {
 			"/git/sync/account": {

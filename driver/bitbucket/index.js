@@ -174,6 +174,12 @@ Bitbucket.prototype.getBranch = function (data, cb) {
 		if (err) {
 			return cb(err);
 		}
+		if (data.commit && response){
+			return cb(null, {
+				name : response.name,
+				commit: response.target.hash,
+			});
+		}
 		if (response) {
 			return cb(null, response.name);
 		}

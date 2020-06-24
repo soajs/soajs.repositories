@@ -172,6 +172,59 @@ let bl = {
 		});
 	},
 	
+	"getBranch": (soajs, inputmaskData, cb) => {
+		let modelObj = bl.mp.getModel(soajs);
+		let data = {
+			owner: [inputmaskData.owner],
+			name: inputmaskData.repo,
+			provider: [inputmaskData.provider]
+		};
+		modelObj.searchRepositories(data, (err, repos) => {
+			bl.mp.closeModel(soajs, modelObj);
+			if (err) {
+				return cb(bl.handleError(soajs, 602, err));
+			}
+			if (!repos || repos.length === 0 ) {
+				return cb(bl.handleError(soajs, 405, err));
+			}
+			let repo = repos[0];
+			data = {
+				provider: repo.provider
+			};
+			if (!repo.source || repo.source.length === 0) {
+				bl.mp.closeModel(soajs, modelObj);
+				return cb(bl.handleError(soajs, 409, err));
+			}
+			data.owner = repo.source[0].name;
+			
+			modelObj.getAccount(data, (err, accountRecord) => {
+				bl.mp.closeModel(soajs, modelObj);
+				if (err) {
+					return cb(bl.handleError(soajs, 602, err));
+				}
+				if (!accountRecord) {
+					return cb(bl.handleError(soajs, 404, null));
+				}
+				let driver = bl.mp.getDriver(accountRecord);
+				if (!driver) {
+					return cb(bl.handleError(soajs, 603, null));
+				}
+				data = {
+					config: bl.localConfig,
+					repository: repo.repository,
+					branch: inputmaskData.branch,
+					commit: true
+				};
+				driver.getBranch(data, (err, branch) => {
+					if (err) {
+						return cb(bl.handleError(soajs, 410, err));
+					}
+					return cb(null, branch);
+				});
+			});
+		});
+	},
+	
 	"getTags": (soajs, inputmaskData, cb) => {
 		let modelObj = bl.mp.getModel(soajs);
 		let data = {

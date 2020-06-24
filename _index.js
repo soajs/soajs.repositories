@@ -63,6 +63,12 @@ function run(serviceStartCb) {
 				});
 			});
 			
+			service.get("/git/branch", function (req, res) {
+				bl.git.getBranch(req.soajs, req.soajs.inputmaskData, (error, data) => {
+					return res.json(req.soajs.buildResponse(error, data));
+				});
+			});
+			
 			service.get("/git/tags", function (req, res) {
 				bl.git.getTags(req.soajs, req.soajs.inputmaskData, (error, data) => {
 					return res.json(req.soajs.buildResponse(error, data));
