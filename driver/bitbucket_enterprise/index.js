@@ -159,7 +159,8 @@ Bitbucket_enterprise.prototype.getBranch = function (data, cb) {
 			response.values.forEach((oneValue) => {
 				if (oneValue.displayId === data.branch) {
 					branch = {
-						name: data.branch
+						name: data.branch,
+						commit: data.latestCommit
 					};
 				}
 			});

@@ -423,7 +423,7 @@ describe("Unit test for: Drivers - bitbucket_enterprise, index", () => {
 			driver = new Bitbucket_enterprise(service, data);
 			driver.getBranch(data, (err, record) => {
 				assert.ok(record);
-				assert.deepStrictEqual(record, {name: 'master'});
+				assert.deepStrictEqual(record.name, 'master');
 				done();
 			});
 		});
