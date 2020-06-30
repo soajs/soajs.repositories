@@ -41,7 +41,7 @@ describe("Testing get Git API", () => {
 			accountId = body.data.id.toString();
 			setTimeout(function(){
 				done();
-			}, 10000);
+			}, 15000);
 		});
 	});
 	

@@ -88,10 +88,12 @@ Git.prototype.getAccount = function (data, cb) {
 	}
 	let condition = {};
 	condition.type = "account";
-	//todo add support to remove token
-	let options = {
-		"token": !!data.token
-	};
+	let options = {};
+	if (!data.token){
+		options.projection = {
+			token : 0
+		};
+	}
 	if (data.id) {
 		__self.validateId(data.id, (err, id) => {
 			if (err) {
@@ -255,7 +257,13 @@ Git.prototype.getAccounts = function (cb) {
 	let condition = {
 		type: "account"
 	};
-	__self.mongoCore.find(colName, condition, (err, response) => {
+	let options = {
+		projection : {
+			token : 0,
+			tokenId: 0
+		}
+	};
+	__self.mongoCore.find(colName, condition, options, (err, response) => {
 		return cb(err, response);
 	});
 };

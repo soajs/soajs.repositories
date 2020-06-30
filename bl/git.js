@@ -76,7 +76,8 @@ let bl = {
 		let modelObj = bl.mp.getModel(soajs);
 		let data = {
 			owner: inputmaskData.owner,
-			provider: inputmaskData.provider
+			provider: inputmaskData.provider,
+			token:  inputmaskData.token
 		};
 		modelObj.getAccount(data, (err, accountRecord) => {
 			bl.mp.closeModel(soajs, modelObj);
@@ -115,11 +116,58 @@ let bl = {
 		});
 	},
 	
+	"getRepoInfo": (soajs, inputmaskData, cb) => {
+		let modelObj = bl.mp.getModel(soajs);
+		let data = {
+			id: inputmaskData.id
+		};
+		modelObj.getRepository(data, (err, repo) => {
+			if (err) {
+				bl.mp.closeModel(soajs, modelObj);
+				return cb(bl.handleError(soajs, 602, err));
+			}
+			if (!repo) {
+				bl.mp.closeModel(soajs, modelObj);
+				return cb(bl.handleError(soajs, 405, err));
+			}
+			data = {
+				provider: repo.provider
+			};
+			
+			if (!repo.source || repo.source.length === 0) {
+				bl.mp.closeModel(soajs, modelObj);
+				return cb(bl.handleError(soajs, 409, err));
+			}
+			data.owner = repo.source[0].name;
+			data.token = true;
+			modelObj.getAccount(data, (err, accountRecord) => {
+				bl.mp.closeModel(soajs, modelObj);
+				if (err) {
+					return cb(bl.handleError(soajs, 602, err));
+				}
+				if (!accountRecord) {
+					return cb(bl.handleError(soajs, 404, null));
+				}
+				let response = {
+					domain: repo.domain,
+					repository: repo.repository,
+					name: repo.name,
+					owner: repo.owner,
+					provider: repo.provider,
+					access: accountRecord.access,
+					token: accountRecord.token
+				};
+				return cb(null, response);
+			});
+		});
+	},
+	
 	"getRepoFile": (soajs, inputmaskData, cb) => {
 		let modelObj = bl.mp.getModel(soajs);
 		let data = {
 			id: inputmaskData.accountId
 		};
+		data.token = true;
 		modelObj.getAccount(data, (err, account) => {
 			if (err) {
 				bl.mp.closeModel(soajs, modelObj);
@@ -196,7 +244,7 @@ let bl = {
 				return cb(bl.handleError(soajs, 409, err));
 			}
 			data.owner = repo.source[0].name;
-			
+			data.token = true;
 			modelObj.getAccount(data, (err, accountRecord) => {
 				bl.mp.closeModel(soajs, modelObj);
 				if (err) {
@@ -219,6 +267,9 @@ let bl = {
 					if (err) {
 						return cb(bl.handleError(soajs, 410, err));
 					}
+					branch.repo = {
+						id: repo._id.toString()
+					};
 					return cb(null, branch);
 				});
 			});
@@ -248,7 +299,7 @@ let bl = {
 				return cb(bl.handleError(soajs, 409, err));
 			}
 			data.owner = repo.source[0].name;
-			
+			data.token = true;
 			modelObj.getAccount(data, (err, accountRecord) => {
 				bl.mp.closeModel(soajs, modelObj);
 				if (err) {
@@ -302,7 +353,7 @@ let bl = {
 				return cb(bl.handleError(soajs, 409, err));
 			}
 			data.owner = repo.source[0].name;
-			
+			data.token = true;
 			modelObj.getAccount(data, (err, accountRecord) => {
 				bl.mp.closeModel(soajs, modelObj);
 				if (err) {
@@ -339,6 +390,7 @@ let bl = {
 		let data = {
 			id: inputmaskData.id
 		};
+		data.token = true;
 		modelObj.getAccount(data, (err, account) => {
 			if (err) {
 				bl.mp.closeModel(soajs, modelObj);
@@ -533,7 +585,7 @@ let bl = {
 		let data = {
 			id: inputmaskData.id
 		};
-		
+		data.token = true;
 		modelObj.getAccount(data, (err, accountRecord) => {
 			if (err) {
 				bl.mp.closeModel(soajs, modelObj);
@@ -562,6 +614,7 @@ let bl = {
 		let data = {
 			id: inputmaskData.id
 		};
+		data.token = true;
 		modelObj.getAccount(data, (err, account) => {
 			if (err) {
 				bl.mp.closeModel(soajs, modelObj);
@@ -629,6 +682,7 @@ let bl = {
 					provider: inputmaskData.provider,
 					owner: inputmaskData.owner
 				};
+				data.token = true;
 				modelObj.getAccount(data, callback);
 			},
 			repo: function (callback) {
@@ -745,6 +799,7 @@ let bl = {
 					provider: inputmaskData.provider,
 					owner: inputmaskData.owner
 				};
+				data.token = true;
 				return modelObj.getAccount(data, callback);
 			},
 			repo: function (callback) {
@@ -827,6 +882,7 @@ let bl = {
 					provider: inputmaskData.provider,
 					owner: inputmaskData.owner
 				};
+				data.token = true;
 				return modelObj.getAccount(data, callback);
 			},
 			repo: function (callback) {
@@ -908,6 +964,7 @@ let bl = {
 						provider: inputmaskData.provider,
 						owner: inputmaskData.owner
 					};
+					data.token = true;
 					return modelObj.getAccount(data, callback);
 				},
 				repo: function (callback) {
@@ -1000,6 +1057,7 @@ let bl = {
 						provider: inputmaskData.provider,
 						owner: inputmaskData.owner
 					};
+					data.token = true;
 					return modelObj.getAccount(data, callback);
 				},
 				repo: function (callback) {
@@ -1092,6 +1150,7 @@ let bl = {
 					provider: inputmaskData.provider,
 					owner: inputmaskData.owner
 				};
+				data.token = true;
 				modelObj.getAccount(data, callback);
 			},
 			repo: function (callback) {
@@ -1157,6 +1216,7 @@ let bl = {
 					provider: inputmaskData.provider,
 					owner: inputmaskData.owner
 				};
+				data.token = true;
 				return modelObj.getAccount(data, callback);
 			},
 			repo: function (callback) {

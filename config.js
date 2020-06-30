@@ -163,6 +163,21 @@ module.exports = {
 					}
 				},
 			},
+			
+			"/git/repo/info": {
+				"_apiInfo": {
+					"l": "Get repository and account information",
+					"group": "Internal"
+				},
+				"id": {
+					"source": ['query.id'],
+					"required": true,
+					"validation": {
+						"type": "string"
+					}
+				},
+			},
+			
 			"/git/branch": {
 				"_apiInfo": {
 					"l": "Get repository branch information",
