@@ -12,7 +12,7 @@ module.exports = {
 	"type": 'service',
 	'subType': 'soajs',
 	"description": "This service handles soajs integration with git providers.",
-		"prerequisites": {
+	"prerequisites": {
 		cpu: '',
 		memory: ''
 	},
@@ -26,9 +26,7 @@ module.exports = {
 	"extKeyRequired": true,
 	
 	"gitAccounts": {
-		"github" : {
-			"tokenScope": ["repo", "admin:repo_hook"]
-		},
+		"github" : {},
 		"bitbucket": {
 			"apiDomain": 'https://api.bitbucket.org/2.0',
 			"routes": {
@@ -91,7 +89,7 @@ module.exports = {
 		417: "Catalog Entry with same DNA detected!",
 		418: "Tag is already active",
 		
-		420: "Tow factor authentication is enabled. Verification code required",
+		//420: "Tow factor authentication is enabled. Verification code required",
 		
 		500: "Invalid soa.json file schema",
 		
@@ -327,6 +325,13 @@ module.exports = {
 						"type": "string"
 					}
 				},
+				"token": {
+					"source": ['body.token'],
+					"required": false,
+					"validation": {
+						"type": "string"
+					}
+				},
 				"label": {
 					"source": ['body.label'],
 					"required": true,
@@ -363,13 +368,6 @@ module.exports = {
 					"validation": {
 						"type": "string",
 						"enum": ["public", "private"]
-					}
-				},
-				"on2fa": {
-					"source": ['body.on2fa'],
-					"required": false,
-					"validation": {
-						"type": "string",
 					}
 				},
 				"oauthKey": {
@@ -489,16 +487,16 @@ module.exports = {
 				},
 				"password": {
 					"source": ['body.password'],
-					"required": true,
+					"required": false,
 					"validation": {
 						"type": "string"
 					}
 				},
-				"on2fa": {
-					"source": ['body.on2fa'],
+				"token": {
+					"source": ['body.token'],
 					"required": false,
 					"validation": {
-						"type": "string",
+						"type": "string"
 					}
 				},
 				"oauthKey": {
@@ -786,13 +784,6 @@ module.exports = {
 					"required": false,
 					"validation": {
 						"type": "string"
-					}
-				},
-				"on2fa": {
-					"source": ['query.on2fa'],
-					"required": false,
-					"validation": {
-						"type": "string",
 					}
 				}
 			},

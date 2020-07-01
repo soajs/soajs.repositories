@@ -160,67 +160,6 @@ describe("Unit test for: Drivers - github, helper", () => {
 		});
 	});
 	
-	describe("Testing createToken", () => {
-		before((done) => {
-			done();
-		});
-		
-		afterEach((done) => {
-			sinon.restore();
-			done();
-		});
-		after(function (done) {
-			done();
-		});
-		
-		it("Success personal", (done) => {
-			let self = {
-				type: 'personal',
-				username: 'username',
-				github: {
-					oauthAuthorizations: {
-						createAuthorization: () => {
-							return new Promise((resolve, reject) => {
-								resolve({
-									body: true
-								});
-								reject(true);
-							});
-						}
-					}
-				}
-			};
-			let data = {
-				config: config,
-			};
-			helperFile.createToken(self, data, () => {
-				done();
-			});
-		});
-		
-		it("Success personal error", (done) => {
-			let self = {
-				type: 'personal',
-				note: 'username',
-				github: {
-					oauthAuthorizations: {
-						createAuthorization: () => {
-							return new Promise((resolve, reject) => {
-								reject(true);
-							});
-						}
-					}
-				}
-			};
-			let data = {
-				config: config
-			};
-			helperFile.createToken(self, data, () => {
-				done();
-			});
-		});
-	});
-	
 	describe("Testing getRepositories", () => {
 		before((done) => {
 			done();
@@ -339,7 +278,7 @@ describe("Unit test for: Drivers - github, helper", () => {
 				username: 'username',
 				github: {
 					repos: {
-						list: () => {
+						listForAuthenticatedUser: () => {
 							return new Promise((resolve, reject) => {
 								resolve({
 									body: true
@@ -366,7 +305,7 @@ describe("Unit test for: Drivers - github, helper", () => {
 				username: 'username',
 				github: {
 					repos: {
-						list: () => {
+						listForAuthenticatedUser: () => {
 							return new Promise((resolve, reject) => {
 								reject(true);
 							});
@@ -451,7 +390,7 @@ describe("Unit test for: Drivers - github, helper", () => {
 			let self = {
 				github: {
 					repos: {
-						getContents: () => {
+						getContent: () => {
 							return new Promise((resolve, reject) => {
 								resolve({
 									body: true
@@ -476,7 +415,7 @@ describe("Unit test for: Drivers - github, helper", () => {
 			let self = {
 				github: {
 					repos: {
-						getContents: () => {
+						getContent: () => {
 							return new Promise((resolve, reject) => {
 								reject(true);
 							});
@@ -603,58 +542,6 @@ describe("Unit test for: Drivers - github, helper", () => {
 				repository: "soajs/soajs.repositories"
 			};
 			helperFile.getBranch(self, data, () => {
-				done();
-			});
-		});
-	});
-	
-	describe("Testing deleteToken", () => {
-		before((done) => {
-			done();
-		});
-		
-		afterEach((done) => {
-			sinon.restore();
-			done();
-		});
-		after(function (done) {
-			done();
-		});
-		
-		it("Success ", (done) => {
-			let self = {
-				tokenId: "!23",
-				github: {
-					oauthAuthorizations: {
-						deleteAuthorization: () => {
-							return new Promise((resolve, reject) => {
-								resolve({
-									body: true
-								});
-								reject(true);
-							});
-						}
-					}
-				}
-			};
-			helperFile.deleteToken(self, () => {
-				done();
-			});
-		});
-		
-		it("fail ", (done) => {
-			let self = {
-				github: {
-					oauthAuthorizations: {
-						deleteAuthorization: () => {
-							return new Promise((resolve, reject) => {
-								reject(true);
-							});
-						}
-					}
-				}
-			};
-			helperFile.deleteToken(self, () => {
 				done();
 			});
 		});

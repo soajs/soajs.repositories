@@ -35,7 +35,7 @@
     "sinon": "8.1.1"
   },
   "dependencies": {
-    "@octokit/rest": "16.43.1",
+    "@octokit/rest": "18.0.0",
     "async": "3.2.0",
     "lodash": "4.17.15",
     "parse-url": "5.0.1",

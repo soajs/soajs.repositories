@@ -8,7 +8,7 @@
 
 "use strict";
 
-const Octokit = require("@octokit/rest");
+const { Octokit } = require("@octokit/rest");
 const helper = require("./helper");
 
 function Github(service, data) {
@@ -22,19 +22,9 @@ function Github(service, data) {
 	__self.service = service;
 	__self.username = data.username || data.owner;
 	__self.label = data.label;
-	if (__self.access === "private") {
-		if (data.password) {
-			auth.token = {
-				password: data.password,
-				username: __self.username
-			};
-			__self.password = data.password;
-		}
-		else if (data.token) {
+	if (__self.access === "private" && data.token) {
 			auth.token = data.token;
 			__self.token = data.token;
-			
-		}
 	}
 	else if (data.token) {
 		auth.token = data.token;
@@ -43,12 +33,6 @@ function Github(service, data) {
 	}
 	if (data.tokenId){
 		__self.tokenId = data.tokenId;
-	}
-	if (auth.token && data.on2fa) {
-		auth.token.on2fa = () => {
-			return Promise.resolve(data.on2fa);
-		};
-		__self.on2fa = data.on2fa;
 	}
 	__self.service.log.debug("Github Git Init!");
 	if (Object.keys(auth).length > 0) {
@@ -98,9 +82,6 @@ Github.prototype.login = function (data, cb) {
 	let __self = this;
 	helper.validate(__self, (err, record) => {
 		if (err) {
-			if (err.message && err.message.indexOf("2FA required") > -1){
-				return cb(new Error("2FA required"));
-			}
 			return cb(err);
 		}
 		let account = {
@@ -117,15 +98,8 @@ Github.prototype.login = function (data, cb) {
 			GID: record.id
 		};
 		if (__self.access === 'private') {
-			helper.createToken(__self, data, (err, result) => {
-				if (err) {
-					return cb(err);
-				} else {
-					account.token = result.token;
-					account.tokenId = result.id;
-					return cb(null, account);
-				}
-			});
+			account.token = record.token;
+			return cb(null, account);
 		} else {
 			return cb(null, account);
 		}
@@ -172,19 +146,7 @@ Github.prototype.getOrganizations = function (data, cb) {
 };
 
 Github.prototype.logout = function (data, cb) {
-	let __self = this;
-	if (__self.access === "public"){
-		return cb(null, true);
-	}
-	helper.deleteToken(__self, (err, record) => {
-		if (err) {
-			if (err.message && err.message.indexOf("2FA required") > -1){
-				return cb(new Error("2FA required"));
-			}
-			return cb(err);
-		}
-		return cb(null, record);
-	});
+	return cb(null, true);
 };
 
 Github.prototype.getFile = function (data, cb) {

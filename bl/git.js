@@ -401,9 +401,6 @@ let bl = {
 				return cb(bl.handleError(soajs, 403, err));
 			}
 			account.password = inputmaskData.password;
-			if (inputmaskData.on2fa) {
-				account.on2fa = inputmaskData.on2fa;
-			}
 			let driver = bl.mp.getDriver(account);
 			if (!driver) {
 				return cb(bl.handleError(soajs, 603, null));
@@ -443,11 +440,7 @@ let bl = {
 					function (err) {
 						bl.mp.closeModel(soajs, modelObj);
 						if (err) {
-							if (err.message && err.message === "2FA required") {
-								return cb(bl.handleError(soajs, 420, err));
-							} else {
-								return cb(bl.handleError(soajs, 602, err));
-							}
+							return cb(bl.handleError(soajs, 602, err));
 						}
 						return cb(null, `Your account ${account.owner} has been successfully logged out!`);
 					});
@@ -509,9 +502,6 @@ let bl = {
 		driver.login(data, (err, loginRecord) => {
 			if (err) {
 				bl.mp.closeModel(soajs, modelObj);
-				if (err.message && err.message === "2FA required") {
-					return cb(bl.handleError(soajs, 420, err));
-				}
 				return cb(bl.handleError(soajs, 604, err));
 			}
 			data = {
@@ -646,9 +636,6 @@ let bl = {
 			driver.login(data, (err, loginRecord) => {
 				if (err) {
 					bl.mp.closeModel(soajs, modelObj);
-					if (err.message && err.message === "2FA required") {
-						return cb(bl.handleError(soajs, 420, err));
-					}
 					return cb(bl.handleError(soajs, 403, err));
 				}
 				let opts = {

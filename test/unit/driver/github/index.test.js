@@ -41,8 +41,7 @@ describe("Unit test for: Drivers - github, index", () => {
 				"username": "soajs",
 				"type": "personal",
 				"access": "private",
-				"password": "***",
-				"on2fa": "123"
+				"token": "***",
 			};
 			driver = new Github(service, data);
 			done();
@@ -93,17 +92,11 @@ describe("Unit test for: Drivers - github, index", () => {
 				"username": "soajs",
 				"type": "personal",
 				"access": "private",
-				"password": "***",
-				"on2fa": "123"
+				"token": "***",
 			};
 			sinon.stub(githelper, 'validate').callsFake(function fakeFn(self, cb) {
 				return cb(null, {
 					id: 1
-				});
-			});
-			sinon.stub(githelper, 'createToken').callsFake(function fakeFn(self, data, cb) {
-				return cb(null, {
-					token : 123
 				});
 			});
 			driver = new Github(service, data);
@@ -136,8 +129,7 @@ describe("Unit test for: Drivers - github, index", () => {
 				"username": "soajs",
 				"type": "personal",
 				"access": "private",
-				"token": "1234",
-				"tokenId": "1234"
+				"token": "1234"
 			};
 			sinon.stub(githelper, 'getRepositories').callsFake(function fakeFn(self, data, cb) {
 				return cb(null, {
@@ -183,8 +175,7 @@ describe("Unit test for: Drivers - github, index", () => {
 				"username": "soajs",
 				"type": "personal",
 				"access": "private",
-				"password": "***",
-				"on2fa": "123"
+				"token": "***",
 			};
 			driver = new Github(service, data);
 			
@@ -215,8 +206,6 @@ describe("Unit test for: Drivers - github, index", () => {
 				"username": "soajs",
 				"type": "personal",
 				"access": "private",
-				"password": "***",
-				"on2fa": "123"
 			};
 			sinon.stub(githelper, 'getOrganizations').callsFake(function fakeFn(self, cb) {
 				return cb(null, [{
@@ -254,12 +243,8 @@ describe("Unit test for: Drivers - github, index", () => {
 				"username": "soajs",
 				"type": "personal",
 				"access": "private",
-				"password": "***",
-				"on2fa": "123"
+				"token": "***",
 			};
-			sinon.stub(githelper, 'deleteToken').callsFake(function fakeFn(self, cb) {
-				return cb(null, true);
-			});
 			driver = new Github(service, data);
 			
 			done();

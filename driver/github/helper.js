@@ -9,7 +9,6 @@
 "use strict";
 
 const parseUrl = require("parse-url");
-const shortid = require("shortid");
 
 const helper = {
 	
@@ -48,16 +47,6 @@ const helper = {
 			});
 		}
 	},
-	"createToken": (self, data, cb) => {
-		self.github.oauthAuthorizations.createAuthorization({
-			note: 'SOAJS GitHub App Token (soajs_' + shortid.generate() + ')',
-			scopes: data.config.gitAccounts.github.tokenScope,
-		}).then(({data}) => {
-			return cb(null, data);
-		}).catch((err) => {
-			return cb(err);
-		});
-	},
 	
 	"getOrganizations": (self, cb) => {
 		self.github.orgs.listForUser({
@@ -93,7 +82,7 @@ const helper = {
 				});
 			}
 		} else {
-			self.github.repos.list({
+			self.github.repos.listForAuthenticatedUser({
 				username: self.username,
 				visibility: "all",
 				per_page: data.per_page || '100',
@@ -114,7 +103,7 @@ const helper = {
 			path: data.path,
 			ref: data.branch || data.tag
 		};
-		self.github.repos.getContents(opts).then(({data}) => {
+		self.github.repos.getContent(opts).then(({data}) => {
 			return cb(null, data);
 		}).catch((err) => {
 			return cb(err);
@@ -168,15 +157,6 @@ const helper = {
 			owner: repoInfo[0],
 			repo: repoInfo[1],
 			ref: "tags/" + data.tag
-		}).then(({data}) => {
-			return cb(null, data);
-		}).catch((err) => {
-			return cb(err);
-		});
-	},
-	"deleteToken": (self, cb) => {
-		self.github.oauthAuthorizations.deleteAuthorization({
-			authorization_id: self.tokenId
 		}).then(({data}) => {
 			return cb(null, data);
 		}).catch((err) => {

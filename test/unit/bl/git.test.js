@@ -806,7 +806,7 @@ describe("Unit test for: BL - Git", () => {
 				"username": "soajs",
 				"type": "personal",
 				"access": "private",
-				"password": "***"
+				"token": "***"
 			};
 			soajs.inputmaskData = inputmaskData;
 			BL.login(soajs, inputmaskData, (err, response) => {
@@ -1055,8 +1055,7 @@ describe("Unit test for: BL - Git", () => {
 			let inputmaskData = {
 				id: "5e1de864a34d5d3b94d10c07",
 				username: "ragheb",
-				password: "password",
-				on2fa: "on2fa123"
+				token: "password",
 			};
 			BL.drivers = {
 				"github": Github
@@ -1139,8 +1138,7 @@ describe("Unit test for: BL - Git", () => {
 			let inputmaskData = {
 				id: "5e1de864a34d5d3b94d10c07",
 				username: "ragheb",
-				password: "password",
-				on2fa: "on2fa123"
+				token: "password",
 			};
 			BL.drivers = {
 				"github": Github
