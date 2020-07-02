@@ -13,7 +13,6 @@ const sinon = require('sinon');
 
 const helper = require("../../../helper.js");
 const helperFile = helper.requireModule('driver/github/helper.js');
-const config = helper.requireModule('config.js');
 
 
 describe("Unit test for: Drivers - github, helper", () => {
