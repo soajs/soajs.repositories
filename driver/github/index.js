@@ -98,7 +98,7 @@ Github.prototype.login = function (data, cb) {
 			GID: record.id
 		};
 		if (__self.access === 'private') {
-			account.token = record.token;
+			account.token = __self.token;
 			return cb(null, account);
 		} else {
 			return cb(null, account);

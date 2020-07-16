@@ -707,7 +707,7 @@ let bl = {
 				repository: results.repo.repository
 			};
 			driver.listBranches(data, (error, branches) => {
-				if (err) {
+				if (error) {
 					bl.mp.closeModel(soajs, modelObj);
 					return cb(bl.handleError(soajs, 602, err));
 				}
