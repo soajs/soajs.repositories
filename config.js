@@ -25,6 +25,17 @@ module.exports = {
 	"oauth": true,
 	"extKeyRequired": true,
 	
+	"tags": ["github", "bitbucket", "private", "public"],
+	"attributes": {
+		"github": ["personal", "organization", "twitter", "github"],
+		"bitbucket": ["saas", "enterprise", "projects"]
+	},
+	"program": ["soajs"],
+	"documentation": {
+		"readme": "/README.md",
+		"release": "/RELEASE.md"
+	},
+	
 	"gitAccounts": {
 		"github" : {},
 		"bitbucket": {
