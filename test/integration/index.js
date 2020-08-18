@@ -41,8 +41,8 @@ describe("starting integration tests", () => {
 		});
 	});
 	
-	it("loading tests", (done) => {
-		require("./git.test.js");
+	it("loading USE Case", (done) => {
+		require("./UC1/test.js");
 		done();
 	});
 	

@@ -15,6 +15,7 @@ describe("Testing get Git API", () => {
 	let accountId;
 	let account;
 	let repo;
+	let tag;
 	before(function (done) {
 		done();
 	});
@@ -26,7 +27,7 @@ describe("Testing get Git API", () => {
 	
 	it("Step 1: login account github", (done) => {
 		let params = {
-			"body" : {
+			"body": {
 				"provider": "github",
 				"domain": "github.com",
 				"label": "soajs",
@@ -38,8 +39,8 @@ describe("Testing get Git API", () => {
 		requester('/git/account', 'post', params, (error, body) => {
 			assert.ifError(error);
 			assert.ok(body);
-			accountId = body.data.id.toString();
-			setTimeout(function(){
+			accountId = body.data.id.toString(body);
+			setTimeout(function () {
 				done();
 			}, 15000);
 		});
@@ -50,7 +51,7 @@ describe("Testing get Git API", () => {
 		requester('/git/accounts', 'get', params, (error, body) => {
 			assert.ifError(error);
 			assert.ok(body);
-			assert.deepStrictEqual(body.data.length , 1);
+			assert.deepStrictEqual(body.data.length, 1);
 			assert.deepStrictEqual(body.data[0]._id.toString(), accountId);
 			done();
 		});
@@ -58,7 +59,7 @@ describe("Testing get Git API", () => {
 	
 	it("Step 3: confirm account github", (done) => {
 		let params = {
-			"qs" : {
+			"qs": {
 				"id": accountId
 			}
 		};
@@ -72,9 +73,7 @@ describe("Testing get Git API", () => {
 	});
 	
 	it("Step 4: search repository github", (done) => {
-		let params = {
-		
-		};
+		let params = {};
 		requester('/git/repos', 'post', params, (error, body) => {
 			assert.ifError(error);
 			assert.ok(body);
@@ -85,7 +84,7 @@ describe("Testing get Git API", () => {
 	it("Step 5: search repository github", (done) => {
 		let params = {
 			body: {
-				name : "soajs.repositories"
+				name: "soajs.repositories"
 			}
 		};
 		requester('/git/repos', 'post', params, (error, body) => {
@@ -100,9 +99,9 @@ describe("Testing get Git API", () => {
 	it("Step 6: get file from repo", (done) => {
 		let params = {
 			qs: {
-				accountId : accountId,
-				repo : repo.repository,
-				filepath : 'config.js',
+				accountId: accountId,
+				repo: repo.repository,
+				filepath: 'config.js',
 				branch: "develop"
 			}
 		};
@@ -114,10 +113,91 @@ describe("Testing get Git API", () => {
 		});
 	});
 	
-	it("Step 7: get branches from repo", (done) => {
+	it("Step 7: get tags from repo", (done) => {
 		let params = {
 			qs: {
-				id : repo._id.toString(),
+				id: repo._id.toString(),
+			}
+		};
+		requester('/git/tags', 'get', params, (error, body) => {
+			assert.ifError(error);
+			assert.ok(body);
+			tag = body.data.tags[0].name;
+			if (!body.data) {
+				console.log(JSON.stringify(body, null, 2));
+			}
+			assert.ok(body.data);
+			done();
+		});
+	});
+	
+	it("Step 8: sync account", (done) => {
+		let params = {
+			qs: {
+				id: accountId,
+			}
+		};
+		requester('/git/sync/account', 'put', params, (error, body) => {
+			assert.ifError(error);
+			assert.ok(body);
+			assert.ok(body.data);
+			setTimeout(function () {
+				done();
+			}, 10000);
+		});
+	});
+	
+	it("Step 9: get repo", (done) => {
+		let params = {
+			qs: {
+				id: repo._id.toString(),
+			}
+		};
+		requester('/git/repo/', 'get', params, (error, body) => {
+			assert.ifError(error);
+			assert.ok(body);
+			assert.ok(body.data);
+			setTimeout(function () {
+				done();
+			}, 10000);
+		});
+	});
+	
+	it("Step 10: get repo info", (done) => {
+		let params = {
+			qs: {
+				id: repo._id.toString(),
+			}
+		};
+		requester('/git/repo/info', 'get', params, (error, body) => {
+			assert.ifError(error);
+			assert.ok(body);
+			assert.ok(body.data);
+			done();
+		});
+	});
+	
+	it("Step 11: activate repo", (done) => {
+		let params = {
+			qs: {
+				id: repo._id.toString(),
+				owner: account.owner,
+				provider: account.provider
+			}
+		};
+		requester('/git/repo/activate', 'put', params, (error, body) => {
+			assert.ifError(error);
+			assert.ok(body);
+			console.log(JSON.stringify(body, null, 2))
+			assert.ok(body.data);
+			done();
+		});
+	});
+	
+	it("Step 12: get branches from repo", (done) => {
+		let params = {
+			qs: {
+				id: repo._id.toString(),
 			}
 		};
 		requester('/git/branches', 'get', params, (error, body) => {
@@ -127,76 +207,12 @@ describe("Testing get Git API", () => {
 			done();
 		});
 	});
-	it("Step 8: get tags from repo", (done) => {
-		let params = {
-			qs: {
-				id : repo._id.toString(),
-			}
-		};
-		requester('/git/tags', 'get', params, (error, body) => {
-			assert.ifError(error);
-			assert.ok(body);
-			if (!body.data){
-				console.log(JSON.stringify(body, null,  2));
-			}
-			assert.ok(body.data);
-			done();
-		});
-	});
 	
-	it("Step 9: sync account", (done) => {
+	it("Step 13: sync repo ", (done) => {
 		let params = {
 			qs: {
-				id : accountId,
-			}
-		};
-		requester('/git/sync/account', 'put', params, (error, body) => {
-			assert.ifError(error);
-			assert.ok(body);
-			assert.ok(body.data);
-			setTimeout(function(){
-				done();
-			}, 10000);
-		});
-	});
-	
-	it("Step 10: get repo", (done) => {
-		let params = {
-			qs: {
-				id : repo._id.toString(),
-			}
-		};
-		requester('/git/repo/', 'get', params, (error, body) => {
-			assert.ifError(error);
-			assert.ok(body);
-			assert.ok(body.data);
-			setTimeout(function(){
-				done();
-			}, 10000);
-		});
-	});
-	
-	it("Step 11: activate repo", (done) => {
-		let params = {
-			qs: {
-				id : repo._id.toString(),
-				owner : account.owner,
-				provider: account.provider
-			}
-		};
-		requester('/git/repo/activate', 'put', params, (error, body) => {
-			assert.ifError(error);
-			assert.ok(body);
-			assert.ok(body.data);
-			done();
-		});
-	});
-	
-	it("Step 12: sync repo ", (done) => {
-		let params = {
-			qs: {
-				id : repo._id.toString(),
-				owner : account.owner,
+				id: repo._id.toString(),
+				owner: account.owner,
 				provider: account.provider
 			}
 		};
@@ -207,11 +223,11 @@ describe("Testing get Git API", () => {
 			done();
 		});
 	});
-	it("Step 13: activate branch ", (done) => {
+	it("Step 14: activate branch ", (done) => {
 		let params = {
 			qs: {
-				id : repo._id.toString(),
-				owner : account.owner,
+				id: repo._id.toString(),
+				owner: account.owner,
 				provider: account.provider,
 				branch: "develop"
 			}
@@ -219,18 +235,39 @@ describe("Testing get Git API", () => {
 		requester('/git/branch/activate', 'put', params, (error, body) => {
 			assert.ifError(error);
 			assert.ok(body);
-			if (!body.data){
-				console.log(JSON.stringify(body, null,  2));
+			if (!body.data) {
+				console.log(JSON.stringify(body, null, 2));
 			}
 			assert.ok(body.data);
 			done();
 		});
 	});
-	it("Step 14: sync branch ", (done) => {
+	
+	it("Step 15: get branch ", (done) => {
 		let params = {
 			qs: {
-				id : repo._id.toString(),
-				owner : account.owner,
+				owner: account.owner,
+				provider: account.provider,
+				repo: repo.name,
+				branch: "develop"
+			}
+		};
+		requester('/git/branch', 'get', params, (error, body) => {
+			assert.ifError(error);
+			assert.ok(body);
+			if (!body.data) {
+				console.log(JSON.stringify(body, null, 2));
+			}
+			assert.ok(body.data);
+			done();
+		});
+	});
+	
+	it("Step 16: sync branch ", (done) => {
+		let params = {
+			qs: {
+				id: repo._id.toString(),
+				owner: account.owner,
 				provider: account.provider,
 				branch: "develop"
 			}
@@ -238,18 +275,18 @@ describe("Testing get Git API", () => {
 		requester('/git/sync/branch', 'put', params, (error, body) => {
 			assert.ifError(error);
 			assert.ok(body);
-			if (!body.data){
-				console.log(JSON.stringify(body, null,  2));
+			if (!body.data) {
+				console.log(JSON.stringify(body, null, 2));
 			}
 			assert.ok(body.data);
 			done();
 		});
 	});
-	it("Step 15: deactivate branch ", (done) => {
+	it("Step 17: deactivate branch ", (done) => {
 		let params = {
 			qs: {
-				id : repo._id.toString(),
-				owner : account.owner,
+				id: repo._id.toString(),
+				owner: account.owner,
 				provider: account.provider,
 				branch: "develop"
 			}
@@ -257,18 +294,74 @@ describe("Testing get Git API", () => {
 		requester('/git/branch/deactivate', 'put', params, (error, body) => {
 			assert.ifError(error);
 			assert.ok(body);
-			if (!body.data){
-				console.log(JSON.stringify(body, null,  2));
+			if (!body.data) {
+				console.log(JSON.stringify(body, null, 2));
 			}
 			assert.ok(body.data);
 			done();
 		});
 	});
-	it("Step 16: deactivate repo ", (done) => {
+	it("Step 18: get tag ", (done) => {
 		let params = {
 			qs: {
-				id : repo._id.toString(),
-				owner : account.owner,
+				id: repo._id.toString(),
+				tag: tag
+			}
+		};
+		requester('/git/tag', 'get', params, (error, body) => {
+			assert.ifError(error);
+			assert.ok(body);
+			if (!body.data) {
+				console.log(JSON.stringify(body, null, 2));
+			}
+			assert.ok(body.data);
+			done();
+		});
+	});
+	it("Step 19: activate tag ", (done) => {
+		let params = {
+			qs: {
+				id: repo._id.toString(),
+				owner: account.owner,
+				provider: account.provider,
+				tag: tag
+			}
+		};
+		requester('/git/tag/activate', 'put', params, (error, body) => {
+			assert.ifError(error);
+			assert.ok(body);
+			if (!body.data) {
+				console.log(JSON.stringify(body, null, 2));
+			}
+			assert.ok(body.data);
+			done();
+		});
+	});
+	
+	it("Step 20: deactivate tag ", (done) => {
+		let params = {
+			qs: {
+				id: repo._id.toString(),
+				owner: account.owner,
+				provider: account.provider,
+				tag: tag
+			}
+		};
+		requester('/git/tag/deactivate', 'put', params, (error, body) => {
+			assert.ifError(error);
+			assert.ok(body);
+			if (!body.data) {
+				console.log(JSON.stringify(body, null, 2));
+			}
+			assert.ok(body.data);
+			done();
+		});
+	});
+	it("Step 21: deactivate repo ", (done) => {
+		let params = {
+			qs: {
+				id: repo._id.toString(),
+				owner: account.owner,
 				provider: account.provider,
 			}
 		};
@@ -279,33 +372,35 @@ describe("Testing get Git API", () => {
 			done();
 		});
 	});
-	it("Step 17: logout ", (done) => {
+	it("Step 22: delete repo ", (done) => {
 		let params = {
 			qs: {
-				id : accountId,
+				id: repo._id.toString()
 			}
 		};
-		requester('/git/account', 'delete', params, (error, body) => {
+		requester('/git/repo', 'delete', params, (error, body) => {
 			assert.ifError(error);
 			assert.ok(body);
 			assert.ok(body.data);
 			done();
 		});
 	});
-	
-	it("Step 18: delete repo ", (done) => {
-		let params = {
-			id : repo._id.toString()
-		};
-		requester('/git/repo', 'delete', params, (error, body) => {
+	it("Step 23: delete repo ", (done) => {
+		let params = {};
+		requester('/git/repositories', 'delete', params, (error, body) => {
 			assert.ifError(error);
 			assert.ok(body);
+			assert.ok(body.data);
 			done();
 		});
 	});
-	it("Step 19: delete repo ", (done) => {
-		let params = {};
-		requester('/git/repositories', 'delete', params, (error, body) => {
+	it("Step 24: logout ", (done) => {
+		let params = {
+			qs: {
+				id: accountId,
+			}
+		};
+		requester('/git/account', 'delete', params, (error, body) => {
 			assert.ifError(error);
 			assert.ok(body);
 			assert.ok(body.data);

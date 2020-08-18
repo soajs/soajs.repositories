@@ -88,9 +88,9 @@ module.exports = {
 		405: "Repository not found.",
 		406: "Username not found.",
 		407: "No need to upgrade.",
-		408: "Repository already active.",
+		408: "Repository is already active.",
 		409: "Repository is not active.",
-		410: "Branch is is not found",
+		410: "Branch is not found",
 		411: "Catalog validation",
 		412: "Branch is already active",
 		413: "Unable to logout. One or more repositories are active.",
@@ -263,7 +263,7 @@ module.exports = {
 			},
 			"/git/tag": {
 				"_apiInfo": {
-					"l": "Get repository tag",
+					"l": "Get repository tag information",
 					"group": "Repository information"
 				},
 				"id": {
@@ -283,7 +283,7 @@ module.exports = {
 			},
 			"/git/repo/file": {
 				"_apiInfo": {
-					"l": "Get a file from repository",
+					"l": "Get a file from the repository",
 					"group": "Repository management"
 				},
 				"accountId": {

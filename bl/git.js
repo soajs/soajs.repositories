@@ -190,8 +190,9 @@ let bl = {
 				config: data.config
 			};
 			driver.getFile(data, (error, fileContent) => {
+				bl.mp.closeModel(soajs, modelObj);
 				if (error) {
-					bl.mp.closeModel(soajs, modelObj);
+					
 					return cb(bl.handleError(soajs, 604, error));
 				}
 				return cb(null, {
