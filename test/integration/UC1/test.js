@@ -188,7 +188,6 @@ describe("Testing get Git API", () => {
 		requester('/git/repo/activate', 'put', params, (error, body) => {
 			assert.ifError(error);
 			assert.ok(body);
-			console.log(JSON.stringify(body, null, 2))
 			assert.ok(body.data);
 			done();
 		});

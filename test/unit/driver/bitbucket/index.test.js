@@ -448,6 +448,69 @@ describe("Unit test for: Drivers - bitbucket, index", () => {
 		});
 	});
 	
+	describe("Testing listTags", () => {
+		before((done) => {
+			done();
+		});
+		
+		afterEach((done) => {
+			sinon.restore();
+			done();
+		});
+		after(function (done) {
+			done();
+		});
+		
+		it("Success", (done) => {
+			let data = {
+				"provider": "github",
+				"domain": "github.com",
+				"label": "Soajs",
+				"username": "soajs",
+				"type": "personal",
+				"access": "private",
+				"password": "***",
+				"on2fa": "123"
+			};
+			sinon.stub(bitbucketHelper, 'listTags').callsFake(function fakeFn(self, data, cb) {
+				return cb(null, {
+					values: [{
+						name: "1.1"
+					}]
+				});
+			});
+			driver = new Bitbucket(service, data);
+			driver.listTags({}, (err, response) => {
+				assert.ifError(err);
+				assert.deepStrictEqual(response, [{
+					name: "1.1"
+				}]);
+				done();
+			});
+		});
+		
+		it("fail", (done) => {
+			let data = {
+				"provider": "github",
+				"domain": "github.com",
+				"label": "Soajs",
+				"username": "soajs",
+				"type": "personal",
+				"access": "private",
+				"password": "***",
+				"on2fa": "123"
+			};
+			sinon.stub(bitbucketHelper, 'listTags').callsFake(function fakeFn(self, data, cb) {
+				return cb(true);
+			});
+			driver = new Bitbucket(service, data);
+			driver.listTags(data, (err) => {
+				assert.ok(err);
+				done();
+			});
+		});
+	});
+	
 	describe("Testing getFile", () => {
 		before((done) => {
 			done();
@@ -544,6 +607,36 @@ describe("Unit test for: Drivers - bitbucket, index", () => {
 			});
 		});
 		
+		it("Success commit", (done) => {
+			let data = {
+				"provider": "github",
+				"domain": "github.com",
+				"label": "Soajs",
+				"username": "soajs",
+				"type": "personal",
+				"access": "private",
+				"password": "***",
+				"commit": "123"
+			};
+			sinon.stub(bitbucketHelper, 'getBranch').callsFake(function fakeFn(self, data, cb) {
+				return cb(null, {
+					name : "master",
+					target: {
+						"hash": "123"
+					}
+				});
+			});
+			driver = new Bitbucket(service, data);
+			driver.getBranch(data, (err, response) => {
+				assert.ifError(err);
+				assert.deepStrictEqual(response,  {
+					name: "master",
+					commit: "123"
+				});
+				done();
+			});
+		});
+		
 		it("fail no branch", (done) => {
 			let data = {
 				"provider": "github",
@@ -581,6 +674,84 @@ describe("Unit test for: Drivers - bitbucket, index", () => {
 			});
 			driver = new Bitbucket(service, data);
 			driver.getBranch(data, (err) => {
+				assert.ok(err);
+				done();
+			});
+		});
+	});
+	
+	describe("Testing getTag", () => {
+		before((done) => {
+			done();
+		});
+		
+		afterEach((done) => {
+			sinon.restore();
+			done();
+		});
+		after(function (done) {
+			done();
+		});
+		
+		it("Success", (done) => {
+			let data = {
+				"provider": "github",
+				"domain": "github.com",
+				"label": "Soajs",
+				"username": "soajs",
+				"type": "personal",
+				"access": "private",
+				"password": "***",
+			};
+			sinon.stub(bitbucketHelper, 'getTag').callsFake(function fakeFn(self, data, cb) {
+				return cb(null, {
+					name : "1.1"
+				});
+			});
+			driver = new Bitbucket(service, data);
+			driver.getTag(data, (err, response) => {
+				assert.ifError(err);
+				assert.deepStrictEqual(response,  "1.1");
+				done();
+			});
+		});
+		
+		it("fail no tag", (done) => {
+			let data = {
+				"provider": "github",
+				"domain": "github.com",
+				"label": "Soajs",
+				"username": "soajs",
+				"type": "personal",
+				"access": "private",
+				"password": "***",
+			};
+			sinon.stub(bitbucketHelper, 'getTag').callsFake(function fakeFn(self, data, cb) {
+				return cb(null, null);
+			});
+			driver = new Bitbucket(service, data);
+			driver.getTag(data, (err) => {
+				assert.ok(err);
+				done();
+			});
+		});
+		
+		it("fail", (done) => {
+			let data = {
+				"provider": "github",
+				"domain": "github.com",
+				"label": "Soajs",
+				"username": "soajs",
+				"type": "personal",
+				"access": "private",
+				"password": "***",
+				"on2fa": "123"
+			};
+			sinon.stub(bitbucketHelper, 'getTag').callsFake(function fakeFn(self, data, cb) {
+				return cb(true);
+			});
+			driver = new Bitbucket(service, data);
+			driver.getTag(data, (err) => {
 				assert.ok(err);
 				done();
 			});

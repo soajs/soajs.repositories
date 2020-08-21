@@ -388,6 +388,70 @@ describe("Unit test for: Drivers - bitbucket_enterprise, index", () => {
 		});
 	});
 	
+	describe("Testing listTags", () => {
+		before((done) => {
+			
+			done();
+		});
+		
+		afterEach((done) => {
+			sinon.restore();
+			done();
+		});
+		after(function (done) {
+			done();
+		});
+		
+		it("Success", (done) => {
+			let data = {
+				"provider": "bitbucket_enterprise",
+				"domain": "http://localhost:7990",
+				"label": "Ragheb",
+				"username": "ragheb",
+				"type": "personal",
+				"access": "private",
+				"token": "123"
+			};
+			sinon.stub(bitbucketHelper, 'listTags').callsFake(function fakeFn(self, data, cb) {
+				return cb(null, {
+						values: [{
+							displayId: "1.1"
+						}]
+					}
+				);
+			});
+			driver = new Bitbucket_enterprise(service, data);
+			driver.listTags(data, (err, records) => {
+				assert.ifError(err);
+				assert.ok(records);
+				assert.deepStrictEqual(records, [{
+					name: "1.1"
+				}]);
+				done();
+			});
+		});
+		
+		it("fail", (done) => {
+			let data = {
+				"provider": "bitbucket_enterprise",
+				"domain": "http://localhost:7990",
+				"label": "Ragheb",
+				"username": "ragheb",
+				"type": "personal",
+				"access": "private",
+				"token": "123"
+			};
+			sinon.stub(bitbucketHelper, 'listTags').callsFake(function fakeFn(self, data, cb) {
+				return cb(true);
+			});
+			driver = new Bitbucket_enterprise(service, data);
+			driver.listTags(data, (err) => {
+				assert.ok(err);
+				done();
+			});
+		});
+	});
+	
 	describe("Testing getBranch", () => {
 		before((done) => {
 			done();
@@ -443,6 +507,65 @@ describe("Unit test for: Drivers - bitbucket_enterprise, index", () => {
 			});
 			driver = new Bitbucket_enterprise(service, data);
 			driver.getBranch(data, (err) => {
+				assert.ok(err);
+				done();
+			});
+		});
+	});
+	
+	describe("Testing getTag", () => {
+		before((done) => {
+			done();
+		});
+		
+		afterEach((done) => {
+			sinon.restore();
+			done();
+		});
+		after(function (done) {
+			done();
+		});
+		
+		it("Success", (done) => {
+			let data = {
+				"provider": "bitbucket_enterprise",
+				"domain": "http://localhost:7990",
+				"label": "Ragheb",
+				"username": "ragheb",
+				"type": "personal",
+				"access": "private",
+				"token": "123",
+				"branch": "master"
+			};
+			sinon.stub(bitbucketHelper, 'getTag').callsFake(function fakeFn(self, data, cb) {
+				return cb(null, {
+						name: "1.1"
+					}
+				);
+			});
+			driver = new Bitbucket_enterprise(service, data);
+			driver.getTag(data, (err, record) => {
+				assert.ok(record);
+				assert.deepStrictEqual(record.name, '1.1');
+				done();
+			});
+		});
+		it("fail", (done) => {
+			let data = {
+				"provider": "bitbucket_enterprise",
+				"domain": "http://localhost:7990",
+				"label": "Ragheb",
+				"username": "ragheb",
+				"type": "personal",
+				"access": "private",
+				"token": "123",
+				"branch": "master"
+			};
+			sinon.stub(bitbucketHelper, 'getTag').callsFake(function fakeFn(self, data, cb) {
+				return cb(true);
+			});
+			driver = new Bitbucket_enterprise(service, data);
+			driver.getTag(data, (err) => {
 				assert.ok(err);
 				done();
 			});

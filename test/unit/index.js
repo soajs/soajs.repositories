@@ -33,16 +33,22 @@ describe("Starting Unit test", () => {
 	
 	it("Unit test for Lib", (done) => {
 		require("./lib/index.test.js");
+		
+		require("./lib/catalog/config/index.js");
+		require("./lib/catalog/custom/index.js");
+		require("./lib/catalog/daemon/index.js");
+		require("./lib/catalog/service/index.js");
+		require("./lib/catalog/static/index.js");
 		done();
 	});
-	
+
     it("Unit test for Model", (done) => {
 	   require("./model/mongo/git.test.js");
         done();
     });
-	
+
 	it("Unit test for Drivers", (done) => {
-		
+
 		require("./driver/github/index.test.js");
 		require("./driver/github/helper.test.js");
 		require("./driver/bitbucket/index.test.js");

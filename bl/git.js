@@ -41,7 +41,7 @@ let bl = {
 			return modelObj;
 		},
 		"getDriver": (data) => {
-			return new bl.drivers[data.provider](bl.soajs_service, data);
+			return data.provider && bl.drivers[data.provider] ? new bl.drivers[data.provider](bl.soajs_service, data) : null;
 		},
 		"closeModel": (soajs, modelObj) => {
 			if (soajs && soajs.tenant && soajs.tenant.type === "client" && soajs.tenant.dbConfig) {
@@ -154,9 +154,11 @@ let bl = {
 					name: repo.name,
 					owner: repo.owner,
 					provider: repo.provider,
-					access: accountRecord.access,
-					token: accountRecord.token
+					access: accountRecord.access
 				};
+				if (accountRecord.token) {
+					response.token = accountRecord.token;
+				}
 				return cb(null, response);
 			});
 		});
@@ -768,7 +770,7 @@ let bl = {
 						lib.deleteCatalog_src(soajs, opts, callback);
 					}
 				],
-				() => {
+				(err) => {
 					bl.mp.closeModel(soajs, modelObj);
 					if (err) {
 						return cb(bl.handleError(soajs, 602, err));
@@ -906,7 +908,7 @@ let bl = {
 			if (results.repo.tags && results.repo.tags.length > 0) {
 				let found = false;
 				for (let x = 0; x < results.repo.tags.length; x++) {
-					if (results.repo.tags[x].name === inputmaskData.tags && results.repo.tags[x].active) {
+					if (results.repo.tags[x].name === inputmaskData.tag && results.repo.tags[x].active) {
 						found = true;
 						break;
 					}
@@ -1176,9 +1178,9 @@ let bl = {
 				repository: results.repo.repository
 			};
 			driver.listBranches(data, (error, branches) => {
-				if (err) {
+				if (error) {
 					bl.mp.closeModel(soajs, modelObj);
-					return cb(bl.handleError(soajs, 602, err));
+					return cb(bl.handleError(soajs, 602, error));
 				}
 				data = {
 					_id: results.repo._id

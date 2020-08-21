@@ -16,7 +16,7 @@ module.exports = {
 		cpu: '',
 		memory: ''
 	},
-	"serviceVersion": 1,
+	"serviceVersion": "1",
 	"serviceName": "repositories",
 	"serviceGroup": "Console",
 	"servicePort": 4006,

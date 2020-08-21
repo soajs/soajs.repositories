@@ -545,4 +545,122 @@ describe("Unit test for: Drivers - github, helper", () => {
 			});
 		});
 	});
+	
+	describe("Testing listTags", () => {
+		before((done) => {
+			done();
+		});
+		
+		afterEach((done) => {
+			sinon.restore();
+			done();
+		});
+		after(function (done) {
+			done();
+		});
+		
+		it("Success ", (done) => {
+			let self = {
+				github: {
+					repos: {
+						listTags: () => {
+							return new Promise((resolve, reject) => {
+								resolve({
+									body: true
+								});
+								reject(true);
+							});
+						}
+					}
+				}
+			};
+			let data = {
+				repository: "soajs/soajs.repositories",
+				page: 1,
+				per_page: 10
+			};
+			helperFile.listTags(self, data, () => {
+				done();
+			});
+		});
+		
+		it("fail ", (done) => {
+			let self = {
+				github: {
+					repos: {
+						listTags: () => {
+							return new Promise((resolve, reject) => {
+								reject(true);
+							});
+						}
+					}
+				}
+			};
+			let data = {
+				repository: "soajs/soajs.repositories"
+			};
+			helperFile.listTags(self, data, () => {
+				done();
+			});
+		});
+	});
+	
+	describe("Testing getTag", () => {
+		before((done) => {
+			done();
+		});
+		
+		afterEach((done) => {
+			sinon.restore();
+			done();
+		});
+		after(function (done) {
+			done();
+		});
+		
+		it("Success ", (done) => {
+			let self = {
+				github: {
+					git: {
+						getRef: () => {
+							return new Promise((resolve, reject) => {
+								resolve({
+									body: true
+								});
+								reject(true);
+							});
+						}
+					}
+				}
+			};
+			let data = {
+				repository: "soajs/soajs.repositories",
+				tag: "1.1"
+			};
+			helperFile.getTag(self, data, () => {
+				done();
+			});
+		});
+		
+		it("fail ", (done) => {
+			let self = {
+				github: {
+					git: {
+						getRef: () => {
+							return new Promise((resolve, reject) => {
+								reject(true);
+							});
+						}
+					}
+				}
+			};
+			let data = {
+				repository: "soajs/soajs.repositories",
+				tag: "1.1"
+			};
+			helperFile.getTag(self, data, () => {
+				done();
+			});
+		});
+	});
 });
