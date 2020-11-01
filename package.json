@@ -1,7 +1,7 @@
 {
   "name": "soajs.repositories",
   "description": "soajs Repositories service",
-  "version": "1.0.16",
+  "version": "1.0.17",
   "author": {
     "name": "soajs team",
     "email": "team@soajs.org"
