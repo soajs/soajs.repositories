@@ -468,7 +468,7 @@ describe("Unit test for: Drivers - github, index", () => {
 			driver.getFile(data, (err, res) => {
 				assert.ifError(err);
 				assert.deepStrictEqual(res, {
-					content: new Buffer("random content", 'base64').toString()
+					content: new Buffer.from("random content", 'base64').toString()
 				});
 				done();
 			});

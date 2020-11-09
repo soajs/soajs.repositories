@@ -22,7 +22,7 @@ function Bitbucket_enterprise(service, data) {
 	if (data.token) {
 		__self.token = data.token;
 	} else if (__self.access === "private") {
-		__self.token = new Buffer(data.username + ":" + data.password).toString('base64');
+		__self.token = new Buffer.from(data.username + ":" + data.password).toString('base64');
 	}
 	service.log.debug("Bitbucket Enterprise Git Init!");
 }

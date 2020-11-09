@@ -156,7 +156,7 @@ Github.prototype.getFile = function (data, cb) {
 			return cb(err);
 		}
 		return cb(null, {
-			content: response.content ? new Buffer(response.content, 'base64').toString() : response,
+			content: response.content ? new Buffer.from(response.content, 'base64').toString() : response,
 		});
 	});
 };
