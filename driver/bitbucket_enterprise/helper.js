@@ -17,7 +17,7 @@ function requester(options, cb) {
 	}
 	options.headers['Content-Type'] = 'application/json';
 	request(options, function (error, response, body) {
-		return cb(error, body);
+		return cb(error, body, (response ? response.statusCode : null));
 	});
 }
 
@@ -39,26 +39,24 @@ const helper = {
 		};
 		if (self.token) {
 			options.headers = {
-				Authorization: 'Basic ' + self.token
+				Authorization: 'Bearer ' + self.token
 			};
 		}
-		requester(options, function (error, record) {
+		requester(options, function (error, record, statusCode) {
+			if (statusCode === 200 && record && record.id) {
+				self.id = record.id;
+				return cb(null, record);
+			}
 			if (error) {
-				return cb(error);
+				return cb(error, null);
 			}
 			if (!record || typeof record !== "object") {
-				return cb({message: 'User does not exist'});
+				return cb(new Error ("User does not exist"), null);
 			}
-			if (record.errors) {
-				return cb(record.errors);
+			if (record.errors && record.errors[0] && record.errors[0].message) {
+				return cb(new Error (record.errors[0].message), null);
 			}
-			if (record.message && record.message.search("'status-code': 404")){
-				return cb({message: "Domain not found!"});
-			}
-			if (record.id) {
-				self.id = record.id;
-			}
-			return cb(null, record);
+			return cb(new Error ("Unable to login"), null);
 		});
 	},
 	"getRepositories": (self, data, cb) => {

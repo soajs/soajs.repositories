@@ -122,11 +122,11 @@ describe("Testing get Git API", () => {
 		requester('/git/tags', 'get', params, (error, body) => {
 			assert.ifError(error);
 			assert.ok(body);
-			tag = body.data.tags[0].name;
 			if (!body.data) {
 				console.log(JSON.stringify(body, null, 2));
 			}
 			assert.ok(body.data);
+			tag = body.data.tags[0].name;
 			done();
 		});
 	});
