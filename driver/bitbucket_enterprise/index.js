@@ -158,10 +158,14 @@ Bitbucket_enterprise.prototype.getBranch = function (data, cb) {
 		if (response && response.values && response.values.length > 0) {
 			response.values.forEach((oneValue) => {
 				if (oneValue.displayId === data.branch) {
-					branch = {
-						name: data.branch,
-						commit: data.latestCommit
-					};
+					if (data.commit) {
+						branch = {
+							name: data.branch,
+							commit: oneValue.latestCommit
+						};
+					} else {
+						branch = data.branch;
+					}
 				}
 			});
 		}
@@ -175,7 +179,11 @@ Bitbucket_enterprise.prototype.getTag = function (data, cb) {
 		if (err) {
 			return cb(err);
 		}
-		return cb(null, response);
+		if (response && response.displayId) {
+			return cb(null, {"name": response.displayId});
+		} else {
+			return cb(null, null);
+		}
 	});
 };
 

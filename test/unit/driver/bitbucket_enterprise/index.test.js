@@ -487,7 +487,7 @@ describe("Unit test for: Drivers - bitbucket_enterprise, index", () => {
 			driver = new Bitbucket_enterprise(service, data);
 			driver.getBranch(data, (err, record) => {
 				assert.ok(record);
-				assert.deepStrictEqual(record.name, 'master');
+				assert.deepStrictEqual(record, 'master');
 				done();
 			});
 		});
@@ -539,7 +539,7 @@ describe("Unit test for: Drivers - bitbucket_enterprise, index", () => {
 			};
 			sinon.stub(bitbucketHelper, 'getTag').callsFake(function fakeFn(self, data, cb) {
 				return cb(null, {
-						name: "1.1"
+					displayId: "1.1"
 					}
 				);
 			});

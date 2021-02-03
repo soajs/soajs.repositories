@@ -406,15 +406,9 @@ describe("Unit test for: Drivers - bitbucket_enterprise, helper", () => {
 			};
 			let repoInfo = data.repository.split('/');
 			nock(config.gitAccounts.bitbucket_enterprise.apiDomain.replace("%PROVIDER_DOMAIN%", self.domain))
-				.get(config.gitAccounts.bitbucket_enterprise.routes.getTags.replace('%PROJECT_NAME%', repoInfo[0]).replace('%REPO_NAME%', repoInfo[1]).replace("%TAG_NAME%", data.tag))
+				.get(config.gitAccounts.bitbucket_enterprise.routes.getTag.replace('%PROJECT_NAME%', repoInfo[0]).replace('%REPO_NAME%', repoInfo[1]).replace("%TAG_NAME%", data.tag))
 				.reply(200, {
-					"size": 1,
-					"limit": 100,
-					"isLastPage": true,
-					"values": [
-						{}
-					],
-					"start": 0
+					"displayId": "1.1"
 				});
 			helperFile.getTag(self, data, (err, res) => {
 				assert.ok(res);
@@ -494,7 +488,7 @@ describe("Unit test for: Drivers - bitbucket_enterprise, helper", () => {
 					start: 0
 				})
 				.replyWithError('something awful happened');
-				helperFile.getFile(self, data, (err) => {
+			helperFile.getFile(self, data, (err) => {
 				assert.ok(err);
 				done();
 			});

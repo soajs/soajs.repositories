@@ -71,7 +71,7 @@ const helper = {
 		};
 		if (self.token) {
 			options.headers = {
-				Authorization: 'Basic ' + self.token
+				Authorization: 'Bearer ' + self.token
 			};
 		}
 		requester(options, cb);
@@ -84,7 +84,7 @@ const helper = {
 		};
 		if (self.token) {
 			options.headers = {
-				Authorization: 'Basic ' + self.token
+				Authorization: 'Bearer ' + self.token
 			};
 		}
 		requester(options, cb);
@@ -103,7 +103,7 @@ const helper = {
 		}
 		if (self.token) {
 			options.headers = {
-				Authorization: 'Basic ' + self.token
+				Authorization: 'Bearer ' + self.token
 			};
 		}
 		requester(options, cb);
@@ -118,7 +118,7 @@ const helper = {
 		};
 		if (self.token) {
 			options.headers = {
-				Authorization: 'Basic ' + self.token
+				Authorization: 'Bearer ' + self.token
 			};
 		}
 		requester(options, cb);
@@ -129,11 +129,11 @@ const helper = {
 		const options = {
 			method: 'GET',
 			url: data.config.gitAccounts.bitbucket_enterprise.apiDomain.replace("%PROVIDER_DOMAIN%", self.domain) +
-				data.config.gitAccounts.bitbucket_enterprise.routes.getTags.replace('%PROJECT_NAME%', repoInfo[0]).replace('%REPO_NAME%', repoInfo[1]).replace("%TAG_NAME%", data.tag)
+				data.config.gitAccounts.bitbucket_enterprise.routes.getTag.replace('%PROJECT_NAME%', repoInfo[0]).replace('%REPO_NAME%', repoInfo[1]).replace("%TAG_NAME%", data.tag)
 		};
 		if (self.token) {
 			options.headers = {
-				Authorization: 'Basic ' + self.token
+				Authorization: 'Bearer ' + self.token
 			};
 		}
 		requester(options, cb);
@@ -157,7 +157,7 @@ const helper = {
 		
 		if (self.token) {
 			options.headers = {
-				Authorization: 'Basic ' + self.token
+				Authorization: 'Bearer ' + self.token
 			};
 		}
 		let lines = [];
@@ -166,27 +166,29 @@ const helper = {
 		
 		function getFile(start, cb) {
 			options.qs.start = start;
-			requester(options, (err, response) => {
+			requester(options, (err, response, statusCode) => {
 				if (err) {
 					return cb(err);
 				}
-				if (response.errors) {
-					return cb(response.errors);
+				if (response) {
+					if (response.errors && response.errors[0] && response.errors[0].message) {
+						return cb(new Error(response.errors[0].message), null);
+					}
+					if (statusCode === 200) {
+						if (response.lines) {
+							lines = lines.concat(response.lines);
+						}
+						if (options.qs.start > max) {
+							return cb(new Error("File is too Large"));
+						}
+						if (!response.isLastPage) {
+							return getFile((response.start + response.size), cb);
+						} else {
+							return cb(null, {lines: lines});
+						}
+					}
 				}
-				if (response["status-code"] === 404) {
-					return cb(response);
-				}
-				if (response.lines) {
-					lines = lines.concat(response.lines);
-				}
-				if (options.qs.start > max) {
-					return cb({message: "File is too Large"});
-				}
-				if (!response.isLastPage) {
-					return getFile((response.start + response.size), cb);
-				} else {
-					return cb(null, {lines: lines});
-				}
+				return (new Error ("File not found"));
 			});
 		}
 		
