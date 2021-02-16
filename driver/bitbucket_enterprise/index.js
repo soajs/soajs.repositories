@@ -33,7 +33,7 @@ Bitbucket_enterprise.prototype.createRepositoryRecord = function (data) {
 		repository: data.project.key + "/" + data.name,
 		name: data.name,
 		type: "repository",
-		owner: data.project.key,
+		owner: (data.project.owner && data.project.owner.name) ? data.project.owner.name : __self.username,
 		provider: __self.provider,
 		source: {
 			name: __self.username,

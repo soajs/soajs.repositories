@@ -63,6 +63,7 @@ describe("Unit test for: Drivers - bitbucket_enterprise, index", () => {
 				"statusMessage": "Available",
 				"forkable": true,
 				"project": {
+					"owner": {"name": "NEW"},
 					"key": "NEW",
 					"id": 22,
 					"name": "newPr",
@@ -539,7 +540,7 @@ describe("Unit test for: Drivers - bitbucket_enterprise, index", () => {
 			};
 			sinon.stub(bitbucketHelper, 'getTag').callsFake(function fakeFn(self, data, cb) {
 				return cb(null, {
-					displayId: "1.1"
+						displayId: "1.1"
 					}
 				);
 			});

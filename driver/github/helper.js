@@ -142,7 +142,7 @@ const helper = {
 		if (data.page){
 			opts.page = data.page;
 		}
-		if (data.per_page){
+		if (data.size){
 			opts.per_page = data.size;
 		}
 		self.github.repos.listTags(opts).then(({data}) => {
