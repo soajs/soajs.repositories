@@ -248,14 +248,12 @@ module.exports = {
 				},
 				"page": {
 					"source": ['query.page'],
-					"required": false,
 					"validation": {
 						"type": "string"
 					}
 				},
 				"size": {
 					"source": ['query.size'],
-					"required": false,
 					"validation": {
 						"type": "string"
 					}
@@ -331,14 +329,12 @@ module.exports = {
 				},
 				"password": {
 					"source": ['body.password'],
-					"required": false,
 					"validation": {
 						"type": "string"
 					}
 				},
 				"token": {
 					"source": ['body.token'],
-					"required": false,
 					"validation": {
 						"type": "string"
 					}
@@ -383,14 +379,12 @@ module.exports = {
 				},
 				"oauthKey": {
 					"source": ['body.oauthKey'],
-					"required": false,
 					"validation": {
 						"type": "string"
 					}
 				},
 				"oauthSecret": {
 					"source": ['body.oauthSecret'],
-					"required": false,
 					"validation": {
 						"type": "string"
 					}
@@ -403,21 +397,18 @@ module.exports = {
 				},
 				"name": {
 					"source": ['body.name'],
-					"required": false,
 					"validation": {
 						"type": "string"
 					}
 				},
 				"active": {
 					"source": ['body.active'],
-					"required": false,
 					"validation": {
 						"type": "boolean"
 					}
 				},
 				"owner": {
 					"source": ['body.owner'],
-					"required": false,
 					"validation": {
 						'type': 'array',
 						"uniqueItems": true,
@@ -426,7 +417,6 @@ module.exports = {
 				},
 				"provider": {
 					"source": ['body.provider'],
-					"required": false,
 					"validation": {
 						'type': 'array',
 						"uniqueItems": true,
@@ -435,28 +425,24 @@ module.exports = {
 				},
 				"textSearch": {
 					"source": ['body.textSearch'],
-					"required": false,
 					"validation": {
 						"type": "string"
 					}
 				},
 				"skip": {
 					"source": ['body.skip'],
-					"required": false,
 					"validation": {
 						"type": "integer"
 					}
 				},
 				"limit": {
 					"source": ['body.limit'],
-					"required": false,
 					"validation": {
 						"type": "integer"
 					}
 				},
 				"leaf": {
 					"source": ['body.leaf'],
-					"required": false,
 					"validation": {
 						"type": "boolean"
 					}
@@ -498,28 +484,24 @@ module.exports = {
 				},
 				"password": {
 					"source": ['body.password'],
-					"required": false,
 					"validation": {
 						"type": "string"
 					}
 				},
 				"token": {
 					"source": ['body.token'],
-					"required": false,
 					"validation": {
 						"type": "string"
 					}
 				},
 				"oauthKey": {
 					"source": ['body.oauthKey'],
-					"required": false,
 					"validation": {
 						"type": "string"
 					}
 				},
 				"oauthSecret": {
 					"source": ['body.oauthSecret'],
-					"required": false,
 					"validation": {
 						"type": "string"
 					}
@@ -792,7 +774,6 @@ module.exports = {
 				},
 				"password": {
 					"source": ['query.password'],
-					"required": false,
 					"validation": {
 						"type": "string"
 					}
