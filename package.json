@@ -1,7 +1,7 @@
 {
   "name": "soajs.repositories",
   "description": "soajs Repositories service",
-  "version": "1.0.22",
+  "version": "1.0.23",
   "author": {
     "name": "soajs team",
     "email": "team@soajs.org"
@@ -30,8 +30,8 @@
     "mocha": "6.2.2",
     "nock": "11.7.2",
     "request": "2.88.2",
-    "soajs.controller": "4.0.35",
-    "soajs.marketplace": "1.0.37",
+    "soajs.controller": "4.0.36",
+    "soajs.marketplace": "1.0.38",
     "sinon": "8.1.1"
   },
   "dependencies": {
@@ -40,7 +40,7 @@
     "lodash": "4.17.21",
     "parse-url": "5.0.2",
     "shortid": "2.2.16",
-    "soajs": "4.0.21",
+    "soajs": "4.0.22",
     "yamljs": "0.3.0"
   }
 }
