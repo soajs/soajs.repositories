@@ -77,7 +77,7 @@ let bl = {
 		let data = {
 			owner: inputmaskData.owner,
 			provider: inputmaskData.provider,
-			token:  inputmaskData.token
+			token: inputmaskData.token
 		};
 		modelObj.getAccount(data, (err, accountRecord) => {
 			bl.mp.closeModel(soajs, modelObj);
@@ -235,7 +235,7 @@ let bl = {
 			if (err) {
 				return cb(bl.handleError(soajs, 602, err));
 			}
-			if (!repos || repos.length === 0 ) {
+			if (!repos || repos.length === 0) {
 				return cb(bl.handleError(soajs, 405, err));
 			}
 			let repo = repos[0];
@@ -1185,7 +1185,12 @@ let bl = {
 				data = {
 					_id: results.repo._id
 				};
-				data.branches = _.unionBy(results.repo.branches ? results.repo.branches : [], branches, "name");
+				if (results.repo.branches) {
+					let intersect = _.intersectionBy(results.repo.branches, branches, "name");
+					data.branches = _.unionBy(intersect, branches, "name");
+				} else {
+					data.branches = branches;
+				}
 				modelObj.activateSyncRepo(data, (err) => {
 					bl.mp.closeModel(soajs, modelObj);
 					if (err) {

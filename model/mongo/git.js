@@ -89,9 +89,9 @@ Git.prototype.getAccount = function (data, cb) {
 	let condition = {};
 	condition.type = "account";
 	let options = {};
-	if (!data.token){
+	if (!data.token) {
 		options.projection = {
-			token : 0
+			token: 0
 		};
 	}
 	if (data.id) {
@@ -258,8 +258,8 @@ Git.prototype.getAccounts = function (cb) {
 		type: "account"
 	};
 	let options = {
-		projection : {
-			token : 0,
+		projection: {
+			token: 0,
 			tokenId: 0
 		}
 	};
@@ -371,7 +371,7 @@ Git.prototype.updateTags = function (data, cb) {
 	};
 	let fields = {};
 	let options = {'upsert': false, 'safe': true};
-	if (data.active){
+	if (data.active) {
 		fields = {
 			'$push': {
 				tags: {
@@ -381,8 +381,7 @@ Git.prototype.updateTags = function (data, cb) {
 				}
 			}
 		};
-	}
-	else {
+	} else {
 		fields = {
 			'$pull': {
 				tags: {
@@ -468,20 +467,22 @@ Git.prototype.searchRepositories = function (data, cb) {
 	let options = {
 		"skip": 0,
 		"limit": 100,
-		// "sort": {}
+		"sort": {
+			"name": 1
+		}
 	};
 	
 	if (data.name) {
 		condition.name = data.name;
 	}
 	if (data.provider) {
-		condition.provider = { $in: data.provider};
+		condition.provider = {$in: data.provider};
 	}
 	if (data.active) {
 		condition.active = data.active;
 	}
 	if (data.owner) {
-		condition.owner = { $in: data.owner};
+		condition.owner = {$in: data.owner};
 	}
 	if (data.textSearch) {
 		condition.$text = {
@@ -525,7 +526,7 @@ Git.prototype.countSearchRepositories = function (data, cb) {
 		condition.active = data.active;
 	}
 	if (data.owner) {
-		condition.owner = { $in: data.owner};
+		condition.owner = {$in: data.owner};
 	}
 	if (data.textSearch) {
 		condition.$text = {
