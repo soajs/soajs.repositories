@@ -38,7 +38,7 @@
     "@octokit/rest": "18.2.0",
     "async": "3.2.0",
     "lodash": "4.17.21",
-    "parse-url": "5.0.2",
+    "parse-url": "5.0.3",
     "shortid": "2.2.16",
     "soajs": "4.0.24",
     "yamljs": "0.3.0"
