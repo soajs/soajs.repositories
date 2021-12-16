@@ -14,7 +14,5 @@ module.exports = {
     "batchSize": 1000
   },
   "URLParam": {
-    "maxPoolSize": 2,
-    "bufferMaxEntries": 0
   }
 };

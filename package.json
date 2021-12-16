@@ -30,17 +30,17 @@
     "mocha": "6.2.2",
     "nock": "11.7.2",
     "request": "2.88.2",
-    "soajs.controller": "4.0.39",
-    "soajs.marketplace": "1.0.43",
+    "soajs.controller": "4.0.48",
+    "soajs.marketplace": "1.0.46",
     "sinon": "8.1.1"
   },
   "dependencies": {
     "@octokit/rest": "18.2.0",
-    "async": "3.2.0",
+    "async": "3.2.2",
     "lodash": "4.17.21",
     "parse-url": "5.0.2",
     "shortid": "2.2.16",
-    "soajs": "4.0.26",
+    "soajs": "4.0.33",
     "yamljs": "0.3.0"
   }
 }
