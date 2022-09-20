@@ -42,8 +42,6 @@ describe("Unit test for: Model - git", () => {
 							],
 							"credentials": null,
 							"URLParam": {
-								"poolSize": 5,
-								"autoReconnect": true
 							}
 						}
 					}
@@ -68,6 +66,7 @@ describe("Unit test for: Model - git", () => {
 				provider: "github"
 			};
 			model.checkIfAccountExists(data, (err, id) => {
+				console.log(err, id)
 				assert.deepStrictEqual(id, 0);
 				done();
 			});
@@ -336,7 +335,7 @@ describe("Unit test for: Model - git", () => {
 				_id: accountID.id
 			};
 			model.deleteAccount(data, (err, record) => {
-				assert.deepStrictEqual(record.result.n, 1);
+				assert.deepStrictEqual(record.deletedCount, 1);
 				done();
 			});
 		});
