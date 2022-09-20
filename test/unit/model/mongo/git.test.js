@@ -66,7 +66,6 @@ describe("Unit test for: Model - git", () => {
 				provider: "github"
 			};
 			model.checkIfAccountExists(data, (err, id) => {
-				console.log(err, id)
 				assert.deepStrictEqual(id, 0);
 				done();
 			});
