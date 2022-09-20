@@ -334,7 +334,7 @@ describe("Unit test for: Model - git", () => {
 				_id: accountID.id
 			};
 			model.deleteAccount(data, (err, record) => {
-				assert.deepStrictEqual(record.result.n, 1);
+				assert.deepStrictEqual(record.deletedCount, 1);
 				done();
 			});
 		});
