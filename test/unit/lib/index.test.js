@@ -52,8 +52,6 @@ describe("Unit test for: index", () => {
 									],
 									"credentials": null,
 									"URLParam": {
-										"poolSize": 5,
-										"autoReconnect": true
 									}
 								}
 							}
@@ -148,8 +146,6 @@ describe("Unit test for: index", () => {
 									],
 									"credentials": null,
 									"URLParam": {
-										"poolSize": 5,
-										"autoReconnect": true
 									}
 								}
 							}
@@ -247,8 +243,6 @@ describe("Unit test for: index", () => {
 									],
 									"credentials": null,
 									"URLParam": {
-										"poolSize": 5,
-										"autoReconnect": true
 									}
 								}
 							}
@@ -347,8 +341,6 @@ describe("Unit test for: index", () => {
 									],
 									"credentials": null,
 									"URLParam": {
-										"poolSize": 5,
-										"autoReconnect": true
 									}
 								}
 							}
@@ -441,8 +433,6 @@ describe("Unit test for: index", () => {
 									],
 									"credentials": null,
 									"URLParam": {
-										"poolSize": 5,
-										"autoReconnect": true
 									}
 								}
 							}
@@ -538,8 +528,6 @@ describe("Unit test for: index", () => {
 									],
 									"credentials": null,
 									"URLParam": {
-										"poolSize": 5,
-										"autoReconnect": true
 									}
 								}
 							}

@@ -278,7 +278,7 @@ Git.prototype.deleteAccount = function (data, cb) {
 		type: "account",
 		_id: data._id
 	};
-	__self.mongoCore.deleteOne(colName, condition, (err, response) => {
+	__self.mongoCore.deleteOne(colName, condition, {}, (err, response) => {
 		return cb(err, response);
 	});
 };
@@ -434,11 +434,11 @@ Git.prototype.deleteRepo = function (data, cb) {
 				return cb(err, null);
 			}
 			condition._id = id;
-			__self.mongoCore.deleteOne(colName, condition, cb);
+			__self.mongoCore.deleteOne(colName, condition, {}, cb);
 		});
 	} else {
 		condition._id = data._id;
-		__self.mongoCore.deleteOne(colName, condition, cb);
+		__self.mongoCore.deleteOne(colName, condition, {}, cb);
 	}
 };
 
