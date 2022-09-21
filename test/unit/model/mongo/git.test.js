@@ -388,8 +388,6 @@ describe("Unit test for: Model - git", () => {
 				"index": "test",
 				"credentials": null,
 				"URLParam": {
-					"poolSize": 5,
-					"autoReconnect": true
 				},
 			}, null);
 			model.closeConnection();
@@ -409,8 +407,6 @@ describe("Unit test for: Model - git", () => {
 				"index": "test",
 				"credentials": null,
 				"URLParam": {
-					"poolSize": 5,
-					"autoReconnect": true
 				},
 				"dbConfig" : {}
 			}, null);
