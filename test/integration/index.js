@@ -16,7 +16,7 @@ describe("starting integration tests", () => {
 	
 	before((done) => {
 		let rootPath = process.cwd();
-		imported.runPath(rootPath + "/test/data/soajs_profile.js", rootPath + "/test/data/integration/", true, null,(err, msg) => {
+		imported.runPath(rootPath + "/test/data/soajs_profile.js", rootPath + "/test/data/integration/", true, null, (err, msg) => {
 			if (err) {
 				console.log(err);
 			}
