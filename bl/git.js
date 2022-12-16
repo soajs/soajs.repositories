@@ -1203,8 +1203,10 @@ let bl = {
 					"repo": results.repo.name,
 					"branches": activeBranches
 				};
-				console.log(opts);
-				lib.update_items_branches(soajs, opts, (error, response)=>{
+				lib.update_items_branches(soajs, opts, (error)=>{
+					if (error) {
+						soajs.log.error(error);
+					}
 					modelObj.activateSyncRepo(data, (err) => {
 						bl.mp.closeModel(soajs, modelObj);
 						if (err) {
