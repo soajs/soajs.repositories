@@ -1192,7 +1192,11 @@ let bl = {
 					data.branches = branches;
 				}
 				const activeBranches = [];
-				data.branches.forEach(branch => {branch.active && activeBranches.push(branch.name);});
+				data.branches.forEach((branch) => {
+					if (branch.active) {
+						 activeBranches.push(branch.name);
+					}
+				});
 				let opts = {
 					"provider": inputmaskData.provider,
 					"owner": inputmaskData.owner,
@@ -1201,7 +1205,7 @@ let bl = {
 				};
 				lib.update_items_branches(soajs, opts, (error, response)=>{
 					console.log(error);
-					console.log(reponse);
+					console.log(response);
 					modelObj.activateSyncRepo(data, (err) => {
 						bl.mp.closeModel(soajs, modelObj);
 						if (err) {
