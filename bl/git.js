@@ -1191,12 +1191,24 @@ let bl = {
 				} else {
 					data.branches = branches;
 				}
-				modelObj.activateSyncRepo(data, (err) => {
-					bl.mp.closeModel(soajs, modelObj);
-					if (err) {
-						return cb(bl.handleError(soajs, 602, err));
-					}
-					return cb(null, `Repository ${results.repo.repository} is synchronized!`);
+				const activeBranches = [];
+				data.branches.forEach(branch => {branch.active && activeBranches.push(branch.name);});
+				let opts = {
+					"provider": inputmaskData.provider,
+					"owner": inputmaskData.owner,
+					"repo": results.repo.name,
+					"branches": activeBranches
+				};
+				lib.update_items_branches(soajs, opts, (error, response)=>{
+					console.log(error);
+					console.log(reponse);
+					modelObj.activateSyncRepo(data, (err) => {
+						bl.mp.closeModel(soajs, modelObj);
+						if (err) {
+							return cb(bl.handleError(soajs, 602, err));
+						}
+						return cb(null, `Repository ${results.repo.repository} is synchronized!`);
+					});
 				});
 			});
 		});
