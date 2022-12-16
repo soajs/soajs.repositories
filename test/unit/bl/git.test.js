@@ -9561,6 +9561,9 @@ describe("Unit test for: BL - Git", () => {
 				"id": "123",
 			};
 			
+			sinon.stub(lib, 'update_items_branches').callsFake(function fakeFn(soajs, opts, cb) {
+				return cb(null);
+			});
 			BL.syncRepo(soajs, {}, (err) => {
 				assert.deepStrictEqual(err.code, 602);
 				done();
