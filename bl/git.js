@@ -1198,15 +1198,13 @@ let bl = {
 					}
 				});
 				let opts = {
-					"provider": inputmaskData.provider,
-					"owner": inputmaskData.owner,
+					"provider": results.repo.provider,
+					"owner": results.repo.owner,
 					"repo": results.repo.name,
 					"branches": activeBranches
 				};
 				console.log(opts);
 				lib.update_items_branches(soajs, opts, (error, response)=>{
-					console.log(error);
-					console.log(response);
 					modelObj.activateSyncRepo(data, (err) => {
 						bl.mp.closeModel(soajs, modelObj);
 						if (err) {
