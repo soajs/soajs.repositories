@@ -33,10 +33,10 @@ function Git(service, options, mongoCore) {
 	}
 	if (indexing && !indexing[index]) {
 		indexing[index] = true;
-		__self.mongoCore.createIndex(colName, {'repository': "text"}, (err, index) => {
+		__self.mongoCore.createIndex(colName, {'repository': "text"}, {}, (err, index) => {
 			service.log.debug("Index: " + index + " created with error: " + err);
 		});
-		__self.mongoCore.createIndex(colName, {'name': 1, "type": 1}, (err, index) => {
+		__self.mongoCore.createIndex(colName, {'name': 1, "type": 1}, {}, (err, index) => {
 			service.log.debug("Index: " + index + " created with error: " + err);
 		});
 		service.log.debug("Git: Indexes for " + index + " Updated!");
