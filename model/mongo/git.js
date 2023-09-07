@@ -15,7 +15,7 @@ let indexing = {};
 
 function Git(service, options, mongoCore) {
 	let __self = this;
-	
+
 	if (mongoCore) {
 		__self.mongoCore = mongoCore;
 	}
@@ -33,10 +33,10 @@ function Git(service, options, mongoCore) {
 	}
 	if (indexing && !indexing[index]) {
 		indexing[index] = true;
-		__self.mongoCore.createIndex(colName, {'repository': "text"}, {}, (err, index) => {
+		__self.mongoCore.createIndex(colName, { 'repository': "text" }, {}, (err, index) => {
 			service.log.debug("Index: " + index + " created with error: " + err);
 		});
-		__self.mongoCore.createIndex(colName, {'name': 1, "type": 1}, {}, (err, index) => {
+		__self.mongoCore.createIndex(colName, { 'name': 1, "type": 1 }, {}, (err, index) => {
 			service.log.debug("Index: " + index + " created with error: " + err);
 		});
 		service.log.debug("Git: Indexes for " + index + " Updated!");
@@ -50,12 +50,12 @@ Git.prototype.closeConnection = function () {
 
 Git.prototype.validateId = function (id, cb) {
 	let __self = this;
-	
+
 	if (!id) {
 		let error = new Error("id is required.");
 		return cb(error, null);
 	}
-	
+
 	try {
 		id = __self.mongoCore.ObjectId(id);
 		return cb(null, id);
@@ -66,7 +66,7 @@ Git.prototype.validateId = function (id, cb) {
 
 Git.prototype.checkIfAccountExists = function (data, cb) {
 	let __self = this;
-	
+
 	if (!data || !(data.id || data.provider)) {
 		let error = new Error("Git: must provide owner and provider.");
 		return cb(error);
@@ -153,10 +153,17 @@ Git.prototype.saveNewAccount = function (data, cb) {
 		let error = new Error("No data provided.");
 		return cb(error);
 	}
-	__self.mongoCore.insertOne(colName, data, (err, record) => {
-		return cb(err, {
-			id: record.insertedId
-		});
+	__self.mongoCore.insertOne(colName, data, {}, (err, record) => {
+		let id = null;
+		if (record) {
+			id = record.insertedId || record._id;
+		}
+		if (id) {
+			return cb(err, { id });
+		} else {
+			let error = new Error("No data provided.");
+			return cb(error);
+		}
 	});
 };
 
@@ -171,8 +178,8 @@ Git.prototype.updateAccount = function (data, cb) {
 		if (err) {
 			return cb(err, null);
 		}
-		condition = {'_id': id};
-		let options = {'upsert': false, 'safe': true};
+		condition = { '_id': id };
+		let options = { 'upsert': false, 'safe': true };
 		let fields = {
 			'$set': {}
 		};
@@ -192,7 +199,7 @@ Git.prototype.upgradeAccount = function (data, cb) {
 	let condition = {
 		"_id": data._id
 	};
-	let options = {'upsert': false, 'safe': true};
+	let options = { 'upsert': false, 'safe': true };
 	let fields = {
 		'$set': data.set
 	};
@@ -209,7 +216,7 @@ Git.prototype.updateRepository = function (data, cb) {
 		repository: data.repository,
 		domain: data.domain
 	};
-	let options = {'upsert': true, 'safe': true};
+	let options = { 'upsert': true, 'safe': true };
 	let fields = {
 		'$set': {
 			repository: data.repository,
@@ -237,7 +244,7 @@ Git.prototype.syncRepository = function (data, cb) {
 		"source.name": data.owner,
 		type: "repository"
 	};
-	let options = {'upsert': true, 'safe': true};
+	let options = { 'upsert': true, 'safe': true };
 	let fields = {
 		'$pull': {
 			"source": {
@@ -293,7 +300,7 @@ Git.prototype.removeRepositories = function (data, cb) {
 		"source.name": data.owner,
 		"type": "repository"
 	};
-	let options = {'upsert': false, 'safe': true};
+	let options = { 'upsert': false, 'safe': true };
 	let fields = {
 		'$pull': {
 			source: {
@@ -318,7 +325,7 @@ Git.prototype.activateSyncRepo = function (data, cb) {
 		type: "repository",
 		_id: data._id
 	};
-	let options = {'upsert': false, 'safe': true};
+	let options = { 'upsert': false, 'safe': true };
 	let fields = {
 		'$set': {
 			branches: data.branches
@@ -343,7 +350,7 @@ Git.prototype.updateBranches = function (data, cb) {
 		_id: data._id,
 		"branches.name": data.name
 	};
-	let options = {'upsert': false, 'safe': true};
+	let options = { 'upsert': false, 'safe': true };
 	let fields = {
 		'$set': {}
 	};
@@ -370,7 +377,7 @@ Git.prototype.updateTags = function (data, cb) {
 		_id: data._id
 	};
 	let fields = {};
-	let options = {'upsert': false, 'safe': true};
+	let options = { 'upsert': false, 'safe': true };
 	if (data.active) {
 		fields = {
 			'$push': {
@@ -390,7 +397,7 @@ Git.prototype.updateTags = function (data, cb) {
 			}
 		};
 	}
-	
+
 	__self.mongoCore.updateOne(colName, condition, fields, options, (err, response) => {
 		return cb(err, response);
 	});
@@ -406,7 +413,7 @@ Git.prototype.removeRepository = function (data, cb) {
 		_id: data._id,
 		type: data.type
 	};
-	let options = {'upsert': false, 'safe': true};
+	let options = { 'upsert': false, 'safe': true };
 	let fields = {
 		'$set': {
 			active: !!data.active,
@@ -471,38 +478,38 @@ Git.prototype.searchRepositories = function (data, cb) {
 			"name": 1
 		}
 	};
-	
+
 	if (data.name) {
 		condition.name = data.name;
 	}
 	if (data.provider) {
-		condition.provider = {$in: data.provider};
+		condition.provider = { $in: data.provider };
 	}
 	if (data.active) {
 		condition.active = data.active;
 	}
 	if (data.owner) {
-		condition.owner = {$in: data.owner};
+		condition.owner = { $in: data.owner };
 	}
 	if (data.textSearch) {
 		condition.$text = {
 			$search: data.textSearch
 		};
 	}
-	
+
 	if (data.skip) {
 		options.skip = data.skip;
 	}
 	if (data.limit) {
 		options.limit = data.limit;
 	}
-	
+
 	if (data.leaf) {
 		condition.source = {
 			$eq: []
 		};
 	}
-	
+
 	__self.mongoCore.find(colName, condition, options, cb);
 };
 
@@ -515,7 +522,7 @@ Git.prototype.countSearchRepositories = function (data, cb) {
 	let condition = {
 		"type": "repository",
 	};
-	
+
 	if (data.name) {
 		condition.name = data.name;
 	}
@@ -526,7 +533,7 @@ Git.prototype.countSearchRepositories = function (data, cb) {
 		condition.active = data.active;
 	}
 	if (data.owner) {
-		condition.owner = {$in: data.owner};
+		condition.owner = { $in: data.owner };
 	}
 	if (data.textSearch) {
 		condition.$text = {
