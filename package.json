@@ -1,7 +1,7 @@
 {
   "name": "soajs.repositories",
   "description": "soajs Repositories service",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "author": {
     "name": "soajs team",
     "email": "team@soajs.org"
@@ -31,7 +31,7 @@
     "nock": "11.7.2",
     "request": "2.88.2",
     "soajs.controller": "4.2.3",
-    "soajs.marketplace": "1.1.1",
+    "soajs.marketplace": "1.1.2",
     "sinon": "8.1.1"
   },
   "dependencies": {
