@@ -18,29 +18,29 @@
     "test": "grunt test"
   },
   "devDependencies": {
-    "grunt": "1.0.4",
-    "grunt-contrib-clean": "2.0.0",
+    "grunt": "1.6.1",
+    "grunt-contrib-clean": "2.0.1",
     "grunt-contrib-copy": "1.0.0",
-    "grunt-contrib-jshint": "2.1.0",
+    "grunt-contrib-jshint": "3.2.0",
     "grunt-coveralls": "2.0.0",
     "grunt-env": "1.0.1",
     "grunt-istanbul": "0.8.0",
-    "grunt-jsdoc": "2.4.0",
+    "grunt-jsdoc": "2.4.1",
     "grunt-mocha-test": "0.13.3",
-    "mocha": "6.2.2",
-    "nock": "11.7.2",
+    "mocha": "10.7.3",
+    "nock": "13.5.5",
     "request": "2.88.2",
-    "soajs.controller": "4.2.12",
-    "soajs.marketplace": "1.1.7",
-    "sinon": "8.1.1"
+    "soajs.controller": "4.2.15",
+    "soajs.marketplace": "1.1.9",
+    "sinon": "18.0.0"
   },
   "dependencies": {
-    "@octokit/rest": "20.0.2",
-    "async": "3.2.5",
+    "@octokit/rest": "20.1.1",
+    "async": "3.2.6",
     "lodash": "4.17.21",
-    "parse-url": "8.1.0",
+    "parse-url": "9.2.0",
     "shortid": "2.2.16",
-    "soajs": "4.1.9",
+    "soajs": "4.1.10",
     "yamljs": "0.3.0"
   }
 }
