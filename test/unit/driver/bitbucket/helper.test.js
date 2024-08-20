@@ -313,6 +313,7 @@ describe("Unit test for: Drivers - bitbucket, helper", () => {
 					expires_in: 1234
 				});
 			helperFile.getRepositories(self, data, (err, res) => {
+				console.log(err,res);
 				assert.ok(res);
 				done();
 			});

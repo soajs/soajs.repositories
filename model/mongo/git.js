@@ -75,7 +75,7 @@ Git.prototype.checkIfAccountExists = function (data, cb) {
 		provider: data.provider,
 		GID: data.id
 	};
-	__self.mongoCore.countDocuments(colName, condition, null, cb);
+	__self.mongoCore.countDocuments(colName, condition, {}, cb);
 };
 
 Git.prototype.getAccount = function (data, cb) {
@@ -144,7 +144,7 @@ Git.prototype.checkActiveRepositories = function (data, cb) {
 	condition.type = "repository";
 	condition["source.name"] = data.owner;
 	condition.active = true;
-	__self.mongoCore.countDocuments(colName, condition, null, cb);
+	__self.mongoCore.countDocuments(colName, condition, {}, cb);
 };
 
 Git.prototype.saveNewAccount = function (data, cb) {
@@ -540,7 +540,7 @@ Git.prototype.countSearchRepositories = function (data, cb) {
 			$search: data.textSearch
 		};
 	}
-	__self.mongoCore.countDocuments(colName, condition, null, cb);
+	__self.mongoCore.countDocuments(colName, condition, {}, cb);
 };
 
 module.exports = Git;
