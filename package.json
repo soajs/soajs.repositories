@@ -27,20 +27,20 @@
     "grunt-istanbul": "0.8.0",
     "grunt-jsdoc": "2.4.1",
     "grunt-mocha-test": "0.13.3",
-    "mocha": "10.7.3",
-    "nock": "11.7.2",
-    "request": "2.88.2",
-    "soajs.controller": "4.2.15",
+    "mocha": "11.0.1",
+    "nock": "13.5.6",
+    "soajs.controller": "4.2.17",
     "soajs.marketplace": "1.1.9",
-    "sinon": "18.0.0"
+    "sinon": "19.0.2"
   },
   "dependencies": {
     "@octokit/rest": "20.1.1",
     "async": "3.2.6",
     "lodash": "4.17.21",
     "parse-url": "9.2.0",
+    "request": "2.88.2",
     "shortid": "2.2.16",
-    "soajs": "4.1.10",
+    "soajs": "4.1.11",
     "yamljs": "0.3.0"
   }
 }
