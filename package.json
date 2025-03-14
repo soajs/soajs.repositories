@@ -1,7 +1,7 @@
 {
   "name": "soajs.repositories",
   "description": "soajs Repositories service",
-  "version": "1.1.8",
+  "version": "1.1.9",
   "author": {
     "name": "soajs team",
     "email": "team@soajs.org"
@@ -27,20 +27,20 @@
     "grunt-istanbul": "0.8.0",
     "grunt-jsdoc": "2.4.1",
     "grunt-mocha-test": "0.13.3",
-    "mocha": "11.0.1",
-    "nock": "11.7.2",
-    "soajs.controller": "4.2.17",
-    "soajs.marketplace": "1.1.10",
+    "mocha": "11.1.0",
+    "nock": "14.0.1",
+    "soajs.controller": "4.2.31",
+    "soajs.marketplace": "1.1.11",
     "sinon": "19.0.2"
   },
   "dependencies": {
-    "@octokit/rest": "20.1.1",
+    "@octokit/rest": "21.1.1",
     "async": "3.2.6",
     "lodash": "4.17.21",
     "parse-url": "9.2.0",
     "request": "2.88.2",
-    "shortid": "2.2.16",
-    "soajs": "4.1.11",
+    "shortid": "2.2.17",
+    "soajs": "4.1.13",
     "yamljs": "0.3.0"
   }
 }
