@@ -28,7 +28,7 @@
     "grunt-jsdoc": "2.4.1",
     "grunt-mocha-test": "0.13.3",
     "mocha": "11.7.5",
-    "nock": "14.0.10",
+    "nock": "11.7.2",
     "soajs.controller": "4.2.41",
     "soajs.marketplace": "1.1.13",
     "sinon": "21.0.0"
